@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { getServerSession } from 'next-auth'
+import { createClient } from '@supabase/supabase-js'
 import { supabase } from '@/lib/supabase'
 
 // Function to create URL-friendly slug
@@ -40,20 +40,8 @@ export async function GET(request: NextRequest) {
       `)
       .eq('is_active', true)
 
-    // Filter by username if specified
-    if (username) {
-      const { data: user } = await supabase
-        .from('users')
-        .select('id')
-        .eq('username', username)
-        .single()
-
-      if (user) {
-        query = query.eq('user_id', user.id)
-      } else {
-        return NextResponse.json({ projects: [], total: 0, hasMore: false })
-      }
-    }
+    // Note: username filtering temporarily disabled due to missing auth_id field in projects table
+    // TODO: Add user relationship to projects table to enable username filtering
 
     // Filter by category if specified
     if (categorySlug) {
@@ -78,18 +66,6 @@ export async function GET(request: NextRequest) {
       .from('projects')
       .select('*', { count: 'exact', head: true })
       .eq('is_active', true)
-
-    if (username) {
-      const { data: user } = await supabase
-        .from('users')
-        .select('id')
-        .eq('username', username)
-        .single()
-
-      if (user) {
-        countQuery = countQuery.eq('user_id', user.id)
-      }
-    }
 
     if (categorySlug) {
       const { data: category } = await supabase
@@ -130,40 +106,23 @@ export async function GET(request: NextRequest) {
       )
     }
 
-    // Get user IDs from projects and fetch user data
-    const userIds = [...new Set(projects.map(p => p.user_id).filter(Boolean))]
-    let usersData: any[] = []
-
-    if (userIds.length > 0) {
-      const { data: users } = await supabase
-        .from('users')
-        .select('id, username, display_name')
-        .in('id', userIds)
-      usersData = users || []
-    }
-
-    // Transform the data to include tags as array and user info
+    // Transform the data to include tags as array and generate slug from title
     const transformedProjects = projects.map(project => {
-      const user = usersData.find(u => u.id === project.user_id)
-
-      // Generate slug if it doesn't exist
-      let projectSlug = project.slug
-      if (!projectSlug) {
-        projectSlug = project.title
-          .toLowerCase()
-          .trim()
-          .replace(/[^\w\s-]/g, '')
-          .replace(/[\s_-]+/g, '-')
-          .replace(/^-+|-+$/g, '')
-      }
+      // Generate slug from title for frontend use
+      const projectSlug = project.title
+        .toLowerCase()
+        .trim()
+        .replace(/[^\w\s-]/g, '')
+        .replace(/[\s_-]+/g, '-')
+        .replace(/^-+|-+$/g, '')
 
       return {
         ...project,
         slug: projectSlug,
         tags: project.tags?.map((tag: any) => tag.tag_name) || [],
         owner: {
-          username: user?.username || 'demo',
-          displayName: user?.display_name || 'Demo User'
+          username: 'anonymous',
+          displayName: 'Anonymous User'
         }
       }
     })
@@ -184,11 +143,35 @@ export async function GET(request: NextRequest) {
 
 export async function POST(request: NextRequest) {
   try {
-    const session = await getServerSession()
+    // Create Supabase client for server-side
+    const supabaseServer = createClient(
+      process.env.NEXT_PUBLIC_SUPABASE_URL!,
+      process.env.SUPABASE_SERVICE_ROLE_KEY!,
+      {
+        auth: {
+          autoRefreshToken: false,
+          persistSession: false
+        }
+      }
+    )
 
-    if (!session?.user?.email) {
+    // Get the authorization header from the request
+    const authHeader = request.headers.get('authorization')
+    if (!authHeader || !authHeader.startsWith('Bearer ')) {
       return NextResponse.json(
         { error: 'Authentication required' },
+        { status: 401 }
+      )
+    }
+
+    const token = authHeader.replace('Bearer ', '')
+
+    // Verify the token and get user
+    const { data: { user }, error: authError } = await supabaseServer.auth.getUser(token)
+
+    if (authError || !user?.email) {
+      return NextResponse.json(
+        { error: 'Invalid authentication token' },
         { status: 401 }
       )
     }
@@ -214,14 +197,14 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    // Get the authenticated user
-    const { data: authUser, error: authError } = await supabase
+    // Get the authenticated user from our users table
+    const { data: authUser, error: userError } = await supabaseServer
       .from('users')
       .select('id, username')
-      .eq('email', session.user.email)
+      .eq('email', user.email)
       .single()
 
-    if (authError || !authUser) {
+    if (userError || !authUser) {
       return NextResponse.json(
         { error: 'User not found' },
         { status: 404 }
@@ -229,7 +212,7 @@ export async function POST(request: NextRequest) {
     }
 
     // Get category ID
-    const { data: category, error: categoryError } = await supabase
+    const { data: category, error: categoryError } = await supabaseServer
       .from('categories')
       .select('id')
       .eq('slug', category_slug)
@@ -242,39 +225,19 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    // Generate or validate slug
-    let projectSlug = slug || createSlug(title)
-
-    // Ensure slug is unique for this user
-    let finalSlug = projectSlug
-    let counter = 1
-
-    while (true) {
-      const { data: existingProject } = await supabase
-        .from('projects')
-        .select('slug')
-        .eq('user_id', authUser.id)
-        .eq('slug', finalSlug)
-        .single()
-
-      if (!existingProject) break
-
-      finalSlug = `${projectSlug}-${counter}`
-      counter++
-    }
+      // Note: slug functionality temporarily disabled due to missing slug column in projects table
+    // TODO: Add slug column to projects table for URL-friendly project identifiers
 
     // Create project
-    const { data: project, error: projectError } = await supabase
+    const { data: project, error: projectError } = await supabaseServer
       .from('projects')
       .insert([{
         title,
-        slug: finalSlug,
         description,
         logo_url,
         website_url,
         github_url,
         category_id: category.id,
-        user_id: authUser.id,
         is_featured: is_featured || false
       }])
       .select(`
@@ -285,10 +248,6 @@ export async function POST(request: NextRequest) {
           slug,
           color,
           gradient
-        ),
-        users!projects_user_id_fkey (
-          username,
-          display_name
         )
       `)
       .single()
@@ -308,7 +267,7 @@ export async function POST(request: NextRequest) {
         tag_name: tag
       }))
 
-      await supabase
+      await supabaseServer
         .from('project_tags')
         .insert(tagInserts)
     }
@@ -318,8 +277,8 @@ export async function POST(request: NextRequest) {
       ...project,
       tags: tags || [],
       owner: {
-        username: project.users?.username,
-        displayName: project.users?.display_name
+        username: authUser.username,
+        displayName: authUser.display_name
       }
     }
 

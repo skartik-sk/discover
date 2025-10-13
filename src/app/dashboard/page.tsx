@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { useSession } from 'next-auth/react'
+import { useAuth } from '@/contexts/auth-context'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
@@ -76,7 +76,7 @@ interface UserData {
 }
 
 export default function DashboardPage() {
-  const { data: session, status } = useSession()
+  const { user, session, loading: authLoading, getAuthHeaders } = useAuth()
   const [userData, setUserData] = useState<UserData | null>(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
@@ -87,19 +87,25 @@ export default function DashboardPage() {
   })
 
   useEffect(() => {
-    if (status === 'loading') return
+    if (authLoading) return
     if (!session) {
       window.location.href = '/auth/signin'
       return
     }
 
     fetchUserData()
-  }, [session, status])
+  }, [session, authLoading])
 
   const fetchUserData = async () => {
     try {
       setLoading(true)
-      const response = await fetch('/api/dashboard')
+      const authHeaders = {
+        'Content-Type': 'application/json',
+        ...getAuthHeaders()
+      }
+      const response = await fetch('/api/dashboard', {
+        headers: authHeaders
+      })
 
       if (!response.ok) {
         throw new Error('Failed to fetch dashboard data')
@@ -142,7 +148,7 @@ export default function DashboardPage() {
   }
 
   
-  if (status === 'loading' || loading) {
+  if (authLoading || loading) {
     return (
       <div className="min-h-screen bg-background flex items-center justify-center">
         <div className="text-center">
@@ -153,7 +159,7 @@ export default function DashboardPage() {
     )
   }
 
-  if (!session) {
+  if (!session || !user) {
     return (
       <div className="min-h-screen bg-background flex items-center justify-center">
         <Card className="max-w-md w-full showcase-project-card shadow-elevation-2">

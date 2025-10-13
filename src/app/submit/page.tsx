@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
-import { useSession } from 'next-auth/react'
+import { useAuth } from '@/contexts/auth-context'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
@@ -39,7 +39,7 @@ interface Category {
 
 export default function SubmitProjectPage() {
   const router = useRouter()
-  const { data: session, status } = useSession()
+  const { user, session, loading: authLoading, getAuthHeaders } = useAuth()
 
   const [categories, setCategories] = useState<Category[]>([])
   const [loading, setLoading] = useState(false)
@@ -111,12 +111,16 @@ export default function SubmitProjectPage() {
     setIsSubmitting(true)
     setError(null)
 
+    // Get auth headers from Supabase context
+    const authHeaders = {
+      'Content-Type': 'application/json',
+      ...getAuthHeaders()
+    }
+
     try {
       const response = await fetch('/api/projects', {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
+        headers: authHeaders,
         body: JSON.stringify({
           title: formData.title,
           description: formData.description,
@@ -173,7 +177,7 @@ export default function SubmitProjectPage() {
     }
   }
 
-  if (status === 'loading') {
+  if (authLoading) {
     return (
       <div className="min-h-screen bg-background flex items-center justify-center">
         <div className="text-center">
@@ -301,7 +305,7 @@ export default function SubmitProjectPage() {
             {/* User Info */}
             <div className="flex items-center justify-center space-x-2 mb-8">
               <Users className="h-5 w-5 text-gray-500" />
-              <span className="text-gray-700">Submitting as: {session.user?.name || session.user?.email}</span>
+              <span className="text-gray-700">Submitting as: {user?.user_metadata?.full_name || user?.email}</span>
             </div>
           </div>
         </div>

@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { Inter, JetBrains_Mono, Space_Grotesk } from "next/font/google";
 import "./globals.css";
-import { AuthSessionProvider } from "@/components/providers/session-provider";
+import { AuthProvider } from "@/contexts/auth-context";
 import { RainbowProvider } from "@/components/providers/rainbow-provider";
 import { Header } from "@/components/layout/header";
 import { Footer } from "@/components/layout/footer";
@@ -76,7 +76,7 @@ export default function RootLayout({
       >
         <SkipLink />
         <ErrorBoundary>
-          <AuthSessionProvider>
+          <AuthProvider>
             <RainbowProvider>
               <Header />
               <main id="main-content" className="flex-1" role="main">
@@ -85,7 +85,7 @@ export default function RootLayout({
               <Footer />
               <AccessibilityToolbar />
             </RainbowProvider>
-          </AuthSessionProvider>
+          </AuthProvider>
         </ErrorBoundary>
       </body>
     </html>

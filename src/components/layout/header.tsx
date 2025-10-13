@@ -1,7 +1,7 @@
 'use client'
 
 import Link from 'next/link'
-import { useSession, signOut } from 'next-auth/react'
+import { useAuth } from '@/contexts/auth-context'
 import { Button } from '@/components/ui/button'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import {
@@ -29,7 +29,7 @@ import {
 } from 'lucide-react'
 import { useState, useEffect } from 'react'
 export function Header() {
-  const { data: session, status } = useSession()
+  const { user, session, loading, signOut } = useAuth()
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
   const [isScrolled, setIsScrolled] = useState(false)
 
@@ -55,8 +55,8 @@ export function Header() {
     return () => document.removeEventListener('mousedown', handleClickOutside)
   }, [isMobileMenuOpen])
 
-  const handleSignOut = () => {
-    signOut({ callbackUrl: '/' })
+  const handleSignOut = async () => {
+    await signOut()
     setIsMobileMenuOpen(false)
   }
 
@@ -138,16 +138,16 @@ export function Header() {
           </div>
 
           {/* User menu */}
-          {status === 'loading' ? (
+          {loading ? (
             <div className="h-10 w-10 animate-pulse rounded-xl bg-gray-200" />
           ) : session ? (
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <Button variant="ghost" className="relative h-10 w-10 rounded-xl hover:bg-gray-100 transition-colors duration-200">
                   <Avatar className="h-10 w-10 ring-2 ring-primary/20 ring-offset-2">
-                    <AvatarImage src={session.user?.image || ''} alt={session.user?.name || ''} />
+                    <AvatarImage src={user?.user_metadata?.avatar_url || ''} alt={user?.user_metadata?.full_name || ''} />
                     <AvatarFallback className="bg-primary text-white font-semibold">
-                      {session.user?.name?.charAt(0) || 'U'}
+                      {user?.user_metadata?.full_name?.charAt(0) || user?.email?.charAt(0)?.toUpperCase() || 'U'}
                     </AvatarFallback>
                   </Avatar>
                 </Button>
@@ -155,9 +155,9 @@ export function Header() {
               <DropdownMenuContent className="w-64 rounded-2xl border-2 shadow-elevation-3" align="end" forceMount>
                 <DropdownMenuLabel className="font-normal p-4">
                   <div className="flex flex-col space-y-2">
-                    <p className="text-sm font-semibold text-gray-900">{session.user?.name}</p>
+                    <p className="text-sm font-semibold text-gray-900">{user?.user_metadata?.full_name || user?.email}</p>
                     <p className="text-xs text-gray-600 truncate">
-                      {session.user?.email}
+                      {user?.email}
                     </p>
                     <Badge variant="secondary" className="w-fit bg-primary/10 text-primary border-primary/20">
                       Creator

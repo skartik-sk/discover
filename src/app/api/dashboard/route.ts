@@ -1,11 +1,31 @@
 import { NextResponse } from 'next/server'
+import { createClient } from '@supabase/supabase-js'
 import { supabase, supabaseAdmin } from '@/lib/supabase'
 
-export async function GET() {
+export async function GET(request: Request) {
   try {
+    // Create Supabase client for server-side
+    const supabaseServer = createClient(
+      process.env.NEXT_PUBLIC_SUPABASE_URL!,
+      process.env.SUPABASE_SERVICE_ROLE_KEY!,
+      {
+        auth: {
+          autoRefreshToken: false,
+          persistSession: false
+        }
+      }
+    )
 
-    // Get authenticated user
-    const { data: { user }, error: authError } = await supabase.auth.getUser()
+    // Get the authorization header from the request
+    const authHeader = request.headers.get('authorization')
+    if (!authHeader || !authHeader.startsWith('Bearer ')) {
+      return NextResponse.json({ error: 'Authentication required' }, { status: 401 })
+    }
+
+    const token = authHeader.replace('Bearer ', '')
+
+    // Verify the token and get user
+    const { data: { user }, error: authError } = await supabaseServer.auth.getUser(token)
 
     if (authError || !user) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
@@ -22,7 +42,7 @@ export async function GET() {
       console.error('Profile fetch error:', profileError)
     }
 
-    // Get user's projects
+    // Get user's projects (use supabase client for queries)
     const { data: projects, error: projectsError } = await supabase
       .from('projects')
       .select(`
@@ -33,10 +53,7 @@ export async function GET() {
           color
         ),
         tags:project_tags (
-          tag_id,
-          tags:tag_id (
-            name
-          )
+          tag_name
         )
       `)
       .eq('user_id', user.id)
@@ -47,18 +64,7 @@ export async function GET() {
       console.error('Projects fetch error:', projectsError)
     }
 
-    // Get project views count
-    const { data: projectViews, error: viewsError } = await supabase
-      .from('project_views')
-      .select('project_id')
-      .in('project_id', projects?.map(p => p.id) || [])
-
-    if (viewsError) {
-      console.error('Views fetch error:', viewsError)
-    }
-
     // Calculate statistics
-    const totalViews = projectViews?.length || 0
     const projectCount = projects?.length || 0
     const totalTags = projects?.reduce((acc, project) => acc + (project.tags?.length || 0), 0) || 0
 
@@ -72,11 +78,11 @@ export async function GET() {
       website_url: project.website_url,
       github_url: project.github_url,
       is_featured: project.is_featured,
-      views: projectViews?.filter(v => v.project_id === project.id).length || 0,
+      views: 0, // TODO: Implement views tracking when table is created
       created_at: project.created_at,
       updated_at: project.updated_at,
       category: project.categories,
-      tags: project.tags?.map((tag: any) => tag.tags?.name).filter(Boolean) || []
+      tags: project.tags?.map((tag: any) => tag.tag_name).filter(Boolean) || []
     })) || []
 
     // Return dashboard data
@@ -88,7 +94,7 @@ export async function GET() {
         username: profile?.username || user.email?.split('@')[0] || 'user',
         avatar: user.user_metadata?.avatar_url || profile?.avatar_url || null,
         bio: profile?.bio || 'No bio set yet',
-        role: profile?.role || 'tester',
+        role: profile?.role || 'submitter',
         wallet_address: profile?.wallet_address || null,
         is_verified: profile?.is_verified || false,
         created_at: profile?.created_at || user.created_at,
@@ -96,7 +102,7 @@ export async function GET() {
       },
       stats: {
         projects_submitted: projectCount,
-        total_views: totalViews,
+        total_views: 0, // TODO: Implement views tracking when table is created
         total_tags: totalTags,
         featured_projects: projects?.filter(p => p.is_featured).length || 0
       },
