@@ -48,6 +48,8 @@ interface ProjectDetailProps {
     github_url: string
     views: number
     created_at: string
+    updated_at?: string
+    is_featured?: boolean
     tags: string[]
     owner: {
       id: string
@@ -87,6 +89,22 @@ export default function ProjectDetail({ project }: ProjectDetailProps) {
   useEffect(() => {
     // Track page view when component mounts
     trackPageView(`project-${project.id}`, project.title)
+
+    // Track view in database
+    const trackView = async () => {
+      try {
+        await fetch(`/api/projects/${project.id}/view`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+        })
+      } catch (error) {
+        console.error('Error tracking view:', error)
+      }
+    }
+
+    trackView()
 
     // Simulate loading delay for skeleton
     const loadingTimer = setTimeout(() => {

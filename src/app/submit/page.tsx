@@ -312,122 +312,151 @@ export default function SubmitProjectPage() {
       </section>
 
       {/* Form Section */}
-      <section className="section-padding">
+      <section className="section-padding bg-gradient-to-b from-white to-gray-50">
         <div className="container-custom">
           <div className="max-w-4xl mx-auto">
             {error && (
-              <Alert className="mb-6 border-red-200 bg-red-50">
-                <AlertCircle className="h-4 w-4" />
-                <AlertDescription>{error}</AlertDescription>
+              <Alert className="mb-6 border-2 border-red-300 bg-red-50 rounded-xl shadow-elevation-2">
+                <AlertCircle className="h-5 w-5 text-red-600" />
+                <AlertDescription className="text-red-700 font-medium">{error}</AlertDescription>
               </Alert>
             )}
 
             <Card className="showcase-card-hover">
+              <CardHeader className="border-b border-gray-100 bg-gradient-to-r from-blue-50 to-cyan-50">
+                <CardTitle className="text-2xl font-display text-gray-900">Project Information</CardTitle>
+                <CardDescription className="text-base">Fill in the details about your Web3 project</CardDescription>
+              </CardHeader>
               <CardContent className="p-8">
                 <form onSubmit={handleSubmit} className="space-y-8">
                   {/* Basic Information */}
                   <div className="space-y-6">
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-2">
-                        Project Title *
+                    <div className="space-y-2">
+                      <label className="flex items-center text-sm font-semibold text-gray-900 mb-2">
+                        Project Title
+                        <span className="text-red-500 ml-1">*</span>
                       </label>
                       <Input
                         type="text"
-                        placeholder="Enter your project name"
+                        placeholder="e.g., DeFi Trading Platform"
                         value={formData.title}
                         onChange={(e) => setFormData(prev => ({ ...prev, title: e.target.value }))}
-                        className={`showcase-input ${errors.title ? 'border-red-500' : ''}`}
+                        className={`showcase-input ${errors.title ? 'border-red-500 focus:border-red-500' : ''}`}
                       />
                       {errors.title && (
-                        <p className="text-sm text-red-600 mt-1">{errors.title}</p>
+                        <p className="text-sm text-red-600 mt-1 flex items-center gap-1">
+                          <AlertCircle className="h-3 w-3" />
+                          {errors.title}
+                        </p>
                       )}
                     </div>
 
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-2">
-                        Category *
+                    <div className="space-y-2">
+                      <label className="flex items-center text-sm font-semibold text-gray-900 mb-2">
+                        Category
+                        <span className="text-red-500 ml-1">*</span>
                       </label>
                       <Select value={formData.category} onValueChange={(value) => setFormData(prev => ({ ...prev, category: value }))}>
-                        <SelectTrigger className="showcase-input">
+                        <SelectTrigger className={`showcase-input ${errors.category ? 'border-red-500' : ''}`}>
                           <SelectValue placeholder="Select a category" />
                         </SelectTrigger>
-                        <SelectContent>
+                        <SelectContent className="rounded-xl border-2 border-gray-200">
                           {categories.map((category) => (
-                            <SelectItem key={category.id} value={category.slug}>
-                              {category.icon} {category.name}
+                            <SelectItem key={category.id} value={category.slug} className="cursor-pointer hover:bg-blue-50">
+                              <span className="flex items-center gap-2">
+                                <span>{category.icon}</span>
+                                <span className="font-medium">{category.name}</span>
+                              </span>
                             </SelectItem>
                           ))}
                         </SelectContent>
                       </Select>
                       {errors.category && (
-                        <p className="text-sm text-red-600 mt-1">{errors.category}</p>
+                        <p className="text-sm text-red-600 mt-1 flex items-center gap-1">
+                          <AlertCircle className="h-3 w-3" />
+                          {errors.category}
+                        </p>
                       )}
                     </div>
 
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-2">
-                        Description *
+                    <div className="space-y-2">
+                      <label className="flex items-center text-sm font-semibold text-gray-900 mb-2">
+                        Description
+                        <span className="text-red-500 ml-1">*</span>
                       </label>
                       <Textarea
-                        placeholder="Describe your project in detail..."
+                        placeholder="Tell us about your project, its features, and what makes it unique..."
                         value={formData.description}
                         onChange={(e) => setFormData(prev => ({ ...prev, description: e.target.value }))}
-                        rows={4}
-                        className={`showcase-input ${errors.description ? 'border-red-500' : ''}`}
+                        rows={5}
+                        className={`showcase-input resize-none ${errors.description ? 'border-red-500 focus:border-red-500' : ''}`}
                       />
                       {errors.description && (
-                        <p className="text-sm text-red-600 mt-1">{errors.description}</p>
+                        <p className="text-sm text-red-600 mt-1 flex items-center gap-1">
+                          <AlertCircle className="h-3 w-3" />
+                          {errors.description}
+                        </p>
                       )}
+                      <p className="text-xs text-gray-500">Minimum 50 characters recommended</p>
                     </div>
 
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-2">
+                    <div className="space-y-2">
+                      <label className="text-sm font-semibold text-gray-900 mb-2 block">
                         Tags
                       </label>
-                      <div className="flex flex-wrap gap-2 mb-2">
-                        {formData.tags.map((tag) => (
-                          <Badge
-                            key={tag}
-                            variant="secondary"
-                            className="showcase-badge flex items-center gap-1"
-                          >
-                            {tag}
-                            <X
-                              className="h-3 w-3 cursor-pointer hover:text-red-500"
-                              onClick={() => removeTag(tag)}
-                            />
-                          </Badge>
-                        ))}
-                        <div className="flex items-center">
+                      <div className="p-4 border-2 border-gray-200 rounded-xl bg-gray-50 space-y-3">
+                        <div className="flex flex-wrap gap-2">
+                          {formData.tags.map((tag) => (
+                            <Badge
+                              key={tag}
+                              variant="secondary"
+                              className="showcase-badge flex items-center gap-1 bg-blue-100 text-blue-700 border-blue-200"
+                            >
+                              {tag}
+                              <X
+                                className="h-3 w-3 cursor-pointer hover:text-red-500 transition-colors"
+                                onClick={() => removeTag(tag)}
+                              />
+                            </Badge>
+                          ))}
+                        </div>
+                        <div className="flex items-center gap-2">
                           <Input
                             type="text"
-                            placeholder="Add a tag"
+                            placeholder="e.g., DeFi, NFT, Gaming"
                             value={formData.tagInput}
                             onChange={(e) => setFormData(prev => ({ ...prev, tagInput: e.target.value }))}
                             onKeyPress={handleTagInputKeyPress}
-                            className="showcase-input w-32"
+                            className="showcase-input flex-1"
                           />
                           <Button
                             type="button"
                             variant="outline"
                             size="sm"
                             onClick={addTag}
-                            className="showcase-btn-outline ml-2"
+                            className="showcase-btn px-4"
                           >
-                            <Plus className="h-4 w-4" />
+                            <Plus className="h-4 w-4 mr-1" />
+                            Add
                           </Button>
                         </div>
+                        <p className="text-xs text-gray-600">
+                          Press Enter or click "Add" to add tags. Tags help users discover your project.
+                        </p>
                       </div>
-                      <p className="text-sm text-gray-500">
-                        Press Enter or click + to add tags
-                      </p>
                     </div>
                   </div>
 
-                  {/* Links */}
-                  <div className="space-y-6">
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-2">
+                  {/* Links Section */}
+                  <div className="space-y-6 pt-4 border-t-2 border-gray-100">
+                    <h3 className="text-lg font-semibold text-gray-900 flex items-center gap-2">
+                      <Globe className="h-5 w-5 text-blue-500" />
+                      Project Links
+                    </h3>
+                    
+                    <div className="space-y-2">
+                      <label className="flex items-center text-sm font-semibold text-gray-900 mb-2">
+                        <Globe className="h-4 w-4 mr-2 text-gray-500" />
                         Website URL
                       </label>
                       <Input
@@ -437,10 +466,12 @@ export default function SubmitProjectPage() {
                         onChange={(e) => setFormData(prev => ({ ...prev, website_url: e.target.value }))}
                         className="showcase-input"
                       />
+                      <p className="text-xs text-gray-500">Your project's main website or landing page</p>
                     </div>
 
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-2">
+                    <div className="space-y-2">
+                      <label className="flex items-center text-sm font-semibold text-gray-900 mb-2">
+                        <Github className="h-4 w-4 mr-2 text-gray-500" />
                         GitHub URL
                       </label>
                       <Input
@@ -450,40 +481,43 @@ export default function SubmitProjectPage() {
                         onChange={(e) => setFormData(prev => ({ ...prev, github_url: e.target.value }))}
                         className="showcase-input"
                       />
+                      <p className="text-xs text-gray-500">Link to your project's GitHub repository</p>
                     </div>
 
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-2">
+                    <div className="space-y-2">
+                      <label className="flex items-center text-sm font-semibold text-gray-900 mb-2">
+                        <ExternalLink className="h-4 w-4 mr-2 text-gray-500" />
                         Logo URL
                       </label>
                       <Input
                         type="url"
-                        placeholder="https://example.com/logo.png (optional)"
+                        placeholder="https://example.com/logo.png"
                         value={formData.logo_url}
                         onChange={(e) => setFormData(prev => ({ ...prev, logo_url: e.target.value }))}
                         className="showcase-input"
                       />
-                      <p className="text-sm text-gray-500 mt-1">
-                        Provide a direct URL to your logo image
+                      <p className="text-xs text-gray-500">
+                        Direct URL to your project logo (PNG, JPG, or SVG recommended)
                       </p>
                     </div>
                   </div>
 
                   {/* Submit Button */}
-                  <div className="flex justify-center pt-6">
+                  <div className="flex justify-center pt-8 border-t-2 border-gray-100">
                     <Button
                       type="submit"
                       size="lg"
                       disabled={isSubmitting}
-                      className="showcase-btn px-8 py-4 text-base font-semibold shadow-elevation-3 hover:shadow-elevation-4"
+                      className="showcase-btn px-10 py-6 text-lg font-bold shadow-elevation-3 hover:shadow-elevation-4"
                     >
                       {isSubmitting ? (
                         <>
-                          <div className="animate-spin rounded-full h-4 w-4 border-2 border-white mr-2"></div>
-                          Submitting...
+                          <div className="animate-spin rounded-full h-5 w-5 border-2 border-white border-t-transparent mr-3"></div>
+                          Submitting Your Project...
                         </>
                       ) : (
                         <>
+                          <Rocket className="mr-2 h-5 w-5" />
                           Submit Project
                           <ArrowRight className="ml-2 h-5 w-5" />
                         </>
@@ -495,20 +529,36 @@ export default function SubmitProjectPage() {
             </Card>
 
             {/* Tips */}
-            <Card className="showcase-card-hover mt-8">
+            <Card className="showcase-card-hover mt-8 border-2 border-yellow-200 bg-gradient-to-br from-yellow-50 to-orange-50">
               <CardHeader>
-                <CardTitle className="flex items-center space-x-2">
-                  <Star className="h-5 w-5 text-yellow-500" />
-                  Pro Tips
+                <CardTitle className="flex items-center gap-2 text-2xl font-display">
+                  <Star className="h-6 w-6 text-yellow-500" />
+                  Pro Tips for Success
                 </CardTitle>
+                <CardDescription className="text-base text-gray-700">Make your project stand out</CardDescription>
               </CardHeader>
               <CardContent>
-                <ul className="space-y-2 text-sm text-gray-600">
-                  <li>• Be descriptive in your title and description to help others understand your project</li>
-                  <li>• Add relevant tags to improve discoverability</li>
-                  <li>• Provide a working demo link if possible</li>
-                  <li>• Include your GitHub repository for transparency</li>
-                  <li>• A good logo helps your project stand out</li>
+                <ul className="space-y-3">
+                  <li className="flex items-start gap-3 text-sm text-gray-700">
+                    <CheckCircle className="h-5 w-5 text-green-500 flex-shrink-0 mt-0.5" />
+                    <span><strong>Be Descriptive:</strong> Write a clear title and detailed description to help others understand your project's value</span>
+                  </li>
+                  <li className="flex items-start gap-3 text-sm text-gray-700">
+                    <CheckCircle className="h-5 w-5 text-green-500 flex-shrink-0 mt-0.5" />
+                    <span><strong>Use Tags:</strong> Add relevant tags to improve discoverability and reach the right audience</span>
+                  </li>
+                  <li className="flex items-start gap-3 text-sm text-gray-700">
+                    <CheckCircle className="h-5 w-5 text-green-500 flex-shrink-0 mt-0.5" />
+                    <span><strong>Demo Link:</strong> Provide a working demo or live website link if possible</span>
+                  </li>
+                  <li className="flex items-start gap-3 text-sm text-gray-700">
+                    <CheckCircle className="h-5 w-5 text-green-500 flex-shrink-0 mt-0.5" />
+                    <span><strong>GitHub Repository:</strong> Include your repository for transparency and credibility</span>
+                  </li>
+                  <li className="flex items-start gap-3 text-sm text-gray-700">
+                    <CheckCircle className="h-5 w-5 text-green-500 flex-shrink-0 mt-0.5" />
+                    <span><strong>Professional Logo:</strong> A high-quality logo helps your project stand out visually</span>
+                  </li>
                 </ul>
               </CardContent>
             </Card>

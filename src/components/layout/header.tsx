@@ -80,7 +80,7 @@ export function Header() {
               <NavigationMenuTrigger className="showcase-nav-link px-4 py-2">
                 Explore
               </NavigationMenuTrigger>
-              <NavigationMenuContent>
+              <NavigationMenuContent className="bg-white border-2 border-gray-200 shadow-elevation-3 rounded-xl">
                 <div className="grid gap-3 p-6 w-[400px] bg-white">
                   <NavigationMenuLink asChild>
                     <Link href="/projects" className="flex items-center space-x-3 p-3 rounded-xl hover:bg-primary/10 transition-colors duration-200 group">
@@ -152,8 +152,8 @@ export function Header() {
                   </Avatar>
                 </Button>
               </DropdownMenuTrigger>
-              <DropdownMenuContent className="w-64 rounded-2xl border-2 shadow-elevation-3" align="end" forceMount>
-                <DropdownMenuLabel className="font-normal p-4">
+              <DropdownMenuContent className="w-64 rounded-2xl border-2 border-gray-200 shadow-elevation-3 bg-white" align="end" forceMount>
+                <DropdownMenuLabel className="font-normal p-4 bg-white">
                   <div className="flex flex-col space-y-2">
                     <p className="text-sm font-semibold text-gray-900">{user?.user_metadata?.full_name || user?.email}</p>
                     <p className="text-xs text-gray-600 truncate">
@@ -164,21 +164,21 @@ export function Header() {
                     </Badge>
                   </div>
                 </DropdownMenuLabel>
-                <DropdownMenuSeparator />
-                <DropdownMenuItem asChild className="rounded-xl p-3 hover:bg-primary/10">
+                <DropdownMenuSeparator className="bg-gray-200" />
+                <DropdownMenuItem asChild className="rounded-xl p-3 m-1 hover:bg-primary/10 cursor-pointer bg-white">
                   <Link href="/dashboard" className="flex items-center w-full">
                     <User className="mr-3 h-4 w-4 text-primary" />
                     <span className="font-medium">Dashboard</span>
                   </Link>
                 </DropdownMenuItem>
-                <DropdownMenuItem asChild className="rounded-xl p-3 hover:bg-primary/10">
+                <DropdownMenuItem asChild className="rounded-xl p-3 m-1 hover:bg-primary/10 cursor-pointer bg-white">
                   <Link href="/settings" className="flex items-center w-full">
                     <Settings className="mr-3 h-4 w-4 text-primary" />
                     <span className="font-medium">Settings</span>
                   </Link>
                 </DropdownMenuItem>
-                <DropdownMenuSeparator />
-                <DropdownMenuItem onClick={handleSignOut} className="rounded-xl p-3 hover:bg-red-50 text-red-600">
+                <DropdownMenuSeparator className="bg-gray-200" />
+                <DropdownMenuItem onClick={handleSignOut} className="rounded-xl p-3 m-1 hover:bg-red-50 text-red-600 cursor-pointer bg-white">
                   <LogOut className="mr-3 h-4 w-4" />
                   <span className="font-medium">Sign Out</span>
                 </DropdownMenuItem>

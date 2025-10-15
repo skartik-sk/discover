@@ -103,23 +103,23 @@ export default function SignInPage() {
                 )}
 
                 {/* Email/Password Sign In */}
-                <form onSubmit={handleEmailSignIn} className="space-y-4">
-                  <div>
-                    <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-1">
-                      Email
+                <form onSubmit={handleEmailSignIn} className="space-y-5">
+                  <div className="space-y-2">
+                    <label htmlFor="email" className="block text-sm font-semibold text-gray-900 mb-1">
+                      Email Address
                     </label>
                     <input
                       id="email"
                       type="email"
                       value={email}
                       onChange={(e) => setEmail(e.target.value)}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                      className="showcase-input w-full"
                       placeholder="you@example.com"
                       required
                     />
                   </div>
-                  <div>
-                    <label htmlFor="password" className="block text-sm font-medium text-gray-700 mb-1">
+                  <div className="space-y-2">
+                    <label htmlFor="password" className="block text-sm font-semibold text-gray-900 mb-1">
                       Password
                     </label>
                     <input
@@ -127,7 +127,7 @@ export default function SignInPage() {
                       type="password"
                       value={password}
                       onChange={(e) => setPassword(e.target.value)}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                      className="showcase-input w-full"
                       placeholder="••••••••"
                       required
                     />
@@ -139,7 +139,7 @@ export default function SignInPage() {
                   >
                     {isLoading ? (
                       <>
-                        <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white mr-2" />
+                        <div className="animate-spin rounded-full h-5 w-5 border-2 border-white border-t-transparent mr-2" />
                         Signing In...
                       </>
                     ) : (

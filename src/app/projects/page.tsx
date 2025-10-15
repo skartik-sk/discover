@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef, useCallback } from 'react'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
@@ -16,7 +16,8 @@ import {
   Trophy,
   ExternalLink,
   Grid,
-  List
+  List,
+  Loader2
 } from 'lucide-react'
 import Link from 'next/link'
 
@@ -51,15 +52,23 @@ const sortOptions = [
   { value: "views", label: "Most Viewed" }
 ]
 
+const PROJECTS_PER_PAGE = 12
+
 export default function ProjectsPage() {
   const [searchQuery, setSearchQuery] = useState('')
   const [selectedCategory, setSelectedCategory] = useState('all')
   const [sortBy, setSortBy] = useState('featured')
   const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid')
   const [projects, setProjects] = useState<Project[]>([])
+  const [displayedProjects, setDisplayedProjects] = useState<Project[]>([])
   const [categories, setCategories] = useState<any[]>([])
   const [loading, setLoading] = useState(true)
+  const [loadingMore, setLoadingMore] = useState(false)
   const [isFilterOpen, setIsFilterOpen] = useState(false)
+  const [page, setPage] = useState(1)
+  const [hasMore, setHasMore] = useState(true)
+  
+  const observerTarget = useRef<HTMLDivElement>(null)
 
   // Fetch categories and projects on mount
   useEffect(() => {
@@ -123,8 +132,47 @@ export default function ProjectsPage() {
 
   // Update projects when filters change
   useEffect(() => {
+    setPage(1)
+    setDisplayedProjects([])
     fetchProjects(selectedCategory, searchQuery, sortBy)
   }, [selectedCategory, searchQuery, sortBy])
+
+  // Lazy loading effect
+  useEffect(() => {
+    if (projects.length > 0) {
+      const endIndex = page * PROJECTS_PER_PAGE
+      const newDisplayedProjects = projects.slice(0, endIndex)
+      setDisplayedProjects(newDisplayedProjects)
+      setHasMore(endIndex < projects.length)
+    }
+  }, [projects, page])
+
+  // Intersection Observer for infinite scroll
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      entries => {
+        if (entries[0].isIntersecting && hasMore && !loadingMore && !loading) {
+          setLoadingMore(true)
+          setTimeout(() => {
+            setPage(prev => prev + 1)
+            setLoadingMore(false)
+          }, 500)
+        }
+      },
+      { threshold: 0.1 }
+    )
+
+    const currentTarget = observerTarget.current
+    if (currentTarget) {
+      observer.observe(currentTarget)
+    }
+
+    return () => {
+      if (currentTarget) {
+        observer.unobserve(currentTarget)
+      }
+    }
+  }, [hasMore, loadingMore, loading])
 
   const handleProjectClick = (projectSlug: string, username: string) => {
     window.open(`/projects/${username}/${projectSlug}`, '_blank')
@@ -203,12 +251,17 @@ export default function ProjectsPage() {
             {/* Enhanced Filters */}
             <div className="flex flex-wrap items-center gap-4">
               <Select value={selectedCategory} onValueChange={setSelectedCategory}>
-                <SelectTrigger className="showcase-input w-48 border-2">
-                  <SelectValue placeholder="Category" />
+                <SelectTrigger className="showcase-input w-52 border-2 font-semibold">
+                  <Filter className="h-4 w-4 mr-2 text-gray-500" />
+                  <SelectValue placeholder="All Categories" />
                 </SelectTrigger>
-                <SelectContent className="rounded-xl border-2 shadow-elevation-2">
+                <SelectContent className="bg-white rounded-xl border-2 border-gray-200 shadow-elevation-3 z-50">
                   {categories.map((category) => (
-                    <SelectItem key={category.value} value={category.value} className="rounded-lg">
+                    <SelectItem 
+                      key={category.value} 
+                      value={category.value} 
+                      className="cursor-pointer hover:bg-blue-50 focus:bg-blue-50 rounded-lg my-1 mx-1 font-medium"
+                    >
                       {category.label}
                     </SelectItem>
                   ))}
@@ -216,12 +269,17 @@ export default function ProjectsPage() {
               </Select>
 
               <Select value={sortBy} onValueChange={setSortBy}>
-                <SelectTrigger className="showcase-input w-48 border-2">
+                <SelectTrigger className="showcase-input w-52 border-2 font-semibold">
+                  <Star className="h-4 w-4 mr-2 text-gray-500" />
                   <SelectValue placeholder="Sort by" />
                 </SelectTrigger>
-                <SelectContent className="rounded-xl border-2 shadow-elevation-2">
+                <SelectContent className="bg-white rounded-xl border-2 border-gray-200 shadow-elevation-3 z-50">
                   {sortOptions.map((option) => (
-                    <SelectItem key={option.value} value={option.value} className="rounded-lg">
+                    <SelectItem 
+                      key={option.value} 
+                      value={option.value} 
+                      className="cursor-pointer hover:bg-blue-50 focus:bg-blue-50 rounded-lg my-1 mx-1 font-medium"
+                    >
                       {option.label}
                     </SelectItem>
                   ))}
@@ -265,25 +323,26 @@ export default function ProjectsPage() {
       {/* Enhanced Projects Grid/List */}
       <section className="section-padding bg-background">
         <div className="container-custom">
-          {projects.length === 0 ? (
+          {projects.length === 0 && !loading ? (
             <div className="text-center py-20">
-              <div className="text-gray-400 mb-6">
-                <Search className="h-16 w-16 mx-auto mb-4 opacity-50" />
+              <div className="inline-flex items-center justify-center w-20 h-20 bg-gradient-to-br from-gray-100 to-gray-200 rounded-full mb-6">
+                <Search className="h-10 w-10 text-gray-500" />
               </div>
               <h3 className="text-2xl font-bold mb-3 font-display text-gray-900">No projects found</h3>
               <p className="text-gray-600 text-lg mb-6">
                 Try adjusting your search terms or filters to find more projects.
               </p>
-              <Button asChild>
+              <Button asChild className="showcase-btn">
                 <Link href="/submit">Submit the First Project</Link>
               </Button>
             </div>
           ) : (
-            <div className={viewMode === 'grid'
-              ? 'grid md:grid-cols-2 lg:grid-cols-3 gap-8'
-              : 'space-y-6'
-            }>
-              {projects.map((project, index) => (
+            <>
+              <div className={viewMode === 'grid'
+                ? 'grid md:grid-cols-2 lg:grid-cols-3 gap-8'
+                : 'space-y-6'
+              }>
+                {displayedProjects.map((project, index) => (
                 <Card
                   key={project.id}
                   className={`showcase-project-card cursor-pointer group animate-scale-in ${
@@ -355,7 +414,28 @@ export default function ProjectsPage() {
                   </CardContent>
                 </Card>
               ))}
-            </div>
+              </div>
+
+              {/* Loading indicator for infinite scroll */}
+              <div ref={observerTarget} className="flex justify-center py-12">
+                {loadingMore && (
+                  <div className="flex items-center gap-3">
+                    <Loader2 className="h-6 w-6 animate-spin text-blue-600" />
+                    <span className="text-gray-600 font-medium">Loading more projects...</span>
+                  </div>
+                )}
+                {!hasMore && displayedProjects.length > 0 && (
+                  <div className="text-center">
+                    <p className="text-gray-500 text-sm font-medium">
+                      You've reached the end! 🎉
+                    </p>
+                    <p className="text-gray-400 text-xs mt-1">
+                      Showing all {displayedProjects.length} projects
+                    </p>
+                  </div>
+                )}
+              </div>
+            </>
           )}
         </div>
       </section>

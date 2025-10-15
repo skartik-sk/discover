@@ -240,11 +240,11 @@ export default function SignUpPage() {
 
               <form onSubmit={handleSubmit} className="space-y-6">
                 {/* Email Field */}
-                <div>
-                  <Label htmlFor="email" className="text-sm font-medium text-gray-700">
+                <div className="space-y-2">
+                  <Label htmlFor="email" className="text-sm font-semibold text-gray-900">
                     Email Address
                   </Label>
-                  <div className="relative mt-1">
+                  <div className="relative">
                     <Input
                       id="email"
                       type="email"
@@ -259,16 +259,19 @@ export default function SignUpPage() {
                     <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
                   </div>
                   {formErrors.email && touched.email && (
-                    <p className="text-sm text-red-600 mt-1">{formErrors.email}</p>
+                    <p className="text-sm text-red-600 mt-1 flex items-center gap-1">
+                      <Shield className="h-3 w-3" />
+                      {formErrors.email}
+                    </p>
                   )}
                 </div>
 
                 {/* Password Field */}
-                <div>
-                  <Label htmlFor="password" className="text-sm font-medium text-gray-700">
+                <div className="space-y-2">
+                  <Label htmlFor="password" className="text-sm font-semibold text-gray-900">
                     Password
                   </Label>
-                  <div className="relative mt-1">
+                  <div className="relative">
                     <Input
                       id="password"
                       type={showPassword ? 'text' : 'password'}
@@ -284,7 +287,7 @@ export default function SignUpPage() {
                       type="button"
                       variant="ghost"
                       size="sm"
-                      className="absolute right-1 top-1/2 transform -translate-y-1/2 h-8 w-8 p-0"
+                      className="absolute right-1 top-1/2 transform -translate-y-1/2 h-8 w-8 p-0 hover:bg-gray-100"
                       onClick={() => setShowPassword(!showPassword)}
                     >
                       {showPassword ? (
@@ -295,7 +298,10 @@ export default function SignUpPage() {
                     </Button>
                   </div>
                   {formErrors.password && touched.password && (
-                    <p className="text-sm text-red-600 mt-1">{formErrors.password}</p>
+                    <p className="text-sm text-red-600 mt-1 flex items-center gap-1">
+                      <Shield className="h-3 w-3" />
+                      {formErrors.password}
+                    </p>
                   )}
 
                   {/* Password Strength Indicator */}
