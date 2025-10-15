@@ -31,18 +31,39 @@ export async function GET(request: Request) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
 
-    // Get user profile data
+    // Get user profile data by auth_id (not id!)
     const { data: profile, error: profileError } = await supabaseAdmin
       .from('users')
       .select('*')
-      .eq('id', user.id)
+      .eq('auth_id', user.id)
       .single()
 
-    if (profileError && profileError.code !== 'PGRST116') {
+    if (profileError) {
       console.error('Profile fetch error:', profileError)
+      // If user doesn't exist, create one
+      if (profileError.code === 'PGRST116') {
+        const { data: newProfile } = await supabaseAdmin
+          .from('users')
+          .insert({
+            auth_id: user.id,
+            email: user.email,
+            display_name: user.user_metadata?.full_name || user.user_metadata?.name || user.email?.split('@')[0],
+            username: user.email?.split('@')[0],
+            avatar_url: user.user_metadata?.avatar_url || user.user_metadata?.picture,
+            role: 'submitter',
+            is_active: true
+          })
+          .select()
+          .single()
+        
+        if (newProfile) {
+          // Use the newly created profile
+          Object.assign(profile || {}, newProfile)
+        }
+      }
     }
 
-    // Get user's projects (use supabase client for queries)
+    // Get user's projects (use profile.id as the user_id in projects table)
     const { data: projects, error: projectsError } = await supabase
       .from('projects')
       .select(`
@@ -56,7 +77,7 @@ export async function GET(request: Request) {
           tag_name
         )
       `)
-      .eq('user_id', user.id)
+      .eq('user_id', profile?.id || user.id)
       .eq('is_active', true)
       .order('created_at', { ascending: false })
 
