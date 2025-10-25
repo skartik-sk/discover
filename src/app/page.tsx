@@ -661,12 +661,14 @@ export default async function HomePage() {
                   Ready to Launch?
                 </span>
               </div>
-              <h2 className="text-3xl md:text-4xl lg:text-5xl font-black text-white uppercase mb-8 leading-[0.95]">
+              <h2 className="text-4xl md:text-5xl lg:text-6xl font-black text-white uppercase mb-6 leading-[1.1]">
                 Showcase Your
                 <br />
-                <span className="text-[#FFDF00]">Web3 Project Today</span>
+                <span className="bg-gradient-to-r from-[#FFDF00] via-amber-400 to-[#FFDF00] bg-clip-text text-transparent">
+                  Web3 Project Today
+                </span>
               </h2>
-              <p className="text-xl md:text-2xl text-white/70 mb-12 max-w-3xl mx-auto leading-relaxed">
+              <p className="text-lg md:text-xl text-white/60 mb-10 max-w-2xl mx-auto leading-relaxed">
                 Join thousands of Web3 builders and get your project in front of
                 the right audience
               </p>

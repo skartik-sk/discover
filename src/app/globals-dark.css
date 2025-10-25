@@ -18,8 +18,7 @@
     --color-gray: #818181;
 
     /* Typography */
-    --font-primary:
-        "Cabinet Grotesk", "Inter", system-ui, -apple-system, sans-serif;
+    --font-primary: "Space Grotesk", system-ui, -apple-system, sans-serif;
 
     /* Spacing */
     --container-max: 1340px;
