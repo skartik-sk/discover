@@ -1,545 +1,492 @@
-'use client'
+"use client";
 
-import { useState, useEffect } from 'react'
-import Link from 'next/link'
-import ProjectDetailSkeleton from './ProjectDetailSkeleton'
-import { trackPageView, trackProjectInteraction, useAnalytics } from '@/lib/analytics'
+import { useState, useEffect } from "react";
+import Link from "next/link";
 import {
   ArrowLeft,
   ExternalLink,
   Github,
   Star,
   Eye,
-  Tag,
   Calendar,
-  User,
   Heart,
   Share2,
   Copy,
   Check,
+  MessageSquare,
   TrendingUp,
   Award,
-  Zap,
-  MessageSquare,
-  ThumbsUp,
-  Clock,
-  Link2,
-  Shield,
-  Sparkles,
-  ArrowUpRight,
   Users,
-  BarChart3,
-  Trophy,
-  ArrowRight
-} from 'lucide-react'
-import { Button } from '@/components/ui/button'
-import { Badge } from '@/components/ui/badge'
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
-import AsyncErrorBoundary from './AsyncErrorBoundary'
+  Sparkles,
+} from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
+import { Card, CardContent } from "@/components/ui/card";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 
 interface ProjectDetailProps {
   project: {
-    id: string
-    title: string
-    description: string
-    logo_url: string
-    website_url: string
-    github_url: string
-    views: number
-    created_at: string
-    updated_at?: string
-    is_featured?: boolean
-    tags: string[]
+    id: string;
+    title: string;
+    description: string;
+    logo_url: string;
+    website_url: string;
+    github_url: string;
+    views: number;
+    created_at: string;
+    updated_at?: string;
+    is_featured?: boolean;
+    tags: string[];
     owner: {
-      id: string
-      username: string
-      displayName: string
-      avatarUrl: string
-      bio: string
-    }
+      id: string;
+      username: string;
+      displayName: string;
+      avatarUrl: string;
+      bio: string;
+    };
     categories: {
-      id: string
-      name: string
-      slug: string
-      color: string
-      gradient: string
-    }
+      id: string;
+      name: string;
+      slug: string;
+      color: string;
+      gradient: string;
+    };
     reviews: Array<{
-      id: string
-      rating: number
-      review_text: string
-      created_at: string
+      id: string;
+      rating: number;
+      review_text: string;
+      created_at: string;
       users: {
-        username: string
-        display_name: string
-        avatar_url: string
-      }
-    }>
-  }
+        username: string;
+        display_name: string;
+        avatar_url: string;
+      };
+    }>;
+  };
 }
 
 export default function ProjectDetail({ project }: ProjectDetailProps) {
-  const [isSubmittingReview, setIsSubmittingReview] = useState(false)
-  const [isLiked, setIsLiked] = useState(false)
-  const [likeCount, setLikeCount] = useState(0)
-  const [copiedToClipboard, setCopiedToClipboard] = useState(false)
-  const [isLoading, setIsLoading] = useState(true)
+  const [isLiked, setIsLiked] = useState(false);
+  const [likeCount, setLikeCount] = useState(0);
+  const [copiedToClipboard, setCopiedToClipboard] = useState(false);
 
-  useEffect(() => {
-    // Track page view when component mounts
-    trackPageView(`project-${project.id}`, project.title)
+  const averageRating =
+    project.reviews && project.reviews.length > 0
+      ? (
+          project.reviews.reduce((sum, r) => sum + r.rating, 0) /
+          project.reviews.length
+        ).toFixed(1)
+      : "0.0";
 
-    // Track view in database
-    const trackView = async () => {
-      try {
-        await fetch(`/api/projects/${project.id}/view`, {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-        })
-      } catch (error) {
-        console.error('Error tracking view:', error)
-      }
-    }
-
-    trackView()
-
-    // Simulate loading delay for skeleton
-    const loadingTimer = setTimeout(() => {
-      setIsLoading(false)
-      // Simulate like count based on views
-      setLikeCount(Math.floor(project.views * 0.3))
-    }, 800)
-
-    return () => {
-      clearTimeout(loadingTimer)
-    }
-  }, [project.id, project.title])
-
-  const formatDate = (dateString: string) => {
-    return new Date(dateString).toLocaleDateString('en-US', {
-      year: 'numeric',
-      month: 'long',
-      day: 'numeric'
-    })
-  }
-
-  const averageRating = project.reviews.length > 0
-    ? project.reviews.reduce((sum, review) => sum + review.rating, 0) / project.reviews.length
-    : 0
-
-  const handleShare = async () => {
+  const handleCopyLink = async () => {
     try {
-      await navigator.clipboard.writeText(window.location.href)
-      setCopiedToClipboard(true)
-      setTimeout(() => setCopiedToClipboard(false), 2000)
-
-      // Track share event
-      trackProjectInteraction(project.id, 'share', {
-        method: 'clipboard',
-        url: window.location.href
-      })
+      await navigator.clipboard.writeText(window.location.href);
+      setCopiedToClipboard(true);
+      setTimeout(() => setCopiedToClipboard(false), 2000);
     } catch (err) {
-      console.error('Failed to copy to clipboard:', err)
+      console.error("Failed to copy link:", err);
     }
-  }
+  };
 
   const handleLike = () => {
-    setIsLiked(!isLiked)
-    setLikeCount(prev => isLiked ? prev - 1 : prev + 1)
-
-    // Track like/unlike event
-    trackProjectInteraction(project.id, 'like', {
-      action: isLiked ? 'unlike' : 'like',
-      totalLikes: isLiked ? likeCount - 1 : likeCount + 1
-    })
-  }
-
-  // Generate structured data for SEO
-  const generateStructuredData = () => {
-    const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000'
-    const projectUrl = `${baseUrl}/projects/${project.owner.username}/${project.title.toLowerCase().replace(/[^\w\s-]/g, '').replace(/[\s_-]+/g, '-').replace(/^-+|-+$/g, '')}`
-
-    return {
-      '@context': 'https://schema.org',
-      '@type': 'SoftwareApplication',
-      name: project.title,
-      description: project.description,
-      url: projectUrl,
-      applicationCategory: 'Web3Application',
-      operatingSystem: 'Web Browser',
-      offers: {
-        '@type': 'Offer',
-        price: '0',
-        priceCurrency: 'USD'
-      },
-      creator: {
-        '@type': 'Person',
-        name: project.owner.displayName || project.owner.username,
-        url: `${baseUrl}/u/${project.owner.username}`
-      },
-      dateCreated: project.created_at,
-      dateModified: project.updated_at || project.created_at,
-      keywords: project.tags?.join(', '),
-      aggregateRating: project.reviews.length > 0 ? {
-        '@type': 'AggregateRating',
-        ratingValue: averageRating.toFixed(1),
-        reviewCount: project.reviews.length,
-        bestRating: '5',
-        worstRating: '1'
-      } : undefined,
-      image: project.logo_url,
-      screenshot: `${baseUrl}/api/og/projects/${project.id}`,
-      downloadUrl: project.website_url,
-      softwareVersion: '1.0.0',
-      releaseNotes: 'Initial release of this Web3 project',
-      license: 'https://creativecommons.org/licenses/by/4.0/',
-      browserRequirements: 'Requires JavaScript. Requires HTML5.',
-      programmingLanguage: ['JavaScript', 'TypeScript', 'Solidity'],
-      features: [
-        'Web3 Integration',
-        'Blockchain Technology',
-        'Decentralized',
-        'Smart Contracts',
-        'Crypto Wallet Support'
-      ],
-      audience: {
-        '@type': 'Audience',
-        audienceType: 'Web3 enthusiasts, blockchain developers, crypto investors'
-      },
-      provider: {
-        '@type': 'Organization',
-        name: 'Web3 Project Hunt',
-        url: baseUrl
-      }
-    }
-  }
-
-  // Show skeleton while loading
-  if (isLoading) {
-    return <ProjectDetailSkeleton />
-  }
-
-  const structuredData = generateStructuredData()
+    setIsLiked(!isLiked);
+    setLikeCount(isLiked ? likeCount - 1 : likeCount + 1);
+  };
 
   return (
-    <AsyncErrorBoundary maxRetries={2}>
-      <>
-        {/* Structured Data for SEO */}
-        <script
-          type="application/ld+json"
-          dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData) }}
-        />
+    <div className="min-h-screen bg-[#0A0A0A]">
+      {/* Back Button */}
+      <div className="container-custom py-6">
+        <Link
+          href="/projects"
+          className="inline-flex items-center gap-2 text-white/60 hover:text-[#FFDF00] transition-colors group"
+        >
+          <ArrowLeft className="h-4 w-4 group-hover:-translate-x-1 transition-transform" />
+          <span className="font-medium">Back to Projects</span>
+        </Link>
+      </div>
 
-        <div className="min-h-screen bg-background" id="top">
-        <div className="container-custom section-padding">
-          {/* Back Navigation */}
-          <Link
-            href="/projects"
-            className="inline-flex items-center text-gray-600 hover:text-primary mb-6 group transition-colors duration-200"
-          >
-            <ArrowLeft className="w-4 h-4 mr-2 group-hover:-translate-x-1 transition-transform duration-300" />
-            <span className="font-medium">Back to Projects</span>
-          </Link>
+      {/* Hero Section */}
+      <section className="relative overflow-hidden">
+        {/* Background Glow */}
+        <div className="absolute inset-0 bg-gradient-to-b from-[#FFDF00]/5 via-transparent to-transparent" />
 
-          {/* Project Header */}
-          <div className="showcase-card-hover p-6 lg:p-8 mb-8 animate-scale-in">
-            <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-8">
-              {/* Project Logo */}
-              <div className="lg:col-span-2 flex justify-center lg:justify-start mb-6 lg:mb-0">
-                <Avatar className="h-20 w-20 border-2 border-gray-200 shadow-elevation-1">
-                  <AvatarImage src={project.logo_url} alt={project.title} />
-                  <AvatarFallback className="bg-gradient-to-br from-primary to-accent text-white font-bold text-xl">
-                    {project.title.charAt(0)}
-                  </AvatarFallback>
-                </Avatar>
-              </div>
-
-              {/* Main Project Info */}
-              <div className="lg:col-span-7 text-center lg:text-left">
-                <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-4 gap-4">
-                  <div className="flex-1">
-                    <div className="flex flex-wrap items-center justify-center lg:justify-start gap-2 mb-3">
-                      <Badge variant="secondary" className="bg-primary/10 text-primary border-primary/20 font-medium text-xs">
-                        {project.categories?.name || 'Web3'}
-                      </Badge>
+        <div className="container-custom py-12 relative z-10">
+          <div className="grid lg:grid-cols-3 gap-12">
+            {/* Main Content - Left Side */}
+            <div className="lg:col-span-2 space-y-8">
+              {/* Project Header */}
+              <div className="space-y-6">
+                {/* Logo & Meta */}
+                <div className="flex items-start gap-6">
+                  {project.logo_url && (
+                    <div className="relative group">
+                      <div className="absolute -inset-1 bg-gradient-to-br from-[#FFDF00] to-amber-500 rounded-2xl blur opacity-25 group-hover:opacity-50 transition-opacity" />
+                      <div className="relative w-24 h-24 rounded-2xl bg-gradient-to-br from-[#FFDF00] to-amber-500 p-0.5">
+                        <div className="w-full h-full rounded-2xl bg-[#0A0A0A] flex items-center justify-center p-3">
+                          <img
+                            src={project.logo_url}
+                            alt={project.title}
+                            className="w-full h-full object-contain"
+                          />
+                        </div>
+                      </div>
+                    </div>
+                  )}
+                  <div className="flex-1 space-y-3">
+                    <div className="flex items-center gap-3 flex-wrap">
+                      {project.categories && (
+                        <Badge className="bg-white/10 hover:bg-white/20 text-white border-0 text-sm">
+                          {project.categories.name}
+                        </Badge>
+                      )}
                       {project.is_featured && (
-                        <Trophy className="h-4 w-4 text-yellow-500" />
+                        <Badge className="bg-[#FFDF00] hover:bg-[#FFDF00]/90 text-black border-0">
+                          <Star className="h-3 w-3 mr-1 fill-current" />
+                          Featured
+                        </Badge>
                       )}
                     </div>
-                    <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold text-gray-900 mb-4 font-display group-hover:text-primary transition-colors duration-200">
+                    <h1 className="text-4xl lg:text-5xl font-black text-white uppercase leading-tight">
                       {project.title}
                     </h1>
-                    <p className="text-lg text-gray-600 leading-relaxed mb-6">
-                      {project.description}
-                    </p>
                   </div>
                 </div>
 
+                {/* Description */}
+                <p className="text-lg text-white/80 leading-relaxed">
+                  {project.description}
+                </p>
+
                 {/* Tags */}
-                <div className="flex flex-wrap gap-2 mb-6">
-                  {project.tags.map((tag, index) => (
-                    <Badge
-                      key={tag}
-                      variant="outline"
-                      className="text-xs border-gray-200 text-gray-600 bg-gray-50 font-medium"
-                    >
-                      {tag}
-                    </Badge>
-                  ))}
-                </div>
+                {project.tags && project.tags.length > 0 && (
+                  <div className="flex flex-wrap gap-2">
+                    {project.tags.map((tag, i) => (
+                      <Badge
+                        key={i}
+                        variant="outline"
+                        className="border-white/20 text-white/80 hover:bg-white/5"
+                      >
+                        {tag}
+                      </Badge>
+                    ))}
+                  </div>
+                )}
 
                 {/* Action Buttons */}
-                <div className="flex flex-col sm:flex-row flex-wrap gap-3 justify-center lg:justify-start">
+                <div className="flex flex-wrap gap-4">
                   {project.website_url && (
-                    <Button asChild className="showcase-btn px-6 py-3 text-sm font-semibold">
+                    <Button asChild size="lg" className="btn-primary group">
                       <a
                         href={project.website_url}
                         target="_blank"
                         rel="noopener noreferrer"
-                        aria-label="Visit project website"
-                        onClick={() => trackProjectInteraction(project.id, 'click', {
-                          type: 'website',
-                          url: project.website_url
-                        })}
                       >
-                        <ExternalLink className="w-4 h-4 mr-2" />
+                        <ExternalLink className="h-5 w-5 mr-2 group-hover:rotate-12 transition-transform" />
                         Visit Website
-                        <ArrowRight className="w-4 h-4 ml-2" />
                       </a>
                     </Button>
                   )}
                   {project.github_url && (
-                    <Button variant="outline" asChild className="showcase-btn-outline px-6 py-3 text-sm font-semibold border-2">
+                    <Button
+                      asChild
+                      variant="outline"
+                      size="lg"
+                      className="btn-outline"
+                    >
                       <a
                         href={project.github_url}
                         target="_blank"
                         rel="noopener noreferrer"
-                        aria-label="View GitHub repository"
-                        onClick={() => trackProjectInteraction(project.id, 'click', {
-                          type: 'github',
-                          url: project.github_url
-                        })}
                       >
-                        <Github className="w-4 h-4 mr-2" />
+                        <Github className="h-5 w-5 mr-2" />
                         View Code
                       </a>
                     </Button>
                   )}
                   <Button
                     variant="outline"
-                    onClick={handleShare}
-                    className="showcase-btn-outline px-6 py-3 text-sm font-semibold border-2 w-full sm:w-auto"
-                    aria-label={copiedToClipboard ? "Link copied to clipboard" : "Copy project link"}
+                    size="lg"
+                    onClick={handleCopyLink}
+                    className="btn-outline"
                   >
                     {copiedToClipboard ? (
-                      <Check className="w-4 h-4 mr-2 text-green-600" />
+                      <>
+                        <Check className="h-5 w-5 mr-2" />
+                        Copied!
+                      </>
                     ) : (
-                      <Copy className="w-4 h-4 mr-2" />
+                      <>
+                        <Share2 className="h-5 w-5 mr-2" />
+                        Share
+                      </>
                     )}
-                    {copiedToClipboard ? 'Copied!' : 'Share'}
                   </Button>
                   <Button
                     variant="outline"
+                    size="lg"
                     onClick={handleLike}
-                    className={`showcase-btn-outline px-6 py-3 text-sm font-semibold border-2 w-full sm:w-auto ${
-                      isLiked ? 'bg-red-50 border-red-500 text-red-600' : ''
-                    }`}
-                    aria-label={`${isLiked ? 'Unlike' : 'Like'} this project`}
+                    className={`btn-outline ${isLiked ? "border-red-500 text-red-500" : ""}`}
                   >
-                    <Heart className={`w-4 h-4 mr-2 ${isLiked ? 'fill-current' : ''}`} />
+                    <Heart
+                      className={`h-5 w-5 mr-2 ${isLiked ? "fill-current" : ""}`}
+                    />
                     {likeCount}
                   </Button>
                 </div>
               </div>
 
-              {/* Stats */}
-              <div className="lg:col-span-3">
-                <div className="grid grid-cols-3 gap-3 lg:grid-cols-1 lg:space-y-3">
-                  <div className="showcase-stat-card p-4 text-center">
-                    <div className="flex items-center justify-center space-x-2 text-gray-600 mb-2">
-                      <Eye className="w-4 h-4" />
-                      <span className="text-sm font-medium">Views</span>
+              {/* Stats Cards */}
+              <div className="grid grid-cols-3 gap-4">
+                <Card className="card-dark">
+                  <CardContent className="p-6 text-center">
+                    <Eye className="h-8 w-8 mx-auto mb-3 text-cyan-500" />
+                    <div className="text-3xl font-black text-white mb-1">
+                      {project.views?.toLocaleString() || 0}
                     </div>
-                    <div className="text-2xl font-bold text-gray-900">{project.views.toLocaleString()}</div>
-                  </div>
-
-                  <div className="showcase-stat-card p-4 text-center">
-                    <div className="flex items-center justify-center space-x-2 text-gray-600 mb-2">
-                      <Star className="w-4 h-4" />
-                      <span className="text-sm font-medium">Rating</span>
+                    <div className="text-sm text-white/60 uppercase font-medium">
+                      Views
                     </div>
-                    <div className="text-2xl font-bold text-gray-900">{averageRating.toFixed(1)}</div>
-                    <p className="text-sm text-gray-600">{project.reviews.length} reviews</p>
-                  </div>
-
-                  <div className="showcase-stat-card p-4 text-center">
-                    <div className="flex items-center justify-center space-x-2 text-gray-600 mb-2">
-                      <Heart className="w-4 h-4" />
-                      <span className="text-sm font-medium">Likes</span>
+                  </CardContent>
+                </Card>
+                <Card className="card-dark">
+                  <CardContent className="p-6 text-center">
+                    <Star className="h-8 w-8 mx-auto mb-3 text-[#FFDF00]" />
+                    <div className="text-3xl font-black text-white mb-1">
+                      {averageRating}
                     </div>
-                    <div className="text-2xl font-bold text-gray-900">{likeCount.toLocaleString()}</div>
-                  </div>
-                </div>
+                    <div className="text-sm text-white/60 uppercase font-medium">
+                      Rating
+                    </div>
+                  </CardContent>
+                </Card>
+                <Card className="card-dark">
+                  <CardContent className="p-6 text-center">
+                    <MessageSquare className="h-8 w-8 mx-auto mb-3 text-purple-500" />
+                    <div className="text-3xl font-black text-white mb-1">
+                      {project.reviews?.length || 0}
+                    </div>
+                    <div className="text-sm text-white/60 uppercase font-medium">
+                      Reviews
+                    </div>
+                  </CardContent>
+                </Card>
               </div>
-            </div>
-          </div>
 
-          {/* Project Info Cards */}
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-            <Card className="showcase-card-hover p-6">
-              <CardContent className="pt-0 text-center">
-                <div className="w-16 h-16 bg-gradient-to-br from-primary/10 to-primary/5 rounded-2xl flex items-center justify-center mx-auto mb-4">
-                  <Calendar className="h-8 w-8 text-primary" />
-                </div>
-                <h3 className="text-lg font-semibold text-gray-900 mb-2">Created</h3>
-                <p className="text-gray-600">{formatDate(project.created_at)}</p>
-              </CardContent>
-            </Card>
+              {/* Reviews Section */}
+              <Card className="card-dark">
+                <CardContent className="p-8">
+                  <div className="flex items-center gap-3 mb-6">
+                    <MessageSquare className="h-6 w-6 text-[#FFDF00]" />
+                    <h2 className="text-2xl font-black text-white uppercase">
+                      Community Reviews
+                    </h2>
+                  </div>
 
-            <Card className="showcase-card-hover p-6">
-              <CardContent className="pt-0 text-center">
-                <div className="w-16 h-16 bg-gradient-to-br from-accent/10 to-accent/5 rounded-2xl flex items-center justify-center mx-auto mb-4">
-                  <Users className="h-8 w-8 text-accent" />
-                </div>
-                <h3 className="text-lg font-semibold text-gray-900 mb-2">Owner</h3>
-                <p className="text-gray-600">{project.owner.displayName || project.owner.username}</p>
-              </CardContent>
-            </Card>
-
-            <Card className="showcase-card-hover p-6">
-              <CardContent className="pt-0 text-center">
-                <div className="w-16 h-16 bg-gradient-to-br from-purple-100 to-purple-50 rounded-2xl flex items-center justify-center mx-auto mb-4">
-                  <Eye className="h-8 w-8 text-purple-600" />
-                </div>
-                <h3 className="text-lg font-semibold text-gray-900 mb-2">Views</h3>
-                <p className="text-gray-600">{project.views.toLocaleString()}</p>
-              </CardContent>
-            </Card>
-          </div>
-
-          {/* Reviews Section */}
-          <Card className="showcase-card-hover p-8 mb-8">
-            <CardHeader className="text-center">
-              <CardTitle className="text-3xl font-bold text-gray-900 mb-2">Reviews</CardTitle>
-              <p className="text-gray-600">{project.reviews.length} {project.reviews.length === 1 ? 'Review' : 'Reviews'}</p>
-            </CardHeader>
-            <CardContent>
-              {project.reviews.length > 0 ? (
-                <div className="space-y-6">
-                  {project.reviews.map((review) => (
-                    <div key={review.id} className="border-b border-gray-200 last:border-b-0 pb-6 last:pb-0">
-                      <div className="flex items-start space-x-4">
-                        <Avatar className="h-12 w-12">
-                          <AvatarImage src={review.users.avatar_url} alt={review.users.display_name} />
-                          <AvatarFallback>
-                            {review.users.display_name?.charAt(0) || review.users.username?.charAt(0)}
-                          </AvatarFallback>
-                        </Avatar>
-                        <div className="flex-1">
-                          <div className="flex items-center justify-between mb-2">
-                            <span className="font-semibold text-gray-900">
-                              {review.users.display_name || review.users.username}
-                            </span>
-                            <div className="flex">
-                              {[...Array(5)].map((_, i) => (
-                                <Star
-                                  key={i}
-                                  className={`w-4 h-4 ${
-                                    i < review.rating
-                                      ? 'text-yellow-400 fill-current'
-                                      : 'text-gray-300'
-                                  }`}
-                                />
-                              ))}
+                  {project.reviews && project.reviews.length > 0 ? (
+                    <div className="space-y-6">
+                      {project.reviews.map((review) => (
+                        <div
+                          key={review.id}
+                          className="border-b border-white/10 last:border-0 pb-6 last:pb-0"
+                        >
+                          <div className="flex items-start gap-4">
+                            <Avatar className="h-12 w-12">
+                              <AvatarImage
+                                src={review.users?.avatar_url || undefined}
+                                alt={review.users?.display_name || "User"}
+                              />
+                              <AvatarFallback className="bg-[#FFDF00] text-black font-black">
+                                {(review.users?.display_name ||
+                                  review.users?.username ||
+                                  "U")[0].toUpperCase()}
+                              </AvatarFallback>
+                            </Avatar>
+                            <div className="flex-1">
+                              <div className="flex items-center justify-between mb-2">
+                                <div>
+                                  <div className="font-bold text-white">
+                                    {review.users?.display_name ||
+                                      review.users?.username}
+                                  </div>
+                                  <div className="text-sm text-white/40">
+                                    {new Date(
+                                      review.created_at,
+                                    ).toLocaleDateString()}
+                                  </div>
+                                </div>
+                                <div className="flex items-center gap-1">
+                                  {[...Array(5)].map((_, i) => (
+                                    <Star
+                                      key={i}
+                                      className={`h-4 w-4 ${
+                                        i < review.rating
+                                          ? "text-[#FFDF00] fill-current"
+                                          : "text-white/20"
+                                      }`}
+                                    />
+                                  ))}
+                                </div>
+                              </div>
+                              <p className="text-white/80">
+                                {review.review_text}
+                              </p>
                             </div>
                           </div>
-                          {review.review_text && (
-                            <p className="text-gray-600 text-sm">{review.review_text}</p>
-                          )}
-                          <p className="text-xs text-gray-500 mt-2">
-                            {formatDate(review.created_at)}
-                          </p>
+                        </div>
+                      ))}
+                    </div>
+                  ) : (
+                    <div className="text-center py-12">
+                      <MessageSquare className="h-16 w-16 mx-auto mb-4 text-white/20" />
+                      <p className="text-white/60">
+                        No reviews yet. Be the first to review this project!
+                      </p>
+                    </div>
+                  )}
+                </CardContent>
+              </Card>
+            </div>
+
+            {/* Sidebar - Right Side */}
+            <div className="space-y-6">
+              {/* Owner Card */}
+              <Card className="card-dark">
+                <CardContent className="p-6">
+                  <div className="flex items-center gap-3 mb-4">
+                    <Users className="h-5 w-5 text-[#FFDF00]" />
+                    <h3 className="text-lg font-black text-white uppercase">
+                      Project Owner
+                    </h3>
+                  </div>
+                  <div className="space-y-4">
+                    <div className="flex items-center gap-4">
+                      <Avatar className="h-16 w-16 border-2 border-[#FFDF00]">
+                        <AvatarImage
+                          src={project.owner?.avatarUrl || undefined}
+                          alt={project.owner?.displayName || "Owner"}
+                        />
+                        <AvatarFallback className="bg-[#FFDF00] text-black text-xl font-black">
+                          {(project.owner?.displayName ||
+                            project.owner?.username ||
+                            "U")[0].toUpperCase()}
+                        </AvatarFallback>
+                      </Avatar>
+                      <div className="flex-1">
+                        <div className="font-bold text-white text-lg">
+                          {project.owner?.displayName ||
+                            project.owner?.username}
+                        </div>
+                        <div className="text-sm text-white/60">
+                          @{project.owner?.username}
                         </div>
                       </div>
                     </div>
-                  ))}
-                </div>
-              ) : (
-                <div className="text-center py-8">
-                  <p className="text-gray-600">No reviews yet. Be the first to review this project!</p>
-                </div>
-              )}
-            </CardContent>
-          </Card>
-
-          {/* Project Owner & Category Section */}
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-            {/* Project Owner Card */}
-            <Card className="showcase-card-hover p-6">
-              <CardHeader>
-                <CardTitle className="text-xl font-bold text-gray-900 flex items-center gap-2">
-                  <User className="w-5 h-5 text-primary" />
-                  Project Owner
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="text-center">
-                  <Avatar className="w-16 h-16 mx-auto mb-4">
-                    <AvatarImage src={project.owner.avatarUrl} alt={project.owner.displayName} />
-                    <AvatarFallback className="bg-gradient-to-br from-primary to-accent text-white font-bold text-xl">
-                      {project.owner.displayName?.charAt(0) || project.owner.username?.charAt(0)}
-                    </AvatarFallback>
-                  </Avatar>
-                  <h4 className="font-semibold text-gray-900 mb-1">
-                    {project.owner.displayName || project.owner.username}
-                  </h4>
-                  <p className="text-sm text-gray-600 mb-4">@{project.owner.username}</p>
-
-                  {project.owner.bio && (
-                    <p className="text-sm text-gray-600 mb-4">{project.owner.bio}</p>
-                  )}
-
-                  <Link href={`/u/${project.owner.username}`}>
-                    <Button className="showcase-btn w-full">
-                      <Users className="w-4 h-4 mr-2" />
-                      View Profile
+                    {project.owner?.bio && (
+                      <p className="text-sm text-white/80 leading-relaxed">
+                        {project.owner.bio}
+                      </p>
+                    )}
+                    <Button
+                      asChild
+                      variant="outline"
+                      className="w-full btn-outline"
+                    >
+                      <Link href={`/u/${project.owner?.username}`}>
+                        View Profile
+                      </Link>
                     </Button>
-                  </Link>
-                </div>
-              </CardContent>
-            </Card>
-
-            {/* Category Card */}
-            {project.categories && (
-              <Card className="showcase-card-hover p-6">
-                <CardHeader>
-                  <CardTitle className="text-xl font-bold text-gray-900 flex items-center gap-2">
-                    <Tag className="w-5 h-5 text-accent" />
-                    Category
-                  </CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <Link href={`/categories/${project.categories.slug}`} className="block">
-                    <div className="flex items-center space-x-3 p-3 rounded-lg bg-gradient-to-r from-gray-50 to-gray-100 border border-gray-200 hover:border-primary transition-colors duration-200">
-                      <div className={`w-10 h-10 rounded-lg bg-gradient-to-r ${project.categories.gradient} flex items-center justify-center text-white font-bold text-sm`}>
-                        {project.categories.name.charAt(0)}
-                      </div>
-                      <div className="flex-1">
-                        <span className="font-medium text-gray-900">{project.categories.name}</span>
-                      </div>
-                      <ArrowRight className="w-4 h-4 text-gray-400" />
-                    </div>
-                  </Link>
+                  </div>
                 </CardContent>
               </Card>
-            )}
+
+              {/* Category Card */}
+              {project.categories && (
+                <Card className="card-dark">
+                  <CardContent className="p-6">
+                    <div className="flex items-center gap-3 mb-4">
+                      <Sparkles className="h-5 w-5 text-[#FFDF00]" />
+                      <h3 className="text-lg font-black text-white uppercase">
+                        Category
+                      </h3>
+                    </div>
+                    <Link
+                      href={`/categories/${project.categories.slug}`}
+                      className="block group"
+                    >
+                      <div className="relative p-6 rounded-xl bg-gradient-to-br from-white/5 to-white/10 border border-white/10 hover:border-[#FFDF00]/50 transition-all">
+                        <div className="text-4xl mb-3">
+                          {project.categories.name === "DeFi" && "📊"}
+                          {project.categories.name === "NFTs" && "🎨"}
+                          {project.categories.name === "Gaming" && "🎮"}
+                          {project.categories.name === "DAO" && "🏛️"}
+                          {project.categories.name === "Infrastructure" && "⚙️"}
+                          {project.categories.name === "Social" && "👥"}
+                          {project.categories.name === "Education" && "📚"}
+                        </div>
+                        <div className="font-black text-xl text-white mb-2">
+                          {project.categories.name}
+                        </div>
+                        <div className="text-sm text-white/60 group-hover:text-[#FFDF00] transition-colors">
+                          Explore more projects →
+                        </div>
+                      </div>
+                    </Link>
+                  </CardContent>
+                </Card>
+              )}
+
+              {/* Project Info */}
+              <Card className="card-dark">
+                <CardContent className="p-6 space-y-4">
+                  <div className="flex items-center gap-3 mb-4">
+                    <Award className="h-5 w-5 text-[#FFDF00]" />
+                    <h3 className="text-lg font-black text-white uppercase">
+                      Project Info
+                    </h3>
+                  </div>
+                  <div className="space-y-3">
+                    <div className="flex items-center justify-between py-2 border-b border-white/10">
+                      <div className="flex items-center gap-2 text-white/60">
+                        <Calendar className="h-4 w-4" />
+                        <span className="text-sm">Created</span>
+                      </div>
+                      <span className="text-sm font-medium text-white">
+                        {new Date(project.created_at).toLocaleDateString(
+                          "en-US",
+                          {
+                            year: "numeric",
+                            month: "long",
+                            day: "numeric",
+                          },
+                        )}
+                      </span>
+                    </div>
+                    <div className="flex items-center justify-between py-2 border-b border-white/10">
+                      <div className="flex items-center gap-2 text-white/60">
+                        <TrendingUp className="h-4 w-4" />
+                        <span className="text-sm">Status</span>
+                      </div>
+                      <Badge className="bg-green-500/20 text-green-500 border-0">
+                        Active
+                      </Badge>
+                    </div>
+                    <div className="flex items-center justify-between py-2">
+                      <div className="flex items-center gap-2 text-white/60">
+                        <Eye className="h-4 w-4" />
+                        <span className="text-sm">Total Views</span>
+                      </div>
+                      <span className="text-sm font-medium text-white">
+                        {project.views?.toLocaleString() || 0}
+                      </span>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+            </div>
           </div>
         </div>
-      </div>
-      </>
-    </AsyncErrorBoundary>
-  )
+      </section>
+    </div>
+  );
 }

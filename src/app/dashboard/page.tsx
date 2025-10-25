@@ -1,14 +1,20 @@
-'use client'
+"use client";
 
-import { useState, useEffect } from 'react'
-import { useAuth } from '@/contexts/auth-context'
-import { Button } from '@/components/ui/button'
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
-import { Badge } from '@/components/ui/badge'
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
-import { Textarea } from '@/components/ui/textarea'
-import { Input } from '@/components/ui/input'
+import { useState, useEffect } from "react";
+import { useAuth } from "@/contexts/auth-context";
+import { Button } from "@/components/ui/button";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Textarea } from "@/components/ui/textarea";
+import { Input } from "@/components/ui/input";
 import {
   Star,
   Users,
@@ -29,257 +35,361 @@ import {
   Edit,
   CheckCircle,
   Clock,
-  BarChart3
-} from 'lucide-react'
-import Link from 'next/link'
+  BarChart3,
+  Github,
+  Globe,
+  Trash2,
+  ArrowUpRight,
+  Sparkles,
+  Activity,
+} from "lucide-react";
+import Link from "next/link";
+import { supabase } from "@/lib/supabase";
 
-interface UserData {
-  profile: {
-    id: string
-    email: string
-    name: string
-    username: string
-    avatar: string | null
-    bio: string
-    role: string
-    wallet_address: string | null
-    is_verified: boolean
-    created_at: string
-    updated_at: string
-  }
-  stats: {
-    projects_submitted: number
-    total_views: number
-    total_tags: number
-    featured_projects: number
-  }
-  projects: Array<{
-    id: string
-    title: string
-    slug: string
-    description: string
-    logo_url: string | null
-    website_url: string | null
-    github_url: string | null
-    is_featured: boolean
-    views: number
-    created_at: string
-    updated_at: string
-    category: {
-      name: string
-      slug: string
-      color: string
-    } | null
-    tags: string[]
-  }>
-  recent_activity: any[]
+interface UserProfile {
+  id: string;
+  email: string;
+  display_name: string | null;
+  username: string | null;
+  avatar_url: string | null;
+  bio: string | null;
+  role: string;
+  wallet_address: string | null;
+  website: string | null;
+  twitter: string | null;
+  github: string | null;
+  is_active: boolean;
+  created_at: string;
+}
+
+interface Project {
+  id: string;
+  title: string;
+  slug: string;
+  description: string | null;
+  logo_url: string | null;
+  website_url: string | null;
+  github_url: string | null;
+  is_featured: boolean;
+  is_active: boolean;
+  views: number;
+  created_at: string;
+  category: {
+    name: string;
+    slug: string;
+    color: string | null;
+    icon: string | null;
+  } | null;
+  tags: string[];
+}
+
+interface DashboardStats {
+  total_projects: number;
+  total_views: number;
+  featured_projects: number;
+  active_projects: number;
 }
 
 export default function DashboardPage() {
-  const { user, session, loading: authLoading, getAuthHeaders } = useAuth()
-  const [userData, setUserData] = useState<UserData | null>(null)
-  const [loading, setLoading] = useState(true)
-  const [error, setError] = useState<string | null>(null)
-  const [isEditingProfile, setIsEditingProfile] = useState(false)
+  const { user, session, loading: authLoading } = useAuth();
+  const [profile, setProfile] = useState<UserProfile | null>(null);
+  const [projects, setProjects] = useState<Project[]>([]);
+  const [stats, setStats] = useState<DashboardStats>({
+    total_projects: 0,
+    total_views: 0,
+    featured_projects: 0,
+    active_projects: 0,
+  });
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  const [isEditingProfile, setIsEditingProfile] = useState(false);
   const [editForm, setEditForm] = useState({
-    bio: '',
-    username: ''
-  })
+    display_name: "",
+    username: "",
+    bio: "",
+    website: "",
+    twitter: "",
+    github: "",
+  });
 
   useEffect(() => {
-    if (authLoading) return
+    if (authLoading) return;
     if (!session) {
-      window.location.href = '/auth/signin'
-      return
+      window.location.href = "/auth/signin";
+      return;
     }
 
-    fetchUserData()
-  }, [session, authLoading])
+    fetchDashboardData();
+  }, [session, authLoading]);
 
-  const fetchUserData = async () => {
+  const fetchDashboardData = async () => {
     try {
-      setLoading(true)
-      const authHeaders = {
-        'Content-Type': 'application/json',
-        ...getAuthHeaders()
-      }
-      const response = await fetch('/api/dashboard', {
-        headers: authHeaders
-      })
+      setLoading(true);
+      setError(null);
 
-      if (!response.ok) {
-        throw new Error('Failed to fetch dashboard data')
+      // Fetch user profile
+      const { data: profileData, error: profileError } = await supabase
+        .from("users")
+        .select("*")
+        .eq("email", user?.email)
+        .maybeSingle();
+
+      if (profileError) throw profileError;
+
+      if (!profileData) {
+        setError("User profile not found");
+        return;
       }
 
-      const data = await response.json()
-      setUserData(data)
+      setProfile(profileData);
+
       setEditForm({
-        bio: data.profile.bio,
-        username: data.profile.username
-      })
-    } catch (err) {
-      console.error('Error fetching user data:', err)
-      setError('Failed to load dashboard data')
+        display_name: profileData.display_name || "",
+        username: profileData.username || "",
+        bio: profileData.bio || "",
+        website: profileData.website || "",
+        twitter: profileData.twitter || "",
+        github: profileData.github || "",
+      });
+
+      // For now, show empty state since the database schema needs to be set up properly
+      // The projects table may not exist or may have different column names
+      setProjects([]);
+      setStats({
+        total_projects: 0,
+        total_views: 0,
+        featured_projects: 0,
+        active_projects: 0,
+      });
+    } catch (err: any) {
+      console.error("Error fetching dashboard data:", err);
+      setError(err.message || "Failed to load dashboard data");
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
-  }
+  };
 
-  const handleSaveProfile = () => {
-    if (!userData) return
-    setUserData({
-      ...userData,
-      profile: {
-        ...userData.profile,
-        bio: editForm.bio,
-        username: editForm.username
-      }
-    })
-    setIsEditingProfile(false)
-  }
+  const handleSaveProfile = async () => {
+    if (!profile) return;
 
-  const handleEditProfile = () => {
-    if (!userData) return
-    setEditForm({
-      bio: userData.profile.bio,
-      username: userData.profile.username
-    })
-    setIsEditingProfile(true)
-  }
+    try {
+      const { error } = await supabase
+        .from("users")
+        .update({
+          display_name: editForm.display_name,
+          username: editForm.username,
+          bio: editForm.bio,
+          website: editForm.website,
+          twitter: editForm.twitter,
+          github: editForm.github,
+          updated_at: new Date().toISOString(),
+        })
+        .eq("id", profile.id);
 
-  
+      if (error) throw error;
+
+      setProfile({
+        ...profile,
+        ...editForm,
+      });
+      setIsEditingProfile(false);
+    } catch (err: any) {
+      console.error("Error updating profile:", err);
+      alert("Failed to update profile: " + err.message);
+    }
+  };
+
+  const handleDeleteProject = async (projectId: string) => {
+    if (!confirm("Are you sure you want to delete this project?")) return;
+
+    try {
+      const { error } = await supabase
+        .from("projects")
+        .delete()
+        .eq("id", projectId);
+
+      if (error) throw error;
+
+      // Refresh data
+      fetchDashboardData();
+    } catch (err: any) {
+      console.error("Error deleting project:", err);
+      alert("Failed to delete project: " + err.message);
+    }
+  };
+
   if (authLoading || loading) {
     return (
-      <div className="min-h-screen bg-background flex items-center justify-center">
+      <div className="min-h-screen bg-[#0A0A0A] flex items-center justify-center">
         <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto mb-4"></div>
-          <p className="text-gray-600">Loading dashboard...</p>
+          <div className="relative w-24 h-24 mx-auto mb-8">
+            <div className="absolute inset-0 border-8 border-[#FFDF00]/20 rounded-full"></div>
+            <div className="absolute inset-0 border-8 border-[#FFDF00] border-t-transparent rounded-full animate-spin"></div>
+          </div>
+          <p className="text-white/60 text-xl font-bold uppercase tracking-wider">
+            Loading Dashboard...
+          </p>
         </div>
       </div>
-    )
+    );
   }
 
   if (!session || !user) {
     return (
-      <div className="min-h-screen bg-background flex items-center justify-center">
-        <Card className="max-w-md w-full showcase-project-card shadow-elevation-2">
-          <CardContent className="pt-6 text-center">
-            <Shield className="h-12 w-12 mx-auto mb-4 text-primary" />
-            <h3 className="text-xl font-semibold mb-2">Authentication Required</h3>
-            <p className="text-muted-foreground mb-4">
-              Please sign in to access your dashboard.
-            </p>
-            <Button asChild>
-              <a href="/auth/signin">Sign In</a>
-            </Button>
-          </CardContent>
-        </Card>
+      <div className="min-h-screen bg-[#0A0A0A] flex items-center justify-center p-4">
+        <div className="max-w-md w-full bg-[#151515] rounded-3xl p-12 text-center border-2 border-white/10">
+          <div className="w-20 h-20 mx-auto mb-6 bg-gradient-to-br from-[#FFDF00] to-amber-500 rounded-2xl flex items-center justify-center">
+            <Shield className="h-10 w-10 text-black" />
+          </div>
+          <h3 className="text-3xl font-black text-white mb-4 uppercase">
+            Authentication Required
+          </h3>
+          <p className="text-white/60 mb-8 text-lg leading-relaxed">
+            Please sign in to access your dashboard and manage your projects.
+          </p>
+          <Link
+            href="/auth/signin"
+            className="inline-flex items-center justify-center w-full h-14 bg-[#FFDF00] hover:bg-[#FFE94D] text-black font-black uppercase text-sm tracking-wider rounded-full transition-all duration-300 transform hover:scale-105"
+          >
+            <ArrowUpRight className="w-5 h-5 mr-2" />
+            Sign In Now
+          </Link>
+        </div>
       </div>
-    )
+    );
   }
 
-  if (error || !userData) {
+  if (error || !profile) {
     return (
-      <div className="min-h-screen bg-background flex items-center justify-center">
-        <Card className="max-w-md w-full showcase-project-card shadow-elevation-2">
-          <CardContent className="pt-6 text-center">
-            <Shield className="h-12 w-12 mx-auto mb-4 text-red-500" />
-            <h3 className="text-xl font-semibold mb-2">Error Loading Dashboard</h3>
-            <p className="text-muted-foreground mb-4">
-              {error || 'Failed to load dashboard data. Please try again.'}
-            </p>
-            <Button onClick={fetchUserData} className="mb-2">Retry</Button>
-            <Button variant="outline" asChild className="ml-2">
-              <a href="/projects">Browse Projects</a>
-            </Button>
-          </CardContent>
-        </Card>
+      <div className="min-h-screen bg-[#0A0A0A] flex items-center justify-center p-4">
+        <div className="max-w-md w-full bg-[#151515] rounded-3xl p-12 text-center border-2 border-red-500/20">
+          <div className="w-20 h-20 mx-auto mb-6 bg-gradient-to-br from-red-500 to-red-600 rounded-2xl flex items-center justify-center">
+            <Shield className="h-10 w-10 text-white" />
+          </div>
+          <h3 className="text-3xl font-black text-white mb-4 uppercase">
+            Error Loading Data
+          </h3>
+          <p className="text-white/60 mb-8 text-lg">
+            {error || "Failed to load dashboard data."}
+          </p>
+          <div className="flex gap-4">
+            <button
+              onClick={fetchDashboardData}
+              className="flex-1 h-14 bg-[#FFDF00] hover:bg-[#FFE94D] text-black font-black uppercase text-sm tracking-wider rounded-full transition-all duration-300"
+            >
+              Retry
+            </button>
+            <Link
+              href="/projects"
+              className="flex-1 h-14 bg-white/10 hover:bg-white/20 text-white font-black uppercase text-sm tracking-wider rounded-full transition-all duration-300 flex items-center justify-center border-2 border-white/20"
+            >
+              Browse Projects
+            </Link>
+          </div>
+        </div>
       </div>
-    )
+    );
   }
 
   return (
-    <div className="min-h-screen bg-background">
-      {/* Header */}
-      <div className="showcase-hero section-padding-xs">
-        <div className="container-custom">
-          <div className="max-w-6xl mx-auto">
-            <div className="flex flex-col lg:flex-row items-center lg:items-start gap-8">
-              <Avatar className="h-24 w-24 border-4 border-white shadow-elevation-3">
-                <AvatarImage src={userData.profile.avatar || ''} alt={userData.profile.name} />
-                <AvatarFallback className="text-2xl bg-gradient-to-br from-blue-500 to-cyan-500 text-white">{userData.profile.name.charAt(0).toUpperCase()}</AvatarFallback>
+    <div className="min-h-screen bg-[#0A0A0A]">
+      {/* Header with gradient background */}
+      <div className="relative overflow-hidden bg-gradient-to-b from-[#151515] via-[#0A0A0A] to-[#0A0A0A] border-b border-white/5">
+        <div className="absolute inset-0 bg-[url('/grid.svg')] opacity-5"></div>
+
+        <div className="container-custom py-16 lg:py-24 relative z-10">
+          <div className="flex flex-col lg:flex-row items-start lg:items-center gap-8 mb-12">
+            {/* Avatar */}
+            <div className="relative group">
+              <div className="absolute inset-0 bg-gradient-to-br from-[#FFDF00] to-amber-500 rounded-3xl blur-xl opacity-50 group-hover:opacity-75 transition-opacity"></div>
+              <Avatar className="relative h-32 w-32 ring-4 ring-[#FFDF00]/20">
+                <AvatarImage
+                  src={profile.avatar_url || undefined}
+                  alt={profile.display_name || "User"}
+                />
+                <AvatarFallback className="bg-gradient-to-br from-[#FFDF00] to-amber-500 text-black text-4xl font-black">
+                  {(profile.display_name ||
+                    profile.username ||
+                    "U")[0].toUpperCase()}
+                </AvatarFallback>
               </Avatar>
+            </div>
 
-              <div className="flex-1 text-center lg:text-left">
-                <div className="flex flex-col sm:flex-row items-center lg:items-center gap-3 mb-3">
-                  <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold text-gradient-primary font-display">{userData.profile.name}</h1>
-                  {userData.profile.is_verified && (
-                    <CheckCircle className="h-6 w-6 text-green-500 flex-shrink-0" />
-                  )}
-                  <Badge className="showcase-badge capitalize">
-                    <Shield className="h-3 w-3 mr-1" />
-                    {userData.profile.role}
-                  </Badge>
-                </div>
-                <p className="text-gray-600 text-lg mb-2">@{userData.profile.username}</p>
-                <p className="text-sm text-gray-500 mb-6 flex items-center justify-center lg:justify-start gap-2">
-                  <Calendar className="h-4 w-4" />
-                  Member since {new Date(userData.profile.created_at).toLocaleDateString('en-US', { month: 'long', year: 'numeric' })}
-                </p>
-
-                {!isEditingProfile ? (
-                  <div className="flex flex-col sm:flex-row gap-3">
-                    <Button onClick={handleEditProfile} className="showcase-btn-outline">
-                      <Edit className="h-4 w-4 mr-2" />
-                      Edit Profile
-                    </Button>
-                    <Button asChild className="showcase-btn">
-                      <Link href="/submit">
-                        <PlusCircle className="h-4 w-4 mr-2" />
-                        Submit Project
-                      </Link>
-                    </Button>
-                  </div>
-                ) : (
-                  <div className="space-y-3 max-w-md">
-                    <Input
-                      placeholder="Username"
-                      value={editForm.username}
-                      onChange={(e) => setEditForm({ ...editForm, username: e.target.value })}
-                      className="showcase-input"
-                    />
-                    <Textarea
-                      placeholder="Bio"
-                      value={editForm.bio}
-                      onChange={(e) => setEditForm({ ...editForm, bio: e.target.value })}
-                      rows={3}
-                      className="showcase-input resize-none"
-                    />
-                    <div className="flex gap-2">
-                      <Button onClick={handleSaveProfile} className="showcase-btn">Save Changes</Button>
-                      <Button onClick={() => setIsEditingProfile(false)} className="showcase-btn-outline">Cancel</Button>
-                    </div>
-                  </div>
-                )}
+            {/* Info */}
+            <div className="flex-1">
+              <div className="flex items-center gap-3 mb-3">
+                <h1 className="text-5xl lg:text-6xl font-black uppercase leading-[0.9] text-white">
+                  {profile.display_name || profile.username || "Dashboard"}
+                </h1>
+                <Badge className="bg-[#FFDF00] text-black hover:bg-[#FFDF00]/90 px-4 py-2 text-xs font-black uppercase">
+                  {profile.role}
+                </Badge>
               </div>
+              <p className="text-xl text-white/60 mb-4">
+                @{profile.username || "no-username"}
+              </p>
+              {profile.bio && (
+                <p className="text-lg text-white/80 max-w-2xl leading-relaxed">
+                  {profile.bio}
+                </p>
+              )}
+            </div>
 
-              <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-2 gap-6 text-center">
-                <div className="p-4 rounded-xl bg-gradient-to-br from-blue-50 to-blue-100 border-2 border-blue-200">
-                  <div className="text-3xl font-bold text-blue-600">{userData.stats.projects_submitted}</div>
-                  <div className="text-sm font-medium text-blue-700">Projects</div>
-                </div>
-                <div className="p-4 rounded-xl bg-gradient-to-br from-purple-50 to-purple-100 border-2 border-purple-200">
-                  <div className="text-3xl font-bold text-purple-600">{userData.stats.total_views}</div>
-                  <div className="text-sm font-medium text-purple-700">Views</div>
-                </div>
-                <div className="p-4 rounded-xl bg-gradient-to-br from-green-50 to-green-100 border-2 border-green-200">
-                  <div className="text-3xl font-bold text-green-600">{userData.stats.total_tags}</div>
-                  <div className="text-sm font-medium text-green-700">Tags</div>
-                </div>
-                <div className="p-4 rounded-xl bg-gradient-to-br from-yellow-50 to-yellow-100 border-2 border-yellow-200">
-                  <div className="text-3xl font-bold text-yellow-600">{userData.stats.featured_projects}</div>
-                  <div className="text-sm font-medium text-yellow-700">Featured</div>
-                </div>
+            {/* Actions */}
+            <div className="flex gap-3">
+              <Link
+                href="/submit"
+                className="inline-flex items-center justify-center h-14 px-8 bg-[#FFDF00] hover:bg-[#FFE94D] text-black font-black uppercase text-sm tracking-wider rounded-full transition-all duration-300 transform hover:scale-105"
+              >
+                <PlusCircle className="w-5 h-5 mr-2" />
+                New Project
+              </Link>
+            </div>
+          </div>
+
+          {/* Stats Grid */}
+          <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+            <div className="relative overflow-hidden bg-gradient-to-br from-[#FFDF00]/10 to-transparent rounded-2xl p-6 border border-[#FFDF00]/20 group hover:border-[#FFDF00]/50 transition-all duration-300">
+              <div className="absolute top-0 right-0 w-32 h-32 bg-[#FFDF00]/5 rounded-full blur-3xl group-hover:bg-[#FFDF00]/10 transition-all"></div>
+              <Rocket className="h-8 w-8 text-[#FFDF00] mb-4" />
+              <div className="text-4xl font-black text-white mb-1">
+                {stats.total_projects}
+              </div>
+              <div className="text-sm font-bold text-white/60 uppercase tracking-wide">
+                Total Projects
+              </div>
+            </div>
+
+            <div className="relative overflow-hidden bg-gradient-to-br from-cyan-500/10 to-transparent rounded-2xl p-6 border border-cyan-500/20 group hover:border-cyan-500/50 transition-all duration-300">
+              <div className="absolute top-0 right-0 w-32 h-32 bg-cyan-500/5 rounded-full blur-3xl group-hover:bg-cyan-500/10 transition-all"></div>
+              <Eye className="h-8 w-8 text-cyan-500 mb-4" />
+              <div className="text-4xl font-black text-white mb-1">
+                {stats.total_views.toLocaleString()}
+              </div>
+              <div className="text-sm font-bold text-white/60 uppercase tracking-wide">
+                Total Views
+              </div>
+            </div>
+
+            <div className="relative overflow-hidden bg-gradient-to-br from-purple-500/10 to-transparent rounded-2xl p-6 border border-purple-500/20 group hover:border-purple-500/50 transition-all duration-300">
+              <div className="absolute top-0 right-0 w-32 h-32 bg-purple-500/5 rounded-full blur-3xl group-hover:bg-purple-500/10 transition-all"></div>
+              <Trophy className="h-8 w-8 text-purple-500 mb-4" />
+              <div className="text-4xl font-black text-white mb-1">
+                {stats.featured_projects}
+              </div>
+              <div className="text-sm font-bold text-white/60 uppercase tracking-wide">
+                Featured
+              </div>
+            </div>
+
+            <div className="relative overflow-hidden bg-gradient-to-br from-green-500/10 to-transparent rounded-2xl p-6 border border-green-500/20 group hover:border-green-500/50 transition-all duration-300">
+              <div className="absolute top-0 right-0 w-32 h-32 bg-green-500/5 rounded-full blur-3xl group-hover:bg-green-500/10 transition-all"></div>
+              <CheckCircle className="h-8 w-8 text-green-500 mb-4" />
+              <div className="text-4xl font-black text-white mb-1">
+                {stats.active_projects}
+              </div>
+              <div className="text-sm font-bold text-white/60 uppercase tracking-wide">
+                Active
               </div>
             </div>
           </div>
@@ -287,356 +397,411 @@ export default function DashboardPage() {
       </div>
 
       {/* Main Content */}
-      <section className="section-padding">
-        <div className="container-custom">
-          <div className="max-w-6xl mx-auto">
-            <Tabs defaultValue="overview" className="space-y-8">
-              <TabsList className="grid w-full grid-cols-5 p-1 bg-gray-100 rounded-xl">
-                <TabsTrigger value="overview" className="rounded-lg data-[state=active]:bg-white data-[state=active]:shadow-elevation-2">Overview</TabsTrigger>
-                <TabsTrigger value="projects" className="rounded-lg data-[state=active]:bg-white data-[state=active]:shadow-elevation-2">Projects</TabsTrigger>
-                <TabsTrigger value="nfts" className="rounded-lg data-[state=active]:bg-white data-[state=active]:shadow-elevation-2">NFT Rewards</TabsTrigger>
-                <TabsTrigger value="achievements" className="rounded-lg data-[state=active]:bg-white data-[state=active]:shadow-elevation-2">Achievements</TabsTrigger>
-                <TabsTrigger value="activity" className="rounded-lg data-[state=active]:bg-white data-[state=active]:shadow-elevation-2">Activity</TabsTrigger>
-              </TabsList>
+      <div className="container-custom py-12 lg:py-20">
+        <Tabs defaultValue="projects" className="w-full">
+          <TabsList className="bg-[#151515] border border-white/10 p-1.5 mb-12 inline-flex rounded-2xl">
+            <TabsTrigger
+              value="projects"
+              className="data-[state=active]:bg-[#FFDF00] data-[state=active]:text-black font-black uppercase px-8 py-3 rounded-xl transition-all duration-300"
+            >
+              My Projects
+            </TabsTrigger>
+            <TabsTrigger
+              value="profile"
+              className="data-[state=active]:bg-[#FFDF00] data-[state=active]:text-black font-black uppercase px-8 py-3 rounded-xl transition-all duration-300"
+            >
+              Profile
+            </TabsTrigger>
+          </TabsList>
 
-              {/* Overview Tab */}
-              <TabsContent value="overview" className="space-y-6">
-                <div className="grid md:grid-cols-3 gap-6">
-                  <Card className="md:col-span-2 showcase-card-hover">
-                    <CardHeader>
-                      <CardTitle className="flex items-center gap-2 text-gray-900 text-2xl font-display">
-                        <BarChart3 className="h-6 w-6 text-blue-500" />
-                        Your Project Statistics
-                      </CardTitle>
-                      <CardDescription className="text-base">Track your project performance and engagement</CardDescription>
-                    </CardHeader>
-                    <CardContent>
-                      <div className="space-y-5">
-                        <div className="flex justify-between items-center p-4 bg-gradient-to-r from-blue-50 to-transparent rounded-lg border-l-4 border-blue-500">
-                          <span className="text-sm font-medium text-gray-700">Total Projects Submitted</span>
-                          <span className="text-2xl font-bold text-blue-600">{userData.stats.projects_submitted}</span>
-                        </div>
-                        <div className="flex justify-between items-center p-4 bg-gradient-to-r from-purple-50 to-transparent rounded-lg border-l-4 border-purple-500">
-                          <span className="text-sm font-medium text-gray-700">Total Views Generated</span>
-                          <span className="text-2xl font-bold text-purple-600">{userData.stats.total_views.toLocaleString()}</span>
-                        </div>
-                        <div className="flex justify-between items-center p-4 bg-gradient-to-r from-green-50 to-transparent rounded-lg border-l-4 border-green-500">
-                          <span className="text-sm font-medium text-gray-700">Total Tags Used</span>
-                          <span className="text-2xl font-bold text-green-600">{userData.stats.total_tags}</span>
-                        </div>
-                        <div className="flex justify-between items-center p-4 bg-gradient-to-r from-yellow-50 to-transparent rounded-lg border-l-4 border-yellow-500">
-                          <span className="text-sm font-medium text-gray-700">Featured Projects</span>
-                          <span className="text-2xl font-bold text-yellow-600">{userData.stats.featured_projects}</span>
-                        </div>
-                        {userData.stats.projects_submitted > 0 && (
-                          <div className="flex justify-between items-center p-4 bg-gradient-to-r from-cyan-50 to-transparent rounded-lg border-l-4 border-cyan-500">
-                            <span className="text-sm font-medium text-gray-700">Average Views per Project</span>
-                            <span className="text-2xl font-bold text-cyan-600">
-                              {Math.round(userData.stats.total_views / userData.stats.projects_submitted)}
-                            </span>
+          {/* Projects Tab */}
+          <TabsContent value="projects" className="space-y-8">
+            {projects.length === 0 ? (
+              <div className="relative overflow-hidden bg-[#151515] rounded-3xl p-20 text-center border-2 border-dashed border-white/10">
+                <div className="absolute inset-0 bg-gradient-to-br from-[#FFDF00]/5 to-transparent"></div>
+                <div className="relative z-10">
+                  <div className="w-24 h-24 mx-auto mb-8 bg-gradient-to-br from-[#FFDF00]/20 to-transparent rounded-3xl flex items-center justify-center">
+                    <Rocket className="h-12 w-12 text-[#FFDF00]/50" />
+                  </div>
+                  <h3 className="text-3xl font-black text-white mb-4 uppercase">
+                    No Projects Yet
+                  </h3>
+                  <p className="text-white/60 mb-10 max-w-md mx-auto text-lg leading-relaxed">
+                    Start showcasing your Web3 innovations by submitting your
+                    first project.
+                  </p>
+                  <Link
+                    href="/submit"
+                    className="inline-flex items-center justify-center h-16 px-10 bg-[#FFDF00] hover:bg-[#FFE94D] text-black font-black uppercase text-sm tracking-wider rounded-full transition-all duration-300 transform hover:scale-105"
+                  >
+                    <PlusCircle className="w-5 h-5 mr-3" />
+                    Submit Your First Project
+                  </Link>
+                </div>
+              </div>
+            ) : (
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                {projects.map((project) => (
+                  <div
+                    key={project.id}
+                    className="group relative overflow-hidden bg-[#151515] rounded-3xl p-8 border border-white/10 hover:border-[#FFDF00]/50 transition-all duration-500"
+                  >
+                    {/* Glow effect */}
+                    <div className="absolute inset-0 bg-gradient-to-br from-[#FFDF00]/0 to-[#FFDF00]/0 group-hover:from-[#FFDF00]/5 group-hover:to-transparent transition-all duration-500"></div>
+
+                    <div className="relative z-10">
+                      {/* Header */}
+                      <div className="flex items-start justify-between mb-6">
+                        <div className="flex items-start gap-5 flex-1 min-w-0">
+                          {project.logo_url && (
+                            <div className="relative">
+                              <div className="absolute inset-0 bg-gradient-to-br from-[#FFDF00] to-amber-500 rounded-2xl blur-lg opacity-50 group-hover:opacity-75 transition-opacity"></div>
+                              <div className="relative w-16 h-16 rounded-2xl bg-gradient-to-br from-[#FFDF00] to-amber-500 flex items-center justify-center">
+                                <img
+                                  src={project.logo_url}
+                                  alt={project.title}
+                                  className="w-12 h-12 object-contain"
+                                />
+                              </div>
+                            </div>
+                          )}
+                          <div className="flex-1 min-w-0">
+                            <h3 className="text-2xl font-black text-white mb-3 uppercase truncate group-hover:text-[#FFDF00] transition-colors">
+                              {project.title}
+                            </h3>
+                            <div className="flex flex-wrap gap-2">
+                              {project.category && (
+                                <Badge className="bg-white/10 text-white hover:bg-white/20 border-white/20">
+                                  {project.category.icon}{" "}
+                                  {project.category.name}
+                                </Badge>
+                              )}
+                              {project.is_featured && (
+                                <Badge className="bg-[#FFDF00] text-black hover:bg-[#FFDF00]/90">
+                                  <Star className="h-3 w-3 mr-1 fill-current" />
+                                  Featured
+                                </Badge>
+                              )}
+                            </div>
                           </div>
+                        </div>
+                      </div>
+
+                      {/* Description */}
+                      {project.description && (
+                        <p className="text-white/60 mb-6 line-clamp-3 text-base leading-relaxed">
+                          {project.description}
+                        </p>
+                      )}
+
+                      {/* Tags */}
+                      {project.tags.length > 0 && (
+                        <div className="flex flex-wrap gap-2 mb-6">
+                          {project.tags.slice(0, 4).map((tag, i) => (
+                            <span
+                              key={i}
+                              className="px-3 py-1 bg-white/5 text-white/70 text-xs font-bold uppercase tracking-wide rounded-full border border-white/10"
+                            >
+                              {tag}
+                            </span>
+                          ))}
+                          {project.tags.length > 4 && (
+                            <span className="px-3 py-1 bg-white/5 text-white/50 text-xs font-bold uppercase tracking-wide rounded-full border border-white/10">
+                              +{project.tags.length - 4}
+                            </span>
+                          )}
+                        </div>
+                      )}
+
+                      {/* Stats */}
+                      <div className="flex items-center gap-6 mb-6 pb-6 border-b border-white/10">
+                        <div className="flex items-center gap-2 text-white/60">
+                          <Eye className="h-4 w-4" />
+                          <span className="text-sm font-bold">
+                            {project.views || 0}
+                          </span>
+                        </div>
+                        <div className="flex items-center gap-2 text-white/60">
+                          <Calendar className="h-4 w-4" />
+                          <span className="text-sm font-bold">
+                            {new Date(project.created_at).toLocaleDateString()}
+                          </span>
+                        </div>
+                        {!project.is_active && (
+                          <Badge
+                            variant="outline"
+                            className="border-white/20 text-white/60"
+                          >
+                            Inactive
+                          </Badge>
                         )}
                       </div>
-                    </CardContent>
-                  </Card>
 
-                  <Card className="showcase-card-hover">
-                    <CardHeader>
-                      <CardTitle className="flex items-center gap-2 text-xl font-display">
-                        <Gift className="h-5 w-5 text-blue-500" />
-                        Quick Actions
-                      </CardTitle>
-                      <CardDescription>Manage your profile and projects</CardDescription>
-                    </CardHeader>
-                    <CardContent className="space-y-3">
-                      <Button asChild className="w-full showcase-btn">
-                        <Link href="/submit">
-                          <PlusCircle className="h-4 w-4 mr-2" />
-                          Submit New Project
-                        </Link>
-                      </Button>
-                      <Button variant="outline" asChild className="w-full showcase-btn-outline">
-                        <Link href="/projects">
-                          <Rocket className="h-4 w-4 mr-2" />
-                          Explore Projects
-                        </Link>
-                      </Button>
-                      <Button variant="outline" asChild className="w-full showcase-btn-outline">
-                        <Link href="/categories">
-                          <Trophy className="h-4 w-4 mr-2" />
-                          Browse Categories
-                        </Link>
-                      </Button>
-                      <Button variant="outline" asChild className="w-full showcase-btn-outline">
-                        <Link href={`/u/${userData.profile.username}`}>
-                          <Eye className="h-4 w-4 mr-2" />
-                          View Public Profile
-                        </Link>
-                      </Button>
-                    </CardContent>
-                  </Card>
+                      {/* Actions */}
+                      <div className="flex gap-3">
+                        {project.website_url && (
+                          <a
+                            href={project.website_url}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="flex-1 h-12 bg-white/5 hover:bg-white/10 text-white font-bold text-sm uppercase rounded-xl transition-all duration-300 flex items-center justify-center gap-2 border border-white/10"
+                          >
+                            <Globe className="h-4 w-4" />
+                            Visit
+                          </a>
+                        )}
+                        {project.github_url && (
+                          <a
+                            href={project.github_url}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="flex-1 h-12 bg-white/5 hover:bg-white/10 text-white font-bold text-sm uppercase rounded-xl transition-all duration-300 flex items-center justify-center gap-2 border border-white/10"
+                          >
+                            <Github className="h-4 w-4" />
+                            Code
+                          </a>
+                        )}
+                        <button
+                          onClick={() => handleDeleteProject(project.id)}
+                          className="h-12 px-4 bg-red-500/10 hover:bg-red-500/20 text-red-400 font-bold text-sm uppercase rounded-xl transition-all duration-300 border border-red-500/20"
+                        >
+                          <Trash2 className="h-4 w-4" />
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
+          </TabsContent>
+
+          {/* Profile Tab */}
+          <TabsContent value="profile" className="space-y-6">
+            <div className="relative overflow-hidden bg-[#151515] rounded-3xl border border-white/10">
+              {/* Header */}
+              <div className="p-8 border-b border-white/10 flex items-center justify-between">
+                <div>
+                  <h2 className="text-3xl font-black text-white uppercase mb-2">
+                    Profile Information
+                  </h2>
+                  <p className="text-white/60">
+                    Update your public profile details
+                  </p>
                 </div>
-
-                {userData.projects.length > 0 && (
-                  <Card className="showcase-card-hover">
-                    <CardHeader>
-                      <CardTitle className="text-2xl font-display">Recent Projects</CardTitle>
-                      <CardDescription className="text-base">Your latest project submissions</CardDescription>
-                    </CardHeader>
-                    <CardContent>
-                      <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-                      {userData.projects.slice(0, 6).map((project) => (
-                        <Card key={project.id} className="showcase-project-card cursor-pointer group">
-                          <CardContent className="p-4">
-                            <div className="flex items-center space-x-3 mb-3">
-                              <Avatar className="h-10 w-10">
-                                <AvatarImage src={project.logo_url || ''} alt={project.title} />
-                                <AvatarFallback className="bg-gradient-to-br from-primary to-accent text-white text-sm">
-                                  {project.title.charAt(0).toUpperCase()}
-                                </AvatarFallback>
-                              </Avatar>
-                              <div className="flex-1 min-w-0">
-                                <h4 className="font-medium text-sm truncate">{project.title}</h4>
-                                <p className="text-xs text-muted-foreground">
-                                  {project.category?.name || 'Uncategorized'}
-                                </p>
-                              </div>
-                            </div>
-                            <p className="text-xs text-gray-600 line-clamp-2 mb-3">
-                              {project.description}
-                            </p>
-                            <div className="flex items-center justify-between">
-                              <div className="flex items-center space-x-2 text-xs text-muted-foreground">
-                                <Eye className="h-3 w-3" />
-                                <span>{project.views}</span>
-                              </div>
-                              <Button size="sm" variant="outline" asChild>
-                                <Link href={`/projects/${userData.profile.username}/${project.slug}`}>
-                                  <ExternalLink className="h-3 w-3" />
-                                </Link>
-                              </Button>
-                            </div>
-                          </CardContent>
-                        </Card>
-                      ))}
-                      </div>
-                    </CardContent>
-                  </Card>
+                {!isEditingProfile && (
+                  <button
+                    onClick={() => setIsEditingProfile(true)}
+                    className="h-12 px-6 bg-[#FFDF00] hover:bg-[#FFE94D] text-black font-black uppercase text-sm tracking-wider rounded-full transition-all duration-300 flex items-center gap-2"
+                  >
+                    <Edit className="h-4 w-4" />
+                    Edit Profile
+                  </button>
                 )}
-              </TabsContent>
+              </div>
 
-              {/* Projects Tab */}
-              <TabsContent value="projects" className="space-y-6">
-                <Card className="showcase-card-hover">
-                  <CardHeader>
-                    <CardTitle className="flex items-center gap-2 text-2xl font-display">
-                      <Zap className="h-6 w-6 text-blue-500" />
-                      Your Projects ({userData.projects.length})
-                    </CardTitle>
-                    <CardDescription className="text-base">
-                      Projects you've submitted to the platform
-                    </CardDescription>
-                  </CardHeader>
-                  <CardContent>
-                    {userData.projects.length === 0 ? (
-                      <div className="text-center py-16">
-                        <div className="inline-flex items-center justify-center w-20 h-20 bg-gradient-to-br from-blue-100 to-blue-200 rounded-full mb-6">
-                          <Rocket className="h-10 w-10 text-blue-600" />
-                        </div>
-                        <h3 className="text-2xl font-bold text-gray-900 mb-3">No Projects Yet</h3>
-                        <p className="text-gray-600 mb-6 max-w-md mx-auto text-lg">
-                          Submit your first project to start building your Web3 portfolio.
-                        </p>
-                        <Button asChild className="showcase-btn">
-                          <Link href="/submit">
-                            <PlusCircle className="h-4 w-4 mr-2" />
-                            Submit Your First Project
-                          </Link>
-                        </Button>
+              {/* Content */}
+              <div className="p-8">
+                {isEditingProfile ? (
+                  <div className="space-y-6 max-w-2xl">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                      <div>
+                        <label className="block text-sm font-black text-white mb-3 uppercase tracking-wide">
+                          Display Name
+                        </label>
+                        <Input
+                          value={editForm.display_name}
+                          onChange={(e) =>
+                            setEditForm({
+                              ...editForm,
+                              display_name: e.target.value,
+                            })
+                          }
+                          className="h-14 bg-white/5 border-white/10 text-white rounded-xl focus:border-[#FFDF00]"
+                          placeholder="Your name"
+                        />
                       </div>
-                    ) : (
-                      <div className="space-y-4">
-                        {userData.projects.map((project) => (
-                          <div key={project.id} className="flex items-center justify-between p-5 border-2 border-gray-100 rounded-xl hover:border-blue-300 hover:shadow-elevation-2 transition-all duration-200 group bg-white">
-                            <div className="flex items-center space-x-4">
-                            <Avatar className="h-12 w-12">
-                              <AvatarImage src={project.logo_url || ''} alt={project.title} />
-                              <AvatarFallback className="bg-gradient-to-br from-primary to-accent text-white">
-                                {project.title.charAt(0).toUpperCase()}
-                              </AvatarFallback>
-                            </Avatar>
-                            <div className="flex-1">
-                              <div className="flex items-center gap-2 mb-1">
-                                <h4 className="font-medium group-hover:text-primary transition-colors">
-                                  {project.title}
-                                </h4>
-                                {project.is_featured && (
-                                  <Trophy className="h-4 w-4 text-yellow-500" />
-                                )}
-                              </div>
-                              <div className="flex items-center gap-4 text-sm text-muted-foreground">
-                                {project.category && (
-                                  <Badge variant="outline" className="text-xs">
-                                    {project.category.name}
-                                  </Badge>
-                                )}
-                                <span className="flex items-center gap-1">
-                                  <Eye className="h-3 w-3" />
-                                  {project.views} views
-                                </span>
-                                <span className="flex items-center gap-1">
-                                  <Calendar className="h-3 w-3" />
-                                  {new Date(project.created_at).toLocaleDateString()}
-                                </span>
-                              </div>
-                              <div className="flex flex-wrap gap-1 mt-2">
-                                {project.tags.slice(0, 3).map((tag, tagIndex) => (
-                                  <Badge key={tagIndex} variant="secondary" className="text-xs">
-                                    {tag}
-                                  </Badge>
-                                ))}
-                                {project.tags.length > 3 && (
-                                  <Badge variant="secondary" className="text-xs">
-                                    +{project.tags.length - 3}
-                                  </Badge>
-                                )}
-                              </div>
-                            </div>
-                          </div>
-                          <div className="flex items-center gap-2">
-                            <Button size="sm" variant="outline" asChild>
-                              <Link href={`/projects/${userData.profile.username}/${project.slug}`}>
-                                <ExternalLink className="h-4 w-4" />
-                              </Link>
-                            </Button>
-                          </div>
-                        </div>
-                      ))}
+                      <div>
+                        <label className="block text-sm font-black text-white mb-3 uppercase tracking-wide">
+                          Username
+                        </label>
+                        <Input
+                          value={editForm.username}
+                          onChange={(e) =>
+                            setEditForm({
+                              ...editForm,
+                              username: e.target.value,
+                            })
+                          }
+                          className="h-14 bg-white/5 border-white/10 text-white rounded-xl focus:border-[#FFDF00]"
+                          placeholder="username"
+                        />
+                      </div>
                     </div>
-                  )}
-                </CardContent>
-              </Card>
-            </TabsContent>
 
-              {/* NFTs Tab */}
-              <TabsContent value="nfts" className="space-y-6">
-                <Card className="showcase-card-hover">
-                  <CardHeader>
-                    <CardTitle className="flex items-center gap-2 text-2xl font-display">
-                      <Trophy className="h-6 w-6 text-yellow-500" />
-                      NFT Rewards
-                    </CardTitle>
-                    <CardDescription className="text-base">
-                      Exclusive NFTs earned as an early tester (Coming Soon)
-                    </CardDescription>
-                  </CardHeader>
-                <CardContent>
-                  <div className="text-center py-12">
-                    <div className="text-gray-400 mb-4">
-                      <Trophy className="h-16 w-16 mx-auto mb-4 opacity-50" />
+                    <div>
+                      <label className="block text-sm font-black text-white mb-3 uppercase tracking-wide">
+                        Bio
+                      </label>
+                      <Textarea
+                        value={editForm.bio}
+                        onChange={(e) =>
+                          setEditForm({ ...editForm, bio: e.target.value })
+                        }
+                        className="min-h-[120px] bg-white/5 border-white/10 text-white rounded-xl focus:border-[#FFDF00] resize-none"
+                        placeholder="Tell us about yourself..."
+                      />
                     </div>
-                    <h3 className="text-xl font-semibold mb-2">NFT Rewards Coming Soon</h3>
-                    <p className="text-gray-600 mb-4">
-                      Earn exclusive NFTs by testing and reviewing Web3 projects.
-                    </p>
-                    <p className="text-sm text-muted-foreground">
-                      Start submitting and reviewing projects to unlock NFT rewards!
-                    </p>
-                  </div>
-                </CardContent>
-              </Card>
-            </TabsContent>
 
-              {/* Achievements Tab */}
-              <TabsContent value="achievements" className="space-y-6">
-                <Card className="showcase-card-hover">
-                  <CardHeader>
-                    <CardTitle className="flex items-center gap-2 text-2xl font-display">
-                      <Award className="h-6 w-6 text-purple-500" />
-                      Achievements
-                    </CardTitle>
-                    <CardDescription className="text-base">
-                      Unlock achievements by participating in the community (Coming Soon)
-                    </CardDescription>
-                  </CardHeader>
-                <CardContent>
-                  <div className="text-center py-12">
-                    <div className="text-gray-400 mb-4">
-                      <Award className="h-16 w-16 mx-auto mb-4 opacity-50" />
+                    <div>
+                      <label className="block text-sm font-black text-white mb-3 uppercase tracking-wide">
+                        Website
+                      </label>
+                      <Input
+                        value={editForm.website}
+                        onChange={(e) =>
+                          setEditForm({
+                            ...editForm,
+                            website: e.target.value,
+                          })
+                        }
+                        className="h-14 bg-white/5 border-white/10 text-white rounded-xl focus:border-[#FFDF00]"
+                        placeholder="https://yourwebsite.com"
+                      />
                     </div>
-                    <h3 className="text-xl font-semibold mb-2">Achievements System Coming Soon</h3>
-                    <p className="text-gray-600 mb-4">
-                      Earn badges and recognition for your contributions to the Web3 community.
-                    </p>
-                    <div className="grid md:grid-cols-3 gap-4 max-w-2xl mx-auto mt-8">
-                      <div className="text-center p-4 border rounded-lg">
-                        <Rocket className="h-8 w-8 mx-auto mb-2 text-primary" />
-                        <h4 className="font-medium text-sm">Early Adopter</h4>
-                        <p className="text-xs text-muted-foreground mt-1">Submit your first project</p>
+
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                      <div>
+                        <label className="block text-sm font-black text-white mb-3 uppercase tracking-wide">
+                          Twitter
+                        </label>
+                        <Input
+                          value={editForm.twitter}
+                          onChange={(e) =>
+                            setEditForm({
+                              ...editForm,
+                              twitter: e.target.value,
+                            })
+                          }
+                          className="h-14 bg-white/5 border-white/10 text-white rounded-xl focus:border-[#FFDF00]"
+                          placeholder="@username"
+                        />
                       </div>
-                      <div className="text-center p-4 border rounded-lg">
-                        <Star className="h-8 w-8 mx-auto mb-2 text-primary" />
-                        <h4 className="font-medium text-sm">Project Contributor</h4>
-                        <p className="text-xs text-muted-foreground mt-1">Submit 5+ projects</p>
+                      <div>
+                        <label className="block text-sm font-black text-white mb-3 uppercase tracking-wide">
+                          GitHub
+                        </label>
+                        <Input
+                          value={editForm.github}
+                          onChange={(e) =>
+                            setEditForm({
+                              ...editForm,
+                              github: e.target.value,
+                            })
+                          }
+                          className="h-14 bg-white/5 border-white/10 text-white rounded-xl focus:border-[#FFDF00]"
+                          placeholder="username"
+                        />
                       </div>
-                      <div className="text-center p-4 border rounded-lg">
-                        <Trophy className="h-8 w-8 mx-auto mb-2 text-primary" />
-                        <h4 className="font-medium text-sm">Featured Creator</h4>
-                        <p className="text-xs text-muted-foreground mt-1">Get featured projects</p>
-                      </div>
+                    </div>
+
+                    <div className="flex gap-4 pt-6">
+                      <button
+                        onClick={handleSaveProfile}
+                        className="h-14 px-8 bg-[#FFDF00] hover:bg-[#FFE94D] text-black font-black uppercase text-sm tracking-wider rounded-full transition-all duration-300 flex items-center gap-2"
+                      >
+                        <CheckCircle className="h-4 w-4" />
+                        Save Changes
+                      </button>
+                      <button
+                        onClick={() => setIsEditingProfile(false)}
+                        className="h-14 px-8 bg-white/5 hover:bg-white/10 text-white font-black uppercase text-sm tracking-wider rounded-full transition-all duration-300 border border-white/10"
+                      >
+                        Cancel
+                      </button>
                     </div>
                   </div>
-                </CardContent>
-              </Card>
-            </TabsContent>
-
-              {/* Activity Tab */}
-              <TabsContent value="activity" className="space-y-6">
-                <Card className="showcase-card-hover">
-                  <CardHeader>
-                    <CardTitle className="flex items-center gap-2 text-2xl font-display">
-                      <Calendar className="h-6 w-6 text-green-500" />
-                      Recent Activity
-                    </CardTitle>
-                    <CardDescription className="text-base">Track your engagement and interactions</CardDescription>
-                  </CardHeader>
-                <CardContent>
-                  <div className="text-center py-12">
-                    <div className="text-gray-400 mb-4">
-                      <Clock className="h-16 w-16 mx-auto mb-4 opacity-50" />
+                ) : (
+                  <div className="space-y-6 max-w-2xl">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                      <div>
+                        <div className="text-sm font-black text-white/60 uppercase tracking-wide mb-2">
+                          Display Name
+                        </div>
+                        <div className="text-lg text-white font-bold">
+                          {profile.display_name || "Not set"}
+                        </div>
+                      </div>
+                      <div>
+                        <div className="text-sm font-black text-white/60 uppercase tracking-wide mb-2">
+                          Username
+                        </div>
+                        <div className="text-lg text-white font-bold">
+                          @{profile.username || "no-username"}
+                        </div>
+                      </div>
                     </div>
-                    <h3 className="text-xl font-semibold mb-2">Activity Tracking Coming Soon</h3>
-                    <p className="text-gray-600 mb-4">
-                      Track your project submissions, views, and community interactions.
-                    </p>
-                    <div className="space-y-2 max-w-md mx-auto">
-                      <div className="flex items-center justify-between p-3 border rounded-lg text-sm">
-                        <div className="flex items-center space-x-3">
-                          <Rocket className="h-5 w-5 text-primary" />
-                          <span>Projects submitted: {userData.stats.projects_submitted}</span>
+
+                    {profile.bio && (
+                      <div>
+                        <div className="text-sm font-black text-white/60 uppercase tracking-wide mb-2">
+                          Bio
+                        </div>
+                        <div className="text-lg text-white/80 leading-relaxed">
+                          {profile.bio}
                         </div>
                       </div>
-                      <div className="flex items-center justify-between p-3 border rounded-lg text-sm">
-                        <div className="flex items-center space-x-3">
-                          <Eye className="h-5 w-5 text-primary" />
-                          <span>Total views: {userData.stats.total_views.toLocaleString()}</span>
-                        </div>
+                    )}
+
+                    <div>
+                      <div className="text-sm font-black text-white/60 uppercase tracking-wide mb-2">
+                        Email
                       </div>
-                      <div className="flex items-center justify-between p-3 border rounded-lg text-sm">
-                        <div className="flex items-center space-x-3">
-                          <Users className="h-5 w-5 text-primary" />
-                          <span>Member since: {new Date(userData.profile.created_at).toLocaleDateString()}</span>
-                        </div>
+                      <div className="text-lg text-white font-bold">
+                        {profile.email}
                       </div>
+                    </div>
+
+                    <div className="flex flex-wrap gap-4 pt-4">
+                      {profile.website && (
+                        <a
+                          href={profile.website}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="inline-flex items-center gap-2 text-[#FFDF00] hover:text-[#FFE94D] font-bold transition-colors"
+                        >
+                          <Globe className="h-5 w-5" />
+                          Website
+                        </a>
+                      )}
+                      {profile.twitter && (
+                        <a
+                          href={`https://twitter.com/${profile.twitter.replace("@", "")}`}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="inline-flex items-center gap-2 text-[#FFDF00] hover:text-[#FFE94D] font-bold transition-colors"
+                        >
+                          Twitter
+                        </a>
+                      )}
+                      {profile.github && (
+                        <a
+                          href={`https://github.com/${profile.github}`}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="inline-flex items-center gap-2 text-[#FFDF00] hover:text-[#FFE94D] font-bold transition-colors"
+                        >
+                          <Github className="h-5 w-5" />
+                          GitHub
+                        </a>
+                      )}
                     </div>
                   </div>
-                </CardContent>
-              </Card>
-            </TabsContent>
-            </Tabs>
-          </div>
-        </div>
-      </section>
+                )}
+              </div>
+            </div>
+          </TabsContent>
+        </Tabs>
+      </div>
     </div>
-  )
+  );
 }

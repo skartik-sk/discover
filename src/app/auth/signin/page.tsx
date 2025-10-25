@@ -1,47 +1,19 @@
 "use client";
 
 import { useState } from "react";
-import { Button } from "@/components/ui/button";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
-import { Alert, AlertDescription } from "@/components/ui/alert";
-import { Separator } from "@/components/ui/separator";
-import { ArrowRight, Wallet, AlertCircle, Mail } from "lucide-react";
-import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useWallet } from "@/lib/web3";
 import { useAuth } from "@/contexts/auth-context";
+import { ArrowRight, Mail, Lock, AlertCircle, Sparkles } from "lucide-react";
+import Link from "next/link";
 
 export default function SignInPage() {
-  const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState("");
+  const router = useRouter();
+  const { signInWithEmail, signInWithGoogle } = useAuth();
+
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const router = useRouter();
-  const { walletState, connectWallet } = useWallet();
-  const { signInWithGoogle, signInWithEmail } = useAuth();
-
-  const handleGoogleSignIn = async () => {
-    setIsLoading(true);
-    setError("");
-
-    try {
-      const { error } = await signInWithGoogle();
-      if (error) {
-        setError("Failed to sign in with Google. Please try again.");
-      }
-      // Redirect will be handled by auth state change in context
-    } catch (error) {
-      setError("An unexpected error occurred. Please try again.");
-    } finally {
-      setIsLoading(false);
-    }
-  };
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState("");
 
   const handleEmailSignIn = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -49,202 +21,203 @@ export default function SignInPage() {
     setError("");
 
     try {
-      const { error } = await signInWithEmail(email, password);
-      if (error) {
-        setError(error || "Failed to sign in with email. Please try again.");
+      const { error: signInError } = await signInWithEmail(email, password);
+      if (signInError) {
+        setError(signInError);
+      } else {
+        router.push("/dashboard");
       }
-      // Redirect will be handled by auth state change in context
-    } catch (error) {
+    } catch (err) {
       setError("An unexpected error occurred. Please try again.");
+      console.error("Sign in error:", err);
     } finally {
       setIsLoading(false);
     }
   };
 
-  const handleWalletConnect = async (walletId: string) => {
-    const success = await connectWallet(walletId);
-    if (success) {
-      router.push("/dashboard");
-    } else {
-      setError("Failed to connect wallet. Please try again.");
+  const handleGoogleSignIn = async () => {
+    setIsLoading(true);
+    setError("");
+
+    try {
+      const { error: signInError } = await signInWithGoogle();
+      if (signInError) {
+        setError("Failed to sign in with Google. Please try again.");
+      }
+      // Redirect will be handled by auth state change
+    } catch (err) {
+      setError("An unexpected error occurred. Please try again.");
+      console.error("Google sign in error:", err);
+    } finally {
+      setIsLoading(false);
     }
   };
 
   return (
-    <div className="min-h-screen showcase-theme">
-      <section className="showcase-hero section-padding-xs lg:section-padding flex items-center">
-        <div className="container-custom">
-          <div className="max-w-md mx-auto">
-            <div className="text-center">
-              <h2 className="text-3xl font-bold text-gray-900 mb-2">
-                Welcome Back
-              </h2>
-              <p className="text-gray-600">
-                Sign in to continue showcasing Web3 innovations
-              </p>
-            </div>
+    <div className="min-h-screen flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
+      <div className="w-full max-w-md">
+        {/* Header */}
+        <div className="text-center mb-8">
+          <Link
+            href="/"
+            className="inline-flex items-center text-gray-400 hover:text-primary mb-8 transition-colors"
+          >
+            <ArrowRight className="w-4 h-4 mr-2 rotate-180" />
+            <span className="uppercase text-sm font-bold tracking-wider">
+              Back to Home
+            </span>
+          </Link>
 
-            <Card className="showcase-project-card shadow-elevation-3 my-5">
-              <CardHeader>
-                <CardTitle className="text-center">Sign In</CardTitle>
-                <CardDescription className="text-center">
-                  Access your account to manage projects and connect with the
-                  community
-                </CardDescription>
-              </CardHeader>
-              <CardContent className="space-y-6">
-                {error && (
-                  <Alert className="border-red-200 bg-red-50">
-                    <AlertCircle className="h-4 w-4" />
-                    <AlertDescription className="text-red-700">
-                      {error}
-                    </AlertDescription>
-                  </Alert>
-                )}
-
-                {/* Email/Password Sign In */}
-                <form onSubmit={handleEmailSignIn} className="space-y-5">
-                  <div className="space-y-2">
-                    <label htmlFor="email" className="block text-sm font-semibold text-gray-900 mb-1">
-                      Email Address
-                    </label>
-                    <input
-                      id="email"
-                      type="email"
-                      value={email}
-                      onChange={(e) => setEmail(e.target.value)}
-                      className="showcase-input w-full"
-                      placeholder="you@example.com"
-                      required
-                    />
-                  </div>
-                  <div className="space-y-2">
-                    <label htmlFor="password" className="block text-sm font-semibold text-gray-900 mb-1">
-                      Password
-                    </label>
-                    <input
-                      id="password"
-                      type="password"
-                      value={password}
-                      onChange={(e) => setPassword(e.target.value)}
-                      className="showcase-input w-full"
-                      placeholder="••••••••"
-                      required
-                    />
-                  </div>
-                  <Button
-                    type="submit"
-                    className="w-full h-12 text-base font-semibold showcase-btn disabled:opacity-50 disabled:cursor-not-allowed"
-                    disabled={isLoading}
-                  >
-                    {isLoading ? (
-                      <>
-                        <div className="animate-spin rounded-full h-5 w-5 border-2 border-white border-t-transparent mr-2" />
-                        Signing In...
-                      </>
-                    ) : (
-                      <>
-                        <Mail className="mr-2 h-5 w-5" />
-                        Sign in with Email
-                      </>
-                    )}
-                  </Button>
-                </form>
-
-                <div className="relative">
-                  <div className="absolute inset-0 flex items-center">
-                    <Separator className="w-full" />
-                  </div>
-                  <div className="relative flex justify-center text-sm">
-                    <span className="px-2 bg-white text-gray-500">
-                      Or continue with
-                    </span>
-                  </div>
-                </div>
-
-                <Button
-                  onClick={handleGoogleSignIn}
-                  className="w-full h-12 text-base font-semibold showcase-btn disabled:opacity-50 disabled:cursor-not-allowed"
-                  disabled={isLoading}
-                >
-                  {isLoading ? (
-                    <>
-                      <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white mr-2" />
-                      Signing In...
-                    </>
-                  ) : (
-                    <>
-                      Sign in with Google
-                      <ArrowRight className="ml-2 h-5 w-5" />
-                    </>
-                  )}
-                </Button>
-
-                <div className="relative">
-                  <div className="absolute inset-0 flex items-center">
-                    <Separator className="w-full" />
-                  </div>
-                  <div className="relative flex justify-center text-sm">
-                    <span className="px-2 bg-white text-gray-500">
-                      Or continue with
-                    </span>
-                  </div>
-                </div>
-
-                <div className="space-y-3">
-                  <p className="text-sm text-gray-600 text-center">
-                    Connect with Web3 wallet
-                  </p>
-                  <Button
-                    variant="outline"
-                    className="showcase-btn-outline border-2 w-full h-11 justify-start"
-                    onClick={() => handleWalletConnect("metamask")}
-                    disabled={walletState.isConnecting}
-                  >
-                    <Wallet className="h-4 w-4 mr-2" />
-                    {walletState.isConnecting
-                      ? "Connecting..."
-                      : "Connect Wallet"}
-                  </Button>
-
-                  {walletState.error && (
-                    <Alert className="border-red-200 bg-red-50">
-                      <AlertCircle className="h-4 w-4" />
-                      <AlertDescription className="text-red-700">
-                        {walletState.error}
-                      </AlertDescription>
-                    </Alert>
-                  )}
-                </div>
-              </CardContent>
-            </Card>
-
-            <div className="text-center">
-              <p className="text-sm text-gray-600">
-                Don't have an account?{" "}
-                <Link
-                  href="/auth/signup"
-                  className="text-blue-600 hover:text-blue-700 font-medium"
-                >
-                  Sign up
-                </Link>
-              </p>
-            </div>
-
-            <div className="text-center">
-              <div className="inline-flex items-center space-x-4 text-xs text-gray-500">
-                <Link href="/privacy" className="hover:text-gray-700">
-                  Privacy Policy
-                </Link>
-                <span>•</span>
-                <Link href="/terms" className="hover:text-gray-700">
-                  Terms of Service
-                </Link>
-              </div>
+          <div className="inline-flex items-center mb-6">
+            <div className="badge-primary">
+              <Lock className="w-4 h-4" />
+              <span>Secure Login</span>
             </div>
           </div>
+
+          <h1 className="text-4xl md:text-5xl font-bold uppercase mb-4">
+            Sign In
+          </h1>
+          <p className="section-description">
+            Access your account to manage projects
+          </p>
         </div>
-      </section>
+
+        {/* Sign In Card */}
+        <div className="card-dark p-8">
+          {error && (
+            <div className="mb-6 p-4 bg-red-500/10 border-2 border-red-500/50 rounded-lg flex items-start gap-3">
+              <AlertCircle className="h-5 w-5 text-red-400 flex-shrink-0 mt-0.5" />
+              <p className="text-red-200 text-sm">{error}</p>
+            </div>
+          )}
+
+          {/* Email/Password Form */}
+          <form onSubmit={handleEmailSignIn} className="space-y-6">
+            <div>
+              <label className="block text-sm font-bold uppercase tracking-wider text-white mb-3">
+                Email Address <span className="text-primary">*</span>
+              </label>
+              <div className="relative">
+                <Mail className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
+                <input
+                  type="email"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  className="input-dark pl-12"
+                  placeholder="you@example.com"
+                  required
+                  disabled={isLoading}
+                />
+              </div>
+            </div>
+
+            <div>
+              <label className="block text-sm font-bold uppercase tracking-wider text-white mb-3">
+                Password <span className="text-primary">*</span>
+              </label>
+              <div className="relative">
+                <Lock className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
+                <input
+                  type="password"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  className="input-dark pl-12"
+                  placeholder="••••••••"
+                  required
+                  disabled={isLoading}
+                />
+              </div>
+            </div>
+
+            <button
+              type="submit"
+              disabled={isLoading}
+              className="w-full inline-flex items-center justify-center gap-3 px-8 py-4 bg-primary text-dark font-bold uppercase tracking-wider rounded-lg hover:bg-primary/90 transition-all hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100"
+            >
+              {isLoading ? (
+                <>
+                  <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-dark"></div>
+                  Signing In...
+                </>
+              ) : (
+                <>
+                  <Mail className="w-5 h-5" />
+                  Sign In with Email
+                  <ArrowRight className="w-5 h-5" />
+                </>
+              )}
+            </button>
+          </form>
+
+          {/* Divider */}
+          <div className="relative my-8">
+            <div className="absolute inset-0 flex items-center">
+              <div className="w-full border-t border-white/10"></div>
+            </div>
+            <div className="relative flex justify-center text-sm">
+              <span className="px-4 bg-dark-lighter text-gray-400 uppercase tracking-wider font-bold">
+                Or
+              </span>
+            </div>
+          </div>
+
+          {/* Google Sign In */}
+          <button
+            onClick={handleGoogleSignIn}
+            disabled={isLoading}
+            className="w-full inline-flex items-center justify-center gap-3 px-8 py-4 bg-dark-lighter border-2 border-white/10 text-white font-bold uppercase tracking-wider rounded-lg hover:border-primary/50 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+          >
+            {isLoading ? (
+              <>
+                <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white"></div>
+                Connecting...
+              </>
+            ) : (
+              <>
+                <Sparkles className="w-5 h-5" />
+                Continue with Google
+              </>
+            )}
+          </button>
+        </div>
+
+        {/* Footer Links */}
+        <div className="mt-8 text-center space-y-4">
+          <p className="text-gray-400">
+            Don't have an account?{" "}
+            <Link
+              href="/auth/signup"
+              className="text-primary hover:text-primary/80 font-bold uppercase text-sm tracking-wider transition-colors"
+            >
+              Sign Up
+            </Link>
+          </p>
+
+          <div className="flex items-center justify-center gap-4 text-xs text-gray-500">
+            <Link
+              href="/privacy"
+              className="hover:text-primary transition-colors uppercase tracking-wider"
+            >
+              Privacy
+            </Link>
+            <span>•</span>
+            <Link
+              href="/terms"
+              className="hover:text-primary transition-colors uppercase tracking-wider"
+            >
+              Terms
+            </Link>
+            <span>•</span>
+            <Link
+              href="/cookie-policy"
+              className="hover:text-primary transition-colors uppercase tracking-wider"
+            >
+              Cookies
+            </Link>
+          </div>
+        </div>
+      </div>
     </div>
   );
 }

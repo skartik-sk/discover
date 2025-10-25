@@ -1,422 +1,475 @@
-import { Button } from '@/components/ui/button'
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
-import { Badge } from '@/components/ui/badge'
-import { Input } from '@/components/ui/input'
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
+import Link from "next/link";
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
+import { Card, CardContent } from "@/components/ui/card";
 import {
-  Search,
-  Star,
-  Users,
-  Rocket,
   ArrowRight,
-  CheckCircle,
-  Zap,
-  Shield,
-  Trophy,
-  Eye,
-  Heart,
   Sparkles,
+  TrendingUp,
+  Users,
+  Eye,
+  Star,
+  Rocket,
+  Shield,
+  Zap,
+  Globe,
+  Github,
+  CheckCircle,
+  BarChart3,
+  Award,
+  Target,
+  Trophy,
+  Search,
+  Layers,
   Code,
-  Palette,
-  Globe
-} from 'lucide-react'
-import Link from 'next/link'
-import { supabase } from '@/lib/supabase'
+  Boxes,
+} from "lucide-react";
+import { supabase } from "@/lib/supabase";
 
-// Icon mapping for categories
-const categoryIcons: Record<string, any> = {
-  'defi': Shield,
-  'nft': Trophy,
-  'gaming': Rocket,
-  'dao': Users,
-  'infrastructure': Code,
-  'education': Palette,
-  'other': Globe
-}
+const categoryIcons: Record<string, string> = {
+  defi: "📊",
+  nft: "🎨",
+  nfts: "🎨",
+  gaming: "🎮",
+  dao: "🏛️",
+  infrastructure: "⚙️",
+  social: "👥",
+  education: "📚",
+  other: "🚀",
+};
 
-// Light color mapping for category icons
-const categoryColors: Record<string, { bg: string, text: string }> = {
-  'defi': { bg: 'from-blue-50 to-blue-100', text: 'text-blue-600' },
-  'nft': { bg: 'from-purple-50 to-purple-100', text: 'text-purple-600' },
-  'gaming': { bg: 'from-red-50 to-red-100', text: 'text-red-600' },
-  'dao': { bg: 'from-green-50 to-green-100', text: 'text-green-600' },
-  'infrastructure': { bg: 'from-orange-50 to-orange-100', text: 'text-orange-600' },
-  'education': { bg: 'from-pink-50 to-pink-100', text: 'text-pink-600' },
-  'other': { bg: 'from-gray-50 to-gray-100', text: 'text-gray-600' }
-}
-
-// Get data from Supabase
-async function getFeaturedProjects() {
+async function fetchFeaturedProjects() {
   try {
     const { data: projects, error } = await supabase
-      .from('projects')
-      .select(`
-        *,
-        categories:category_id (
-          id,
-          name,
-          slug,
-          color,
-          gradient,
-          icon
-        ),
-        tags:project_tags (
-          tag_name
-        )
-      `)
-      .eq('is_active', true)
-      .eq('is_featured', true)
-      .order('created_at', { ascending: false })
-      .limit(6)
+      .from("projects")
+      .select("*")
+      .eq("is_featured", true)
+      .eq("is_active", true)
+      .order("created_at", { ascending: false })
+      .limit(6);
 
-    if (error) {
-      console.error('Error fetching featured projects:', error)
-      return []
-    }
+    if (error) throw error;
+    if (!projects || projects.length === 0) return [];
 
-    // Get user IDs from projects and fetch user data
-    const userIds = [...new Set(projects.map(p => p.user_id).filter(Boolean))]
-    let usersData: any[] = []
+    const userIds = [
+      ...new Set(projects.map((p) => p.creator_id).filter(Boolean)),
+    ];
+    const categoryIds = [
+      ...new Set(projects.map((p) => p.category_id).filter(Boolean)),
+    ];
 
-    if (userIds.length > 0) {
-      const { data: users } = await supabase
-        .from('users')
-        .select('id, username, display_name')
-        .in('id', userIds)
-      usersData = users || []
-    }
+    const { data: users } = await supabase
+      .from("users")
+      .select("id, username, display_name, avatar_url")
+      .in("id", userIds);
 
-    return projects.map(project => {
-      const user = usersData.find(u => u.id === project.user_id)
+    const { data: categories } = await supabase
+      .from("categories")
+      .select("id, name, slug, icon, color")
+      .in("id", categoryIds);
 
-      // Generate slug if it doesn't exist
-      let projectSlug = project.slug
-      if (!projectSlug) {
-        projectSlug = project.title
-          .toLowerCase()
-          .trim()
-          .replace(/[^\w\s-]/g, '')
-          .replace(/[\s_-]+/g, '-')
-          .replace(/^-+|-+$/g, '')
+    const { data: tagsData } = await supabase
+      .from("project_tags")
+      .select("project_id, tag_name")
+      .in(
+        "project_id",
+        projects.map((p) => p.id),
+      );
+
+    const usersMap = new Map(users?.map((u) => [u.id, u]) || []);
+    const categoriesMap = new Map(categories?.map((c) => [c.id, c]) || []);
+    const tagsMap = new Map<string, string[]>();
+
+    tagsData?.forEach((tag) => {
+      if (!tagsMap.has(tag.project_id)) {
+        tagsMap.set(tag.project_id, []);
       }
+      tagsMap.get(tag.project_id)?.push(tag.tag_name);
+    });
 
-      return {
-        ...project,
-        slug: projectSlug,
-        tags: project.tags?.map((tag: any) => tag.tag_name) || [],
-        owner: {
-          username: user?.username || 'demo',
-          displayName: user?.display_name || 'Demo User'
-        }
-      }
-    })
+    return projects.map((project) => ({
+      ...project,
+      owner:
+        project.creator_id && usersMap.has(project.creator_id)
+          ? {
+              ...usersMap.get(project.creator_id),
+              displayName:
+                usersMap.get(project.creator_id)?.display_name ||
+                usersMap.get(project.creator_id)?.username,
+            }
+          : null,
+      categories:
+        project.category_id && categoriesMap.has(project.category_id)
+          ? categoriesMap.get(project.category_id)
+          : null,
+      tags: tagsMap.get(project.id) || [],
+    }));
   } catch (error) {
-    console.error('Error in getFeaturedProjects:', error)
-    return []
+    console.error("Error fetching featured projects:", error);
+    return [];
   }
 }
 
-async function getCategories() {
+async function fetchCategories() {
   try {
-    const { data: categories, error } = await supabase
-      .from('categories')
-      .select('*')
-      .eq('is_active', true)
-      .order('sort_order', { ascending: true })
+    const { data, error } = await supabase
+      .from("categories")
+      .select("*")
+      .eq("is_active", true)
+      .order("sort_order", { ascending: true });
 
-    if (error) {
-      console.error('Error fetching categories:', error)
-      return []
-    }
-
-    // Get project counts for each category
-    const categoryIds = categories.map(c => c.id)
-    let projectCounts: any[] = []
-
-    if (categoryIds.length > 0) {
-      const { data: projects } = await supabase
-        .from('projects')
-        .select('category_id')
-        .eq('is_active', true)
-        .in('category_id', categoryIds)
-
-      // Count projects per category
-      projectCounts = categoryIds.map(id => ({
-        category_id: id,
-        count: projects?.filter(p => p.category_id === id).length || 0
-      }))
-    }
-
-    return categories.map(category => {
-      const countData = projectCounts.find(pc => pc.category_id === category.id)
-      return {
-        ...category,
-        icon: categoryIcons[category.slug] || Globe,
-        projects_count: countData?.count || 0
-      }
-    })
+    if (error) throw error;
+    return data || [];
   } catch (error) {
-    console.error('Error in getCategories:', error)
-    return []
+    console.error("Error fetching categories:", error);
+    return [];
   }
 }
 
-async function getStats() {
+async function fetchPlatformStats() {
   try {
-    // Get real counts
-    const [projectsResult, usersResult, categoriesResult, viewsResult] = await Promise.all([
-      supabase.from('projects').select('id', { count: 'exact', head: true }).eq('is_active', true),
-      supabase.from('users').select('id', { count: 'exact', head: true }).eq('is_active', true),
-      supabase.from('categories').select('id', { count: 'exact', head: true }).eq('is_active', true),
-      supabase.from('projects').select('views').eq('is_active', true)
-    ])
+    const [projectsResult, usersResult, projectsData] = await Promise.all([
+      supabase
+        .from("projects")
+        .select("*", { count: "exact", head: true })
+        .eq("is_active", true),
+      supabase
+        .from("users")
+        .select("*", { count: "exact", head: true })
+        .eq("is_active", true),
+      supabase.from("projects").select("views").eq("is_active", true),
+    ]);
 
-    const projectsCount = projectsResult.count || 0
-    const usersCount = usersResult.count || 0
-    const categoriesCount = categoriesResult.count || 0
+    const totalViews = projectsData.data?.reduce(
+      (sum, project) => sum + (project.views || 0),
+      0,
+    );
 
-    // Calculate total views - ensure viewsData is an array
-    const viewsData = viewsResult.data || []
-    const totalViews = viewsData.reduce((sum, project) => sum + (project.views || 0), 0)
-
-    return [
-      { label: "Projects Showcased", value: projectsCount.toLocaleString(), icon: Rocket, color: "text-primary", bgGradient: "from-primary/10 to-primary/5" },
-      { label: "Active Creators", value: usersCount.toLocaleString(), icon: Users, color: "text-accent", bgGradient: "from-accent/10 to-accent/5" },
-      { label: "Total Views", value: totalViews >= 1000 ? `${(totalViews / 1000).toFixed(1)}K` : totalViews.toString(), icon: Eye, color: "text-purple-500", bgGradient: "from-purple-50 to-purple-100" },
-      { label: "Categories", value: categoriesCount.toString(), icon: Globe, color: "text-green-500", bgGradient: "from-green-50 to-green-100" }
-    ]
+    return {
+      projects: projectsResult.count || 0,
+      users: usersResult.count || 0,
+      views: totalViews || 0,
+      categories: 7,
+    };
   } catch (error) {
-    console.error('Error in getStats:', error)
-    return [
-      { label: "Projects Showcased", value: "0", icon: Rocket, color: "text-primary", bgGradient: "from-primary/10 to-primary/5" },
-      { label: "Active Creators", value: "0", icon: Users, color: "text-accent", bgGradient: "from-accent/10 to-accent/5" },
-      { label: "Total Views", value: "0", icon: Eye, color: "text-purple-500", bgGradient: "from-purple-50 to-purple-100" },
-      { label: "Categories", value: "0", icon: Globe, color: "text-green-500", bgGradient: "from-green-50 to-green-100" }
-    ]
+    console.error("Error fetching stats:", error);
+    return { projects: 0, users: 0, views: 0, categories: 0 };
   }
 }
 
-export default async function Home() {
+export default async function HomePage() {
   const [featuredProjects, categories, stats] = await Promise.all([
-    getFeaturedProjects(),
-    getCategories(),
-    getStats()
-  ])
+    fetchFeaturedProjects(),
+    fetchCategories(),
+    fetchPlatformStats(),
+  ]);
 
-  
   return (
-    <div className="min-h-screen showcase-theme">
-      {/* Enhanced Hero Section */}
-      <section className="showcase-hero section-padding-xs lg:section-padding">
-        <div className="container-custom">
-          <div className="max-w-5xl mx-auto text-center relative z-10">
-            {/* Floating badge */}
-            <div className="animate-float inline-flex items-center mb-8">
-              <Badge className="showcase-badge animate-pulse-slow">
-                <Sparkles className="w-3 h-3 mr-2" />
-                ⚡ Discover Web3 Innovations
-              </Badge>
+    <div className="min-h-screen bg-[#0A0A0A]">
+      {/* Hero Section */}
+      <section className="relative pt-24 pb-20 md:pt-32 md:pb-28 overflow-hidden">
+        {/* Animated Background Effects */}
+        <div className="absolute inset-0 overflow-hidden pointer-events-none">
+          <div className="absolute top-20 left-1/4 w-[600px] h-[600px] bg-[#FFDF00]/10 rounded-full blur-[150px] animate-pulse" />
+          <div
+            className="absolute top-1/3 right-1/4 w-[700px] h-[700px] bg-cyan-500/10 rounded-full blur-[180px] animate-pulse"
+            style={{ animationDelay: "1s" }}
+          />
+          <div
+            className="absolute bottom-0 left-1/2 w-[500px] h-[500px] bg-purple-500/10 rounded-full blur-[140px] animate-pulse"
+            style={{ animationDelay: "2s" }}
+          />
+        </div>
+
+        {/* Dot Pattern Overlay */}
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_1px_1px,_rgb(255,255,255,0.05)_1px,_transparent_0)] bg-[size:40px_40px] pointer-events-none opacity-30" />
+
+        <div className="container-custom relative z-10">
+          <div className="max-w-6xl mx-auto">
+            {/* Badge */}
+            <div className="flex justify-center mb-8 animate-fade-in">
+              <div className="inline-flex items-center gap-2 px-6 py-3 rounded-full bg-gradient-to-r from-[#FFDF00]/20 to-cyan-500/20 border border-white/10 backdrop-blur-sm">
+                <Sparkles className="h-5 w-5 text-[#FFDF00] animate-pulse" />
+                <span className="text-sm font-bold text-white/90 uppercase tracking-wider">
+                  The Ultimate Web3 Showcase Platform
+                </span>
+              </div>
             </div>
 
-            {/* Enhanced heading */}
-            <h1 className="text-5xl md:text-6xl lg:text-7xl xl:text-8xl font-display font-bold text-gradient-primary mb-6 animate-fade-in-up text-balance">
-              Discover Your
-              <br />
-              <span className="text-gradient-accent">Web3 Projects</span>
+            {/* Main Heading */}
+            <h1 className="text-center text-4xl md:text-5xl lg:text-6xl font-black uppercase leading-[0.95] mb-8 tracking-tight animate-fade-in-up">
+              <span className="block text-white">Discover &</span>
+              <span className="block bg-gradient-to-r from-[#FFDF00] via-amber-400 to-[#FFDF00] bg-clip-text text-transparent animate-gradient bg-300% mt-2">
+                Showcase Web3
+              </span>
+              <span className="block text-white mt-2">Projects</span>
             </h1>
 
-            {/* Enhanced description */}
-            <p className="text-xl md:text-2xl text-gray-600 mb-8 max-w-3xl mx-auto animate-slide-in-left leading-relaxed text-balance">
-              Join thousands of Web3 builders discovering innovative decentralized projects.
-              <br className="hidden md:block" />
-              Get discovered, attract users, and grow your Web3 ecosystem.
+            {/* Description */}
+            <p
+              className="text-center text-xl md:text-2xl text-white/70 leading-relaxed mb-10 max-w-4xl mx-auto animate-fade-in-up"
+              style={{ animationDelay: "100ms" }}
+            >
+              The leading platform for Web3 builders to showcase innovative
+              decentralized applications and connect with early adopters,
+              investors, and the community.
             </p>
 
-            {/* Enhanced CTA buttons */}
-            <div className="flex flex-col sm:flex-row gap-4 justify-center mb-12 animate-scale-in">
-              <Button size="lg" className="showcase-btn px-8 py-4 text-base font-semibold shadow-elevation-3 hover:shadow-elevation-4" asChild>
+            {/* CTA Buttons */}
+            <div
+              className="flex flex-wrap gap-6 justify-center mb-12 animate-fade-in-up"
+              style={{ animationDelay: "200ms" }}
+            >
+              <Button
+                asChild
+                size="lg"
+                className="btn-primary group h-16 px-10 text-base shadow-[0_0_30px_rgba(255,223,0,0.3)] hover:shadow-[0_0_50px_rgba(255,223,0,0.5)] transition-all duration-300"
+              >
+                <Link href="/submit">
+                  <Rocket className="h-5 w-5 mr-2 group-hover:translate-y-[-2px] transition-transform" />
+                  Submit Your Project
+                  <ArrowRight className="h-5 w-5 ml-2 group-hover:translate-x-1 transition-transform" />
+                </Link>
+              </Button>
+              <Button
+                asChild
+                variant="outline"
+                size="lg"
+                className="h-16 px-10 text-base bg-white/5 border-2 border-white/20 hover:bg-white/10 hover:border-[#FFDF00]/50 transition-all duration-300 backdrop-blur-sm"
+              >
                 <Link href="/projects">
                   Explore Projects
-                  <ArrowRight className="ml-2 h-5 w-5" />
-                </Link>
-              </Button>
-              <Button size="lg" variant="outline" className="showcase-btn-outline px-8 py-4 text-base font-semibold border-2" asChild>
-                <Link href="/submit">
-                  Submit Your Work
+                  <ArrowRight className="h-5 w-5 ml-2" />
                 </Link>
               </Button>
             </div>
 
-            {/* Enhanced search bar */}
-            <div className="max-w-2xl mx-auto relative animate-slide-in-left">
-              <Search className="absolute left-5 top-1/2 transform -translate-y-1/2 text-gray-400 h-5 w-5" />
-              <Input
-                type="text"
-                placeholder="Search Web3 projects, protocols, or categories..."
-                className="showcase-input pl-14 pr-6 py-4 text-lg border-2 focus:border-primary"
-              />
+            {/* Search Bar */}
+            <div
+              className="max-w-2xl mx-auto mb-16 animate-fade-in-up"
+              style={{ animationDelay: "300ms" }}
+            >
+              <Link href="/projects" className="block">
+                <div className="relative">
+                  <Search className="absolute left-6 top-1/2 -translate-y-1/2 h-6 w-6 text-white/40" />
+                  <input
+                    type="text"
+                    placeholder="Search Web3 projects, protocols, or categories..."
+                    className="w-full h-16 bg-[#151515] border-2 border-white/10 text-white placeholder:text-white/40 pl-16 pr-6 rounded-2xl text-lg font-medium focus:border-[#FFDF00] focus:outline-none transition-all cursor-pointer"
+                    readOnly
+                  />
+                </div>
+              </Link>
             </div>
-          </div>
-        </div>
-      </section>
 
-      {/* Enhanced Stats Section */}
-      <section className="section-padding-sm bg-gradient-subtle">
-        <div className="container-custom">
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-6">
-            {stats.map((stat, index) => (
-              <Card key={index} className="showcase-stat-card p-6 group hover:shadow-elevation-3">
-                <CardContent className="pt-0">
-                  <div className={`w-16 h-16 rounded-2xl bg-gradient-to-br ${stat.bgGradient} flex items-center justify-center mx-auto mb-4 group-hover:scale-110 transition-transform duration-300`}>
-                    <stat.icon className={`h-8 w-8 ${stat.color}`} />
-                  </div>
-                  <div className="text-3xl md:text-4xl font-bold text-gray-900 font-display animate-fade-in-up">
-                    {stat.value}
-                  </div>
-                  <div className="text-sm md:text-base text-gray-600 font-medium mt-1">
-                    {stat.label}
-                  </div>
-                </CardContent>
-              </Card>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* Enhanced Categories Section */}
-      <section className="section-padding bg-background">
-        <div className="container-custom">
-          <div className="text-center mb-16">
-            <h2 className="text-4xl md:text-5xl font-bold mb-6 font-display text-gray-900">
-              Explore Categories
-            </h2>
-            <p className="text-xl text-gray-600 max-w-2xl mx-auto leading-relaxed">
-              Explore innovative Web3 projects across different blockchain categories
-            </p>
-          </div>
-
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-6">
-            {categories.map((category, index) => {
-              const IconComponent = category.icon
-              const colors = categoryColors[category.slug] || categoryColors.other
-              return (
-                <Link key={index} href={`/categories/${category.slug}`}>
-                  <Card className="showcase-category-card group p-6">
-                    <CardContent className="p-0 text-center">
-                      <div className={`icon-wrapper bg-gradient-to-br ${colors.bg}`}>
-                        <IconComponent className={`h-8 w-8 ${colors.text}`} />
-                      </div>
-                      <h3 className="font-semibold text-lg mb-2 text-gray-900 group-hover:text-primary transition-colors duration-200">
-                        {category.name}
-                      </h3>
-                      <p className="text-sm text-gray-600 font-medium">
-                        {category.projects_count || 0} projects
-                      </p>
-                    </CardContent>
-                  </Card>
-                </Link>
-              )
-            })}
-          </div>
-        </div>
-      </section>
-
-      {/* Enhanced Featured Projects Section */}
-      {featuredProjects.length > 0 && (
-        <section className="section-padding bg-gradient-subtle">
-          <div className="container-custom">
-            <div className="text-center mb-16">
-              <div className="animate-float inline-flex items-center mb-6">
-                <Badge className="showcase-badge">
-                  <Trophy className="w-3 h-3 mr-2" />
-                  ⭐ Featured Projects
-                </Badge>
+            {/* Stats */}
+            <div
+              className="grid grid-cols-2 md:grid-cols-4 gap-6 max-w-5xl mx-auto animate-fade-in-up"
+              style={{ animationDelay: "400ms" }}
+            >
+              <div className="text-center group cursor-default bg-[#151515]/50 backdrop-blur-sm border border-white/10 rounded-2xl p-6 hover:border-[#FFDF00]/30 transition-all duration-300">
+                <div className="text-4xl md:text-5xl font-black bg-gradient-to-br from-[#FFDF00] to-amber-500 bg-clip-text text-transparent mb-2 group-hover:scale-110 transition-transform duration-300">
+                  {stats.projects}+
+                </div>
+                <div className="text-sm md:text-base text-white/60 uppercase font-bold tracking-wide">
+                  Projects
+                </div>
               </div>
-              <h2 className="text-4xl md:text-5xl font-bold mb-6 font-display text-gray-900">
-                Trending This Week
-              </h2>
-              <p className="text-xl text-gray-600 max-w-2xl mx-auto leading-relaxed">
-                Hand-picked exceptional projects that are gaining traction in our community
-              </p>
+              <div className="text-center group cursor-default bg-[#151515]/50 backdrop-blur-sm border border-white/10 rounded-2xl p-6 hover:border-cyan-500/30 transition-all duration-300">
+                <div className="text-4xl md:text-5xl font-black bg-gradient-to-br from-cyan-500 to-blue-500 bg-clip-text text-transparent mb-2 group-hover:scale-110 transition-transform duration-300">
+                  {stats.users}+
+                </div>
+                <div className="text-sm md:text-base text-white/60 uppercase font-bold tracking-wide">
+                  Builders
+                </div>
+              </div>
+              <div className="text-center group cursor-default bg-[#151515]/50 backdrop-blur-sm border border-white/10 rounded-2xl p-6 hover:border-purple-500/30 transition-all duration-300">
+                <div className="text-4xl md:text-5xl font-black bg-gradient-to-br from-purple-500 to-pink-500 bg-clip-text text-transparent mb-2 group-hover:scale-110 transition-transform duration-300">
+                  {stats.views > 1000
+                    ? `${Math.floor(stats.views / 1000)}K+`
+                    : stats.views}
+                </div>
+                <div className="text-sm md:text-base text-white/60 uppercase font-bold tracking-wide">
+                  Views
+                </div>
+              </div>
+              <div className="text-center group cursor-default bg-[#151515]/50 backdrop-blur-sm border border-white/10 rounded-2xl p-6 hover:border-green-500/30 transition-all duration-300">
+                <div className="text-4xl md:text-5xl font-black bg-gradient-to-br from-green-500 to-emerald-500 bg-clip-text text-transparent mb-2 group-hover:scale-110 transition-transform duration-300">
+                  {stats.categories}+
+                </div>
+                <div className="text-sm md:text-base text-white/60 uppercase font-bold tracking-wide">
+                  Categories
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Bottom Gradient */}
+        <div className="absolute bottom-0 left-0 right-0 h-32 bg-gradient-to-t from-[#0A0A0A] to-transparent pointer-events-none" />
+      </section>
+
+      {/* Featured Projects Section */}
+      {featuredProjects.length > 0 && (
+        <section className="py-16 md:py-24 relative">
+          <div className="container-custom">
+            <div className="flex flex-col md:flex-row items-start md:items-center justify-between mb-12 gap-6">
+              <div>
+                <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-[#FFDF00]/10 border border-[#FFDF00]/20 mb-4">
+                  <Star className="h-5 w-5 text-[#FFDF00] fill-current" />
+                  <span className="text-sm font-bold text-[#FFDF00] uppercase tracking-wider">
+                    Featured
+                  </span>
+                </div>
+                <h2 className="text-3xl md:text-4xl lg:text-5xl font-black text-white uppercase leading-tight">
+                  Trending This Week
+                </h2>
+                <p className="text-lg text-white/60 mt-3 max-w-2xl">
+                  Hand-picked exceptional projects gaining traction in our
+                  community
+                </p>
+              </div>
+              <Button
+                asChild
+                variant="outline"
+                className="btn-outline hidden md:inline-flex"
+                size="lg"
+              >
+                <Link href="/projects">
+                  View All
+                  <ArrowRight className="h-5 w-5 ml-2" />
+                </Link>
+              </Button>
             </div>
 
-            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
-              {featuredProjects.map((project, index) => (
-                <Link key={project.id} href={`/projects/${project.owner?.username || 'demo'}/${project.slug}`}>
-                  <Card
-                    className="showcase-project-card cursor-pointer group animate-scale-in h-full"
-                    style={{ animationDelay: `${index * 100}ms` }}
+            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {featuredProjects.slice(0, 6).map((project, index) => {
+                const projectSlug =
+                  project.slug ||
+                  project.title
+                    .toLowerCase()
+                    .trim()
+                    .replace(/[^\w\s-]/g, "")
+                    .replace(/[\s_-]+/g, "-")
+                    .replace(/^-+|-+$/g, "");
+                const username = project.owner?.username || "demo";
+                const projectUrl = `/projects/${username}/${projectSlug}`;
+
+                return (
+                  <Link
+                    key={project.id}
+                    href={projectUrl}
+                    className="group animate-fade-in-up"
+                    style={{ animationDelay: `${index * 50}ms` }}
                   >
-                  <CardHeader className="pb-4">
-                    <div className="flex items-start justify-between mb-4">
-                      <div className="flex items-center space-x-4">
-                        <Avatar className="h-14 w-14 border-2 border-gray-200 shadow-elevation-1">
-                          <AvatarImage src={project.logo_url} alt={project.title} />
-                          <AvatarFallback className="bg-gradient-to-br from-primary to-accent text-white font-bold text-lg">
-                            {project.title.charAt(0)}
-                          </AvatarFallback>
-                        </Avatar>
-                        <div>
-                          <CardTitle className="text-xl font-display text-gray-900 group-hover:text-primary transition-colors duration-200">
-                            {project.title}
-                          </CardTitle>
-                          <div className="flex items-center space-x-2 mt-2">
-                            <Badge variant="secondary" className="bg-primary/10 text-primary border-primary/20 font-medium">
-                              {project.categories?.name || 'Web3'}
-                            </Badge>
+                    <Card className="card-dark hover:border-[#FFDF00]/50 transition-all duration-300 h-full overflow-hidden group-hover:shadow-[0_0_30px_rgba(255,223,0,0.15)]">
+                      <CardContent className="p-0">
+                        {/* Project Image */}
+                        {project.logo_url && (
+                          <div className="relative h-48 bg-gradient-to-br from-[#FFDF00]/10 to-transparent overflow-hidden">
+                            <img
+                              src={project.logo_url}
+                              alt={project.title}
+                              className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                            />
                             {project.is_featured && (
-                              <Trophy className="h-4 w-4 text-yellow-500" />
+                              <div className="absolute top-4 right-4">
+                                <div className="bg-[#FFDF00] text-black px-3 py-1 rounded-full flex items-center gap-1 text-xs font-black uppercase">
+                                  <Trophy className="h-3 w-3" />
+                                  Featured
+                                </div>
+                              </div>
                             )}
                           </div>
-                        </div>
-                      </div>
-                    </div>
-                  </CardHeader>
-                  <CardContent className="pt-0">
-                    <CardDescription className="mb-6 text-base leading-relaxed text-gray-600">
-                      {project.description}
-                    </CardDescription>
+                        )}
 
-                    <div className="flex flex-wrap gap-2 mb-6">
-                      {project.tags.slice(0, 3).map((tag, tagIndex) => (
-                        <Badge key={tagIndex} variant="outline" className="text-xs border-gray-200 text-gray-600 bg-gray-50 font-medium">
-                          {tag}
-                        </Badge>
-                      ))}
-                      {project.tags.length > 3 && (
-                        <Badge variant="outline" className="text-xs border-gray-200 text-gray-600 bg-gray-50 font-medium">
-                          +{project.tags.length - 3}
-                        </Badge>
-                      )}
-                    </div>
+                        <div className="p-6">
+                          {/* Header */}
+                          <div className="flex items-start gap-4 mb-4">
+                            {!project.logo_url && (
+                              <div className="relative">
+                                <div className="absolute inset-0 bg-gradient-to-br from-[#FFDF00] to-amber-500 rounded-xl blur opacity-0 group-hover:opacity-50 transition-opacity" />
+                                <div className="relative w-14 h-14 rounded-xl bg-gradient-to-br from-[#FFDF00] to-amber-500 flex items-center justify-center flex-shrink-0 group-hover:scale-110 transition-transform duration-300">
+                                  <span className="text-2xl font-black text-black">
+                                    {project.title.charAt(0)}
+                                  </span>
+                                </div>
+                              </div>
+                            )}
+                            <div className="flex-1 min-w-0">
+                              <h3 className="text-xl font-black text-white mb-2 uppercase group-hover:text-[#FFDF00] transition-colors">
+                                {project.title}
+                              </h3>
+                              {project.categories && (
+                                <Badge className="bg-white/10 text-white hover:bg-white/20 text-xs border-0">
+                                  {categoryIcons[project.categories.slug] ||
+                                    "🚀"}{" "}
+                                  {project.categories.name}
+                                </Badge>
+                              )}
+                            </div>
+                          </div>
 
-                    <div className="flex items-center justify-between">
-                      <div className="flex items-center space-x-4 text-sm text-gray-500">
-                        <div className="flex items-center space-x-1">
-                          <Eye className="h-4 w-4" />
-                          <span>{project.views || 0}</span>
+                          {/* Description */}
+                          <p className="text-white/60 text-sm mb-4 line-clamp-2 leading-relaxed">
+                            {project.description}
+                          </p>
+
+                          {/* Tags */}
+                          {project.tags.length > 0 && (
+                            <div className="flex flex-wrap gap-2 mb-4">
+                              {project.tags.slice(0, 3).map((tag, idx) => (
+                                <Badge
+                                  key={idx}
+                                  className="bg-white/5 text-white/60 hover:bg-white/10 border-0 text-xs"
+                                >
+                                  {tag}
+                                </Badge>
+                              ))}
+                              {project.tags.length > 3 && (
+                                <Badge className="bg-white/5 text-white/60 hover:bg-white/10 border-0 text-xs">
+                                  +{project.tags.length - 3}
+                                </Badge>
+                              )}
+                            </div>
+                          )}
+
+                          {/* Footer */}
+                          <div className="flex items-center justify-between pt-4 border-t border-white/10">
+                            <div className="flex items-center gap-4 text-sm text-white/40">
+                              <div className="flex items-center gap-1">
+                                <Eye className="h-4 w-4" />
+                                <span>{project.views || 0}</span>
+                              </div>
+                              {project.owner && (
+                                <div className="flex items-center gap-1 truncate">
+                                  <Users className="h-4 w-4" />
+                                  <span className="truncate text-xs max-w-[100px]">
+                                    {project.owner.displayName}
+                                  </span>
+                                </div>
+                              )}
+                            </div>
+                            <ArrowRight className="h-5 w-5 text-white/40 group-hover:text-[#FFDF00] group-hover:translate-x-1 transition-all" />
+                          </div>
                         </div>
-                        <div className="flex items-center space-x-1">
-                          <Users className="h-4 w-4" />
-                          <span className="text-xs">{project.owner?.displayName || project.owner?.username || 'Anonymous'}</span>
-                        </div>
-                      </div>
-                      <Button size="sm" className="showcase-btn px-4 py-2 text-xs font-semibold">
-                        View Project
-                        <ArrowRight className="ml-1 h-3 w-3" />
-                      </Button>
-                    </div>
-                  </CardContent>
-                </Card>
-                </Link>
-              ))}
+                      </CardContent>
+                    </Card>
+                  </Link>
+                );
+              })}
             </div>
 
-            <div className="text-center mt-16">
-              <Button size="lg" variant="outline" className="showcase-btn-outline px-8 py-4 text-base font-semibold border-2" asChild>
+            <div className="mt-12 text-center md:hidden">
+              <Button
+                asChild
+                variant="outline"
+                className="btn-outline"
+                size="lg"
+              >
                 <Link href="/projects">
                   View All Projects
-                  <ArrowRight className="ml-2 h-5 w-5" />
+                  <ArrowRight className="h-5 w-5 ml-2" />
                 </Link>
               </Button>
             </div>
@@ -424,57 +477,76 @@ export default async function Home() {
         </section>
       )}
 
-      {/* Enhanced Features Section */}
-      <section className="section-padding bg-background">
+      {/* Features Section */}
+      <section className="py-16 md:py-24">
         <div className="container-custom">
           <div className="text-center mb-16">
-            <h2 className="text-4xl md:text-5xl font-bold mb-6 font-display text-gray-900">
+            <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-purple-500/10 border border-purple-500/20 mb-6">
+              <Sparkles className="h-5 w-5 text-purple-500" />
+              <span className="text-sm font-bold text-purple-500 uppercase tracking-wider">
+                Benefits
+              </span>
+            </div>
+            <h2 className="text-3xl md:text-4xl lg:text-5xl font-black text-white uppercase mb-6 leading-tight">
               Why Choose Our Platform?
             </h2>
-            <p className="text-xl text-gray-600 max-w-2xl mx-auto leading-relaxed">
-              The ultimate platform for Web3 creators to showcase their innovative projects
+            <p className="text-lg md:text-xl text-white/60 max-w-3xl mx-auto leading-relaxed">
+              The ultimate platform for Web3 creators to showcase their
+              innovative projects
             </p>
           </div>
 
           <div className="grid md:grid-cols-3 gap-8">
-            <Card className="showcase-card-hover p-8 group">
-              <CardContent className="pt-0 text-center">
-                <div className="w-20 h-20 bg-gradient-to-br from-primary/10 to-primary/5 rounded-2xl flex items-center justify-center mx-auto mb-6 group-hover:scale-110 transition-transform duration-300">
-                  <Zap className="h-10 w-10 text-primary" />
+            <Card className="card-dark border-white/10 hover:border-[#FFDF00]/50 transition-all duration-300 group">
+              <CardContent className="p-10 text-center">
+                <div className="relative inline-block mb-8">
+                  <div className="absolute inset-0 bg-gradient-to-br from-[#FFDF00] to-amber-500 rounded-3xl blur-xl opacity-0 group-hover:opacity-50 transition-opacity duration-500"></div>
+                  <div className="relative w-20 h-20 rounded-3xl bg-gradient-to-br from-[#FFDF00]/20 to-amber-500/20 flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
+                    <Zap className="h-10 w-10 text-[#FFDF00]" />
+                  </div>
                 </div>
-                <h3 className="text-2xl font-semibold mb-4 font-display text-gray-900 group-hover:text-primary transition-colors duration-200">
+                <h3 className="text-2xl font-black text-white uppercase mb-4 group-hover:text-[#FFDF00] transition-colors">
                   Get Discovered
                 </h3>
-                <p className="text-gray-600 text-lg leading-relaxed">
-                  Reach thousands of potential users and collaborators looking for innovative Web3 projects like yours
+                <p className="text-white/60 leading-relaxed text-base">
+                  Reach thousands of potential users and collaborators looking
+                  for innovative Web3 projects like yours
                 </p>
               </CardContent>
             </Card>
 
-            <Card className="showcase-card-hover p-8 group">
-              <CardContent className="pt-0 text-center">
-                <div className="w-20 h-20 bg-gradient-to-br from-accent/10 to-accent/5 rounded-2xl flex items-center justify-center mx-auto mb-6 group-hover:scale-110 transition-transform duration-300">
-                  <CheckCircle className="h-10 w-10 text-accent" />
+            <Card className="card-dark border-white/10 hover:border-cyan-500/50 transition-all duration-300 group">
+              <CardContent className="p-10 text-center">
+                <div className="relative inline-block mb-8">
+                  <div className="absolute inset-0 bg-gradient-to-br from-cyan-500 to-blue-500 rounded-3xl blur-xl opacity-0 group-hover:opacity-50 transition-opacity duration-500"></div>
+                  <div className="relative w-20 h-20 rounded-3xl bg-gradient-to-br from-cyan-500/20 to-blue-500/20 flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
+                    <CheckCircle className="h-10 w-10 text-cyan-500" />
+                  </div>
                 </div>
-                <h3 className="text-2xl font-semibold mb-4 font-display text-gray-900 group-hover:text-accent transition-colors duration-200">
+                <h3 className="text-2xl font-black text-white uppercase mb-4 group-hover:text-cyan-500 transition-colors">
                   Quality Projects
                 </h3>
-                <p className="text-gray-600 text-lg leading-relaxed">
-                  Join a curated community of high-quality Web3 projects and innovative decentralized applications
+                <p className="text-white/60 leading-relaxed text-base">
+                  Join a curated community of high-quality Web3 projects and
+                  innovative decentralized applications
                 </p>
               </CardContent>
             </Card>
 
-            <Card className="showcase-card-hover p-8 group">
-              <CardContent className="pt-0 text-center">
-                <div className="w-20 h-20 bg-gradient-to-br from-purple-100 to-purple-50 rounded-2xl flex items-center justify-center mx-auto mb-6 group-hover:scale-110 transition-transform duration-300">
-                  <Shield className="h-10 w-10 text-purple-600" />
+            <Card className="card-dark border-white/10 hover:border-purple-500/50 transition-all duration-300 group">
+              <CardContent className="p-10 text-center">
+                <div className="relative inline-block mb-8">
+                  <div className="absolute inset-0 bg-gradient-to-br from-purple-500 to-pink-500 rounded-3xl blur-xl opacity-0 group-hover:opacity-50 transition-opacity duration-500"></div>
+                  <div className="relative w-20 h-20 rounded-3xl bg-gradient-to-br from-purple-500/20 to-pink-500/20 flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
+                    <Shield className="h-10 w-10 text-purple-500" />
+                  </div>
                 </div>
-                <h3 className="text-2xl font-semibold mb-4 font-display text-gray-900 group-hover:text-purple-600 transition-colors duration-200">
+                <h3 className="text-2xl font-black text-white uppercase mb-4 group-hover:text-purple-500 transition-colors">
                   Build Your Brand
                 </h3>
-                <p className="text-gray-600 text-lg leading-relaxed">
-                  Create a stunning portfolio that showcases your unique Web3 projects and technical expertise
+                <p className="text-white/60 leading-relaxed text-base">
+                  Create a stunning portfolio that showcases your unique Web3
+                  projects and technical expertise
                 </p>
               </CardContent>
             </Card>
@@ -482,32 +554,149 @@ export default async function Home() {
         </div>
       </section>
 
-      {/* Enhanced CTA Section */}
-      <section className="section-padding bg-gradient-to-r from-primary to-accent relative overflow-hidden">
-        <div className="absolute inset-0 bg-blue-50/90"></div>
-        <div className="container-custom relative z-10">
-          <div className="max-w-4xl mx-auto text-center">
-            <h2 className="text-4xl md:text-5xl font-bold text-primary mb-6 font-display">
-              Ready to Showcase Your Web3 Projects?
+      {/* How It Works Section */}
+      <section className="py-16 md:py-24 bg-gradient-to-b from-transparent via-white/[0.02] to-transparent">
+        <div className="container-custom">
+          <div className="text-center mb-16">
+            <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-green-500/10 border border-green-500/20 mb-6">
+              <Boxes className="h-5 w-5 text-green-500" />
+              <span className="text-sm font-bold text-green-500 uppercase tracking-wider">
+                Process
+              </span>
+            </div>
+            <h2 className="text-3xl md:text-4xl lg:text-5xl font-black text-white uppercase mb-6 leading-tight">
+              How It Works
             </h2>
-            <p className="text-xl text-gray-700 mb-8 leading-relaxed">
-              Join thousands of Web3 creators building their portfolios and growing their communities
+            <p className="text-lg md:text-xl text-white/60 max-w-3xl mx-auto leading-relaxed">
+              Get your Web3 project featured in just three simple steps
             </p>
-            <div className="flex flex-col sm:flex-row gap-4 justify-center">
-             <Button size="lg" className="showcase-btn px-8 py-4 text-base font-semibold shadow-elevation-3 hover:shadow-elevation-4" asChild>
-                 <Link href="/submit">
-                  Submit Your Project
-                </Link>
-              </Button>
-              <Button size="lg" variant="outline" className="border-primary text-primary hover:bg-primary hover:text-white px-8 py-4 text-base font-semibold" asChild>
-                <Link href="/projects">
-                  Explore Projects
-                </Link>
-              </Button>
+          </div>
+
+          <div className="grid md:grid-cols-3 gap-8 max-w-6xl mx-auto">
+            <div className="relative">
+              <div className="text-center mb-6">
+                <div className="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-gradient-to-br from-[#FFDF00] to-amber-500 text-black font-black text-2xl mb-4">
+                  1
+                </div>
+              </div>
+              <Card className="card-dark border-white/10 hover:border-[#FFDF00]/30 transition-all duration-300">
+                <CardContent className="p-8 text-center">
+                  <div className="w-16 h-16 rounded-2xl bg-[#FFDF00]/10 flex items-center justify-center mx-auto mb-6">
+                    <Rocket className="h-8 w-8 text-[#FFDF00]" />
+                  </div>
+                  <h3 className="text-xl font-black text-white uppercase mb-3">
+                    Submit Project
+                  </h3>
+                  <p className="text-white/60 leading-relaxed text-sm">
+                    Fill out our simple form with your project details, links,
+                    and description
+                  </p>
+                </CardContent>
+              </Card>
+            </div>
+
+            <div className="relative">
+              <div className="text-center mb-6">
+                <div className="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-gradient-to-br from-cyan-500 to-blue-500 text-black font-black text-2xl mb-4">
+                  2
+                </div>
+              </div>
+              <Card className="card-dark border-white/10 hover:border-cyan-500/30 transition-all duration-300">
+                <CardContent className="p-8 text-center">
+                  <div className="w-16 h-16 rounded-2xl bg-cyan-500/10 flex items-center justify-center mx-auto mb-6">
+                    <CheckCircle className="h-8 w-8 text-cyan-500" />
+                  </div>
+                  <h3 className="text-xl font-black text-white uppercase mb-3">
+                    Get Reviewed
+                  </h3>
+                  <p className="text-white/60 leading-relaxed text-sm">
+                    Our team reviews your submission to ensure quality and
+                    authenticity
+                  </p>
+                </CardContent>
+              </Card>
+            </div>
+
+            <div className="relative">
+              <div className="text-center mb-6">
+                <div className="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-gradient-to-br from-purple-500 to-pink-500 text-white font-black text-2xl mb-4">
+                  3
+                </div>
+              </div>
+              <Card className="card-dark border-white/10 hover:border-purple-500/30 transition-all duration-300">
+                <CardContent className="p-8 text-center">
+                  <div className="w-16 h-16 rounded-2xl bg-purple-500/10 flex items-center justify-center mx-auto mb-6">
+                    <TrendingUp className="h-8 w-8 text-purple-500" />
+                  </div>
+                  <h3 className="text-xl font-black text-white uppercase mb-3">
+                    Go Live
+                  </h3>
+                  <p className="text-white/60 leading-relaxed text-sm">
+                    Your project goes live and starts getting discovered by our
+                    community
+                  </p>
+                </CardContent>
+              </Card>
             </div>
           </div>
         </div>
       </section>
+
+      {/* CTA Section */}
+      <section className="py-20 md:py-28 relative overflow-hidden">
+        {/* Background gradient */}
+        <div className="absolute inset-0 bg-gradient-to-b from-[#0A0A0A] via-[#151515] to-[#0A0A0A]"></div>
+        <div className="absolute inset-0 overflow-hidden pointer-events-none">
+          <div className="absolute bottom-0 left-1/4 w-[800px] h-[800px] bg-[#FFDF00]/5 rounded-full blur-[120px]" />
+          <div className="absolute top-0 right-1/4 w-[600px] h-[600px] bg-cyan-500/5 rounded-full blur-[120px]" />
+        </div>
+
+        <div className="container-custom relative z-10">
+          <Card className="card-dark border-[#FFDF00]/20 overflow-hidden max-w-5xl mx-auto">
+            <div className="absolute inset-0 bg-gradient-to-br from-[#FFDF00]/5 via-transparent to-cyan-500/5" />
+            <CardContent className="p-12 md:p-20 text-center relative z-10">
+              <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-[#FFDF00]/10 border border-[#FFDF00]/20 mb-8">
+                <Rocket className="h-5 w-5 text-[#FFDF00]" />
+                <span className="text-sm font-bold text-[#FFDF00] uppercase tracking-wider">
+                  Ready to Launch?
+                </span>
+              </div>
+              <h2 className="text-3xl md:text-4xl lg:text-5xl font-black text-white uppercase mb-8 leading-[0.95]">
+                Showcase Your
+                <br />
+                <span className="text-[#FFDF00]">Web3 Project Today</span>
+              </h2>
+              <p className="text-xl md:text-2xl text-white/70 mb-12 max-w-3xl mx-auto leading-relaxed">
+                Join thousands of Web3 builders and get your project in front of
+                the right audience
+              </p>
+              <div className="flex flex-col sm:flex-row gap-6 justify-center">
+                <Button
+                  asChild
+                  size="lg"
+                  className="btn-primary group h-16 px-10 text-base shadow-[0_0_30px_rgba(255,223,0,0.3)] hover:shadow-[0_0_50px_rgba(255,223,0,0.5)]"
+                >
+                  <Link href="/submit">
+                    <Rocket className="h-5 w-5 mr-2 group-hover:translate-y-[-2px] transition-transform" />
+                    Submit Your Project
+                  </Link>
+                </Button>
+                <Button
+                  asChild
+                  variant="outline"
+                  size="lg"
+                  className="h-16 px-10 text-base bg-white/5 border-2 border-white/20 hover:bg-white/10 hover:border-[#FFDF00]/50"
+                >
+                  <Link href="/projects">
+                    <Globe className="h-5 w-5 mr-2" />
+                    Explore Projects
+                  </Link>
+                </Button>
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+      </section>
     </div>
-  )
+  );
 }

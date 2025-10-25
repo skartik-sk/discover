@@ -42,13 +42,13 @@ CREATE TABLE IF NOT EXISTS projects (
   website_url VARCHAR(500),
   github_url VARCHAR(500),
   category_id UUID REFERENCES categories(id) ON DELETE SET NULL,
-  user_id UUID REFERENCES users(id) ON DELETE CASCADE, -- Project owner
+  creator_id UUID REFERENCES users(id) ON DELETE CASCADE, -- Project owner
   is_featured BOOLEAN DEFAULT false,
   is_active BOOLEAN DEFAULT true,
   views INTEGER DEFAULT 0,
   created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
   updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
-  UNIQUE(user_id, slug) -- Ensure unique project names per user
+  UNIQUE(creator_id, slug) -- Ensure unique project names per user
 );
 
 -- Project tags junction table
@@ -333,9 +333,9 @@ CREATE POLICY "Users can delete own projects" ON projects FOR DELETE USING (auth
 
 -- Create indexes for better performance
 CREATE INDEX IF NOT EXISTS idx_projects_category_id ON projects(category_id);
-CREATE INDEX IF NOT EXISTS idx_projects_user_id ON projects(user_id);
+CREATE INDEX IF NOT EXISTS idx_projects_creator_id ON projects(user_id);
 CREATE INDEX IF NOT EXISTS idx_projects_slug ON projects(slug);
-CREATE INDEX IF NOT EXISTS idx_projects_user_slug ON projects(user_id, slug);
+CREATE INDEX IF NOT EXISTS idx_projects_user_slug ON projects(creator_id, slug);
 CREATE INDEX IF NOT EXISTS idx_projects_is_active ON projects(is_active);
 CREATE INDEX IF NOT EXISTS idx_projects_is_featured ON projects(is_featured);
 CREATE INDEX IF NOT EXISTS idx_project_tags_project_id ON project_tags(project_id);

@@ -1,49 +1,56 @@
 import type { Metadata } from "next";
-import { Inter, JetBrains_Mono, Space_Grotesk } from "next/font/google";
-import "./globals.css";
+import { Space_Grotesk } from "next/font/google";
+import "./globals-dark.css";
 import { AuthProvider } from "@/contexts/auth-context";
 import { RainbowProvider } from "@/components/providers/rainbow-provider";
-import { Header } from "@/components/layout/header";
-import { Footer } from "@/components/layout/footer";
 import { SkipLink } from "@/components/accessibility/skip-link";
 import { AccessibilityToolbar } from "@/components/accessibility/accessibility-toolbar";
 import ErrorBoundary from "@/components/ErrorBoundary";
+import { DarkHeader } from "@/components/layout/header-dark";
+import { DarkFooter } from "@/components/layout/footer-dark";
 
-const inter = Inter({
-  variable: "--font-inter",
+// Cabinet Grotesk alternative - Space Grotesk is similar and available on Google Fonts
+// Configured with weights matching Figma specs: 500, 700 (800/900 will fall back to 700)
+const cabinetGrotesk = Space_Grotesk({
+  variable: "--font-cabinet-grotesk",
   subsets: ["latin"],
-  display: "swap",
-});
-
-const jetbrainsMono = JetBrains_Mono({
-  variable: "--font-jetbrains-mono",
-  subsets: ["latin"],
-  display: "swap",
-});
-
-const spaceGrotesk = Space_Grotesk({
-  variable: "--font-space-grotesk",
-  subsets: ["latin"],
+  weight: ["500", "700"],
   display: "swap",
 });
 
 export const metadata: Metadata = {
-  title: "Discover - Web3 Projects & Innovations Platform",
-  description: "Discover and explore innovative Web3 projects. Submit your decentralized applications and connect with the blockchain community.",
-  keywords: ["web3 platform", "blockchain projects", "defi", "nft", "crypto", "decentralized applications", "blockchain innovation"],
-  authors: [{ name: "Discover Team" }],
+  title: "Discover - Web3 Innovation Platform | Showcase Your Projects",
+  description: "The leading platform for Web3 builders to showcase innovative decentralized applications. Discover DeFi protocols, NFT projects, DAOs, and blockchain solutions.",
+  keywords: [
+    "web3", "blockchain", "defi", "nft", "dao", "crypto", 
+    "decentralized apps", "smart contracts", "ethereum", "web3 projects",
+    "blockchain innovation", "cryptocurrency", "web3 showcase"
+  ],
+  authors: [{ name: "Discover Platform" }],
+  creator: "Discover Team",
+  publisher: "Discover Platform",
   openGraph: {
-    title: "Discover - Web3 Projects Platform",
-    description: "Discover and explore innovative Web3 projects. Submit your decentralized applications and connect with the blockchain community.",
     type: "website",
-    url: "https://discover.com",
+    locale: "en_US",
+    url: "https://discover-web3.com",
+    title: "Discover - Web3 Innovation Platform",
+    description: "Showcase and discover cutting-edge Web3 projects. Connect with builders, investors, and users in the decentralized ecosystem.",
     siteName: "Discover",
+    images: [
+      {
+        url: "/og-image.png",
+        width: 1200,
+        height: 630,
+        alt: "Discover - Web3 Innovation Platform",
+      },
+    ],
   },
   twitter: {
     card: "summary_large_image",
-    title: "Discover - Web3 Projects Platform",
-    description: "Discover and explore innovative Web3 projects. Submit your decentralized applications and connect with the blockchain community.",
-    creator: "@discover",
+    title: "Discover - Web3 Innovation Platform",
+    description: "Showcase and discover cutting-edge Web3 projects. Connect with builders, investors, and users.",
+    creator: "@discoverWeb3",
+    images: ["/og-image.png"],
   },
   robots: {
     index: true,
@@ -60,8 +67,14 @@ export const metadata: Metadata = {
     google: 'your-google-verification-code',
   },
   alternates: {
-    canonical: 'https://discover.com',
+    canonical: 'https://discover-web3.com',
   },
+  icons: {
+    icon: '/favicon.ico',
+    shortcut: '/favicon-16x16.png',
+    apple: '/apple-touch-icon.png',
+  },
+  manifest: '/site.webmanifest',
 };
 
 export default function RootLayout({
@@ -70,19 +83,20 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" suppressHydrationWarning>
+    <html lang="en" suppressHydrationWarning className="dark">
       <body
-        className={`${inter.variable} ${jetbrainsMono.variable} ${spaceGrotesk.variable} antialiased min-h-screen flex flex-col font-sans`}
+        className={`${cabinetGrotesk.variable} antialiased min-h-screen flex flex-col bg-background text-foreground`}
+        style={{ fontFamily: 'var(--font-cabinet-grotesk), sans-serif' }}
       >
         <SkipLink />
         <ErrorBoundary>
           <AuthProvider>
             <RainbowProvider>
-              <Header />
+              <DarkHeader />
               <main id="main-content" className="flex-1" role="main">
                 {children}
               </main>
-              <Footer />
+              <DarkFooter />
               <AccessibilityToolbar />
             </RainbowProvider>
           </AuthProvider>

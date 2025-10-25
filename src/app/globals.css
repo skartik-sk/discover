@@ -1,456 +1,340 @@
 @import "tailwindcss";
 
-/* Base Styles */
+/* FIGMA DESIGN SYSTEM - Exact Match */
+
+/* Base Styles - Dark Theme */
 @layer base {
   body {
-    @apply bg-white text-gray-900;
+    background-color: #151515;
+    color: white;
+    font-family: 'Cabinet Grotesk', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;
     font-feature-settings: "rlig" 1, "calt" 1;
-    antialiased: true;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
   }
 
-  /* Enhanced typography */
+  /* Figma Typography System */
   h1 {
-    @apply text-4xl md:text-5xl lg:text-6xl xl:text-7xl;
-    @apply font-bold tracking-tight;
-    line-height: 1.1;
-  }
-
-  h2 {
-    @apply text-3xl md:text-4xl lg:text-5xl;
-    @apply font-semibold tracking-tight;
-    line-height: 1.2;
-  }
-
-  h3 {
-    @apply text-2xl md:text-3xl lg:text-4xl;
-    @apply font-semibold;
-    line-height: 1.3;
-  }
-
-  h4 {
-    @apply text-xl md:text-2xl lg:text-3xl;
-    @apply font-semibold;
-    line-height: 1.4;
-  }
-}
-
-/* Component Styles */
-@layer components {
-  /* Container System */
-  .container-custom {
-    @apply mx-auto px-4 sm:px-6 lg:px-8 xl:px-12;
-    max-width: 1280px;
-  }
-
-  .container-wide {
-    @apply mx-auto px-4 sm:px-6 lg:px-8 xl:px-12;
-    max-width: 1440px;
-  }
-
-  /* Section Padding */
-  .section-padding {
-    @apply py-16 lg:py-24;
-  }
-
-  .section-padding-sm {
-    @apply py-12 lg:py-16;
-  }
-
-  .section-padding-xs {
-    @apply py-8 lg:py-12;
-  }
-
-  /* Professional Button Styles */
-  .showcase-btn {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    border-radius: 0.75rem;
-    padding: 0.75rem 1.5rem;
-    font-size: 0.875rem;
-    font-weight: 600;
-    transition: all 0.3s ease;
-    background: linear-gradient(135deg, #0ea5e9, #38bdf8);
-    color: white;
-    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
-  }
-
-  .showcase-btn:hover {
-    background: linear-gradient(135deg, #38bdf8, #10b981);
-    box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
-    transform: translateY(-2px);
-  }
-
-  .showcase-btn-secondary {
-    border: 2px solid #3b82f6;
-    background: transparent;
-    color: #3b82f6;
-    border-radius: 0.75rem;
-    padding: 0.75rem 1.5rem;
-    font-size: 0.875rem;
-    font-weight: 600;
-    transition: all 0.3s ease;
-    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
-  }
-
-  .showcase-btn-secondary:hover {
-    background: #3b82f6;
-    color: white;
-    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
-    transform: translateY(-2px);
-  }
-
-  .showcase-btn-outline {
-    border: 2px solid #d1d5db;
-    background: transparent;
-    color: #374151;
-    border-radius: 0.75rem;
-    padding: 0.75rem 1.5rem;
-    font-size: 0.875rem;
-    font-weight: 600;
-    transition: all 0.2s ease;
-  }
-
-  .showcase-btn-outline:hover {
-    border-color: #3b82f6;
-    color: #3b82f6;
-    background: #eff6ff;
-  }
-
-  .showcase-input {
-    border: 2px solid #e5e7eb;
-    border-radius: 0.75rem;
-    padding: 0.75rem 1rem;
-    font-size: 0.875rem;
-    transition: all 0.2s ease;
-    background: white;
-  }
-
-  .showcase-input:focus {
-    outline: none;
-    border-color: #3b82f6;
-    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
-  }
-
-  .showcase-input::placeholder {
-    color: #9ca3af;
-  }
-
-  /* Enhanced Shadow System */
-  .shadow-elevation-1 {
-    box-shadow: 0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24);
-  }
-
-  .shadow-elevation-2 {
-    box-shadow: 0 3px 6px rgba(0,0,0,0.15), 0 2px 4px rgba(0,0,0,0.12);
-  }
-
-  .shadow-elevation-3 {
-    box-shadow: 0 10px 20px rgba(0,0,0,0.15), 0 3px 6px rgba(0,0,0,0.10);
-  }
-
-  .shadow-elevation-4 {
-    box-shadow: 0 14px 28px rgba(0,0,0,0.25), 0 10px 10px rgba(0,0,0,0.22);
-  }
-
-  /* Professional Card Styles */
-  .showcase-card {
-    background: white;
-    border-radius: 1rem;
-    border: 1px solid #e5e7eb;
-    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
-    transition: all 0.3s ease;
-  }
-
-  .showcase-card:hover {
-    box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
-    transform: translateY(-8px);
-    border-color: #93c5fd;
-  }
-
-  .showcase-card-hover {
-    background: white;
-    border-radius: 1rem;
-    border: 2px solid #f3f4f6;
-    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
-    transition: all 0.3s ease;
-    overflow: hidden;
-  }
-
-  .showcase-card-hover:hover {
-    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
-    transform: translateY(-12px);
-    border-color: #60a5fa;
-  }
-
-  .showcase-project-card {
-    background: white;
-    border-radius: 1rem;
-    border: 2px solid #f3f4f6;
-    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
-    position: relative;
-    transition: all 0.3s ease;
-    overflow: hidden;
-  }
-
-  .showcase-project-card:hover {
-    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
-    transform: translateY(-12px);
-    border-color: #60a5fa;
-  }
-
-  .showcase-project-card::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    height: 4px;
-    background: linear-gradient(90deg, #0ea5e9, #38bdf8, #10b981);
-  }
-
-  /* Professional Navigation Styles */
-  .showcase-nav {
-    position: sticky;
-    top: 0;
-    z-index: 50;
-    width: 100%;
-    border-bottom: 1px solid #e5e7eb;
-    background: rgba(255, 255, 255, 0.95);
-    backdrop-filter: blur(16px);
-    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
-  }
-
-  .showcase-nav-link {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    border-radius: 0.75rem;
-    padding: 0.5rem 1rem;
-    font-size: 0.875rem;
-    font-weight: 500;
-    transition: all 0.2s ease;
-    color: #374151;
-  }
-
-  .showcase-nav-link:hover {
-    background: #eff6ff;
-    color: #2563eb;
-  }
-
-  .showcase-nav-link.active {
-    background: #3b82f6;
-    color: white;
-    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
-  }
-
-  /* Professional Hero Section */
-  .showcase-hero {
-    position: relative;
-    overflow: hidden;
-    background: linear-gradient(135deg, #f0f9ff 0%, #f8faff 50%, #ffffff 100%);
-  }
-
-  .showcase-hero::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background:
-      radial-gradient(circle at 20% 50%, rgba(14, 165, 233, 0.1) 0%, transparent 50%),
-      radial-gradient(circle at 80% 20%, rgba(56, 189, 248, 0.08) 0%, transparent 50%),
-      radial-gradient(circle at 40% 80%, rgba(16, 185, 129, 0.06) 0%, transparent 50%);
-    pointer-events: none;
-  }
-
-  /* Professional Badge Styles */
-  .showcase-badge {
-    display: inline-flex;
-    align-items: center;
-    border-radius: 9999px;
-    border: 1px solid rgba(59, 130, 246, 0.2);
-    padding: 0.25rem 0.75rem;
-    font-size: 0.75rem;
-    font-weight: 700;
-    transition: all 0.2s ease;
-    background: #3b82f6;
-    color: white;
-    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
-  }
-
-  .showcase-badge:hover {
-    box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
-  }
-
-  /* Professional Stats Cards */
-  .showcase-stat-card {
-    background: white;
-    border-radius: 1rem;
-    border: 1px solid #f3f4f6;
-    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
-    text-align: center;
-    transition: all 0.3s ease;
-  }
-
-  .showcase-stat-card:hover {
-    transform: translateY(-4px);
-    box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
-  }
-
-  /* Professional Category Cards */
-  .showcase-category-card {
-    background: white;
-    border-radius: 1rem;
-    border: 2px solid #f3f4f6;
-    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
-    cursor: pointer;
-    transition: all 0.3s ease;
-    position: relative;
-    overflow: hidden;
-  }
-
-  .showcase-category-card:hover {
-    transform: translateY(-12px);
-    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
-    border-color: #60a5fa;
-    background: linear-gradient(135deg, #ffffff 0%, #f8fafc 100%);
-  }
-
-  .showcase-category-card::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    height: 3px;
-    background: linear-gradient(90deg, #0ea5e9, #38bdf8, #10b981);
-    opacity: 0;
-    transition: opacity 0.3s ease;
-  }
-
-  .showcase-category-card:hover::before {
-    opacity: 1;
-  }
-
-  .showcase-category-card .icon-wrapper {
-    width: 4rem;
-    height: 4rem;
-    border-radius: 1rem;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 1.875rem;
-    margin: 0 auto 1rem;
-    transition: all 0.3s ease;
-  }
-
-  .showcase-category-card:hover .icon-wrapper {
-    transform: scale(1.15) rotate(5deg);
-    box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.15), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
-  }
-
-  /* Professional Footer */
-  .showcase-footer {
-    background: linear-gradient(to bottom right, #f9fafb, #ffffff);
-    border-top: 2px solid #f3f4f6;
-  }
-}
-
-/* Utility Classes */
-@layer utilities {
-  /* Text Gradients */
-  .text-gradient-primary {
-    background: linear-gradient(135deg, #0ea5e9, #38bdf8);
-    -webkit-background-clip: text;
-    background-clip: text;
-    -webkit-text-fill-color: transparent;
-    color: transparent;
-  }
-
-  .text-gradient-accent {
-    background: linear-gradient(135deg, #38bdf8, #10b981);
-    -webkit-background-clip: text;
-    background-clip: text;
-    -webkit-text-fill-color: transparent;
-    color: transparent;
-  }
-
-  /* Background Gradients */
-  .bg-gradient-hero {
-    background: linear-gradient(135deg, #f0f9ff 0%, #f8faff 50%, #ffffff 100%);
-  }
-
-  .bg-gradient-subtle {
-    background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
-  }
-
-  /* Typography Utilities */
-  .font-display {
-    font-family: var(--font-space-grotesk), var(--font-inter), sans-serif;
+    font-size: 64px;
+    font-weight: 900;
+    text-transform: uppercase;
+    line-height: 0.9375;
     letter-spacing: -0.02em;
   }
 
-  /* Professional Animations */
-  .animate-fade-in-up {
-    animation: fadeInUp 0.6s ease-out forwards;
+  h2 {
+    font-size: 44px;
+    font-weight: 900;
+    text-transform: uppercase;
+    line-height: 0.909;
+    letter-spacing: -0.02em;
   }
 
-  .animate-slide-in-left {
-    animation: slideInLeft 0.6s ease-out forwards;
+  h3 {
+    font-size: 24px;
+    font-weight: 800;
+    text-transform: capitalize;
+    line-height: 1.25;
   }
 
-  .animate-scale-in {
-    animation: scaleIn 0.4s ease-out forwards;
+  h4 {
+    font-size: 20px;
+    font-weight: 700;
+    text-transform: capitalize;
+    line-height: 1.5;
   }
 
-  .animate-float {
-    animation: float 3s ease-in-out infinite;
+  p {
+    font-size: 18px;
+    font-weight: 500;
+    line-height: 1.556;
   }
 
-  .animate-pulse-slow {
-    animation: pulseSlow 2s ease-in-out infinite;
+  /* Scrollbar Styling */
+  ::-webkit-scrollbar {
+    width: 10px;
+    height: 10px;
+  }
+
+  ::-webkit-scrollbar-track {
+    background-color: #1B1B1B;
+  }
+
+  ::-webkit-scrollbar-thumb {
+    background-color: #FFDF00;
+    border-radius: 9999px;
+  }
+
+  ::-webkit-scrollbar-thumb:hover {
+    background-color: #FFE933;
   }
 }
 
-/* Keyframe Animations */
-@keyframes fadeInUp {
-  from {
-    transform: translateY(30px);
-    opacity: 0;
+/* Component Styles - Figma Design System */
+@layer components {
+  /* Container System - EXACT Figma Specs */
+  .container-custom {
+    margin: 0 auto;
+    padding-left: 1rem;
+    padding-right: 1rem;
+    max-width: 1240px;
   }
-  to {
-    transform: translateY(0);
-    opacity: 1;
+
+  @media (min-width: 768px) {
+    .container-custom {
+      padding-left: 100px;
+      padding-right: 100px;
+    }
+  }
+
+  .container-wide {
+    margin: 0 auto;
+    padding-left: 1rem;
+    padding-right: 1rem;
+    max-width: 1440px;
+  }
+
+  /* Section Padding - Figma Specs: 100px vertical */
+  .section-padding {
+    padding: 100px 0;
+  }
+
+  .section-padding-sm {
+    padding: 64px 0;
+  }
+
+  .section-padding-xs {
+    padding: 40px 0;
+  }
+
+  /* Hide Scrollbar - For carousel */
+  .scrollbar-hide {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+
+  .scrollbar-hide::-webkit-scrollbar {
+    display: none;
+  }
+
+  /* Figma Button Styles - Exact Match */
+  .figma-btn-primary {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 18px 32px;
+    background: #FFDF00;
+    color: #151515;
+    font-size: 16px;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 1.24%;
+    border-radius: 8px;
+    transition: all 0.2s ease;
+    border: none;
+    cursor: pointer;
+  }
+
+  .figma-btn-primary:hover {
+    background: #FFE933;
+    transform: translateY(-1px);
+  }
+
+  .figma-btn-secondary {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 18px 32px;
+    background: #151515;
+    color: #FFDF00;
+    font-size: 16px;
+    font-weight: 800;
+    text-transform: uppercase;
+    border-radius: 8px;
+    transition: all 0.2s ease;
+    border: 2px solid #FFDF00;
+    cursor: pointer;
+  }
+
+  .figma-btn-secondary:hover {
+    background: #1B1B1B;
+    transform: translateY(-1px);
+  }
+
+  /* Figma Card - Shadow exact match: 0px 8px 100px rgba(88,112,120,0.1) */
+  .figma-card {
+    background: white;
+    border-radius: 24px;
+    box-shadow: 0px 8px 100px rgba(88, 112, 120, 0.1);
+    transition: all 0.3s ease;
+  }
+
+  .figma-card:hover {
+    transform: translateY(-8px);
+    box-shadow: 0px 16px 120px rgba(88, 112, 120, 0.15);
+  }
+
+  /* Figma Service Card - 400x300px */
+  .figma-service-card {
+    background: #1B1B1B;
+    border-radius: 24px;
+    padding: 40px;
+    width: 100%;
+    max-width: 400px;
+    height: 300px;
+    transition: all 0.3s ease;
+  }
+
+  .figma-service-card.yellow {
+    background: #FFDF00;
+  }
+
+  .figma-service-card:hover {
+    transform: translateY(-8px);
+  }
+
+  /* Figma Resource Card - 295x318px */
+  .figma-resource-card {
+    background: white;
+    border-radius: 16px;
+    overflow: hidden;
+    width: 100%;
+    max-width: 295px;
+    box-shadow: 0px 8px 100px rgba(88, 112, 120, 0.1);
+    transition: all 0.3s ease;
+  }
+
+  .figma-resource-card:hover {
+    transform: translateY(-8px);
+  }
+
+  /* Figma Badge - Pill shape */
+  .figma-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 12px;
+    padding: 10px 24px;
+    background: rgba(255, 223, 0, 0.08);
+    border-radius: 50px;
+  }
+
+  .figma-badge-icon {
+    width: 18px;
+    height: 18px;
+    color: #FFDF00;
+  }
+
+  .figma-badge-text {
+    font-size: 18px;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.889em;
+    color: #FFDF00;
+  }
+
+  /* Figma Navigation */
+  .figma-nav {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 50;
+    background: #151515;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  }
+
+  .figma-nav-link {
+    font-size: 20px;
+    font-weight: 500;
+    text-transform: capitalize;
+    letter-spacing: 1.7em;
+    color: white;
+    transition: color 0.2s ease;
+  }
+
+  .figma-nav-link:hover {
+    color: #FFDF00;
+  }
+
+  .figma-nav-link.active {
+    font-weight: 700;
+    color: #FFDF00;
+  }
+
+  /* Figma Footer */
+  .figma-footer {
+    background: #1B1B1B;
+    padding: 48px 0;
+  }
+
+  /* Decorative Elements */
+  .figma-dashed-circle {
+    stroke: white;
+    stroke-width: 2;
+    stroke-dasharray: 8 8;
+    fill: none;
   }
 }
 
-@keyframes slideInLeft {
-  from {
-    opacity: 0;
-    transform: translateX(-30px);
+/* Utility Classes - Figma Specific */
+@layer utilities {
+  /* Text Styles from Figma */
+  .text-figma-hero {
+    font-size: 64px;
+    font-weight: 900;
+    line-height: 0.9375;
+    text-transform: uppercase;
+    letter-spacing: -0.02em;
   }
-  to {
-    opacity: 1;
-    transform: translateX(0);
+
+  .text-figma-h2 {
+    font-size: 44px;
+    font-weight: 900;
+    line-height: 0.909;
+    text-transform: uppercase;
+  }
+
+  .text-figma-h3 {
+    font-size: 24px;
+    font-weight: 800;
+    line-height: 1.25;
+    text-transform: capitalize;
+  }
+
+  .text-figma-body {
+    font-size: 20px;
+    font-weight: 500;
+    line-height: 1.55;
+  }
+
+  .text-figma-small {
+    font-size: 18px;
+    font-weight: 500;
+    line-height: 1.556;
+  }
+
+  /* Figma Animations */
+  .animate-figma-float {
+    animation: figmaFloat 3s ease-in-out infinite;
+  }
+
+  .animate-figma-pulse {
+    animation: figmaPulse 2s ease-in-out infinite;
+  }
+
+  /* Scrollbar utilities */
+  .scrollbar-hide {
+    -ms-overflow-style: none;  /* IE and Edge */
+    scrollbar-width: none;  /* Firefox */
+  }
+
+  .scrollbar-hide::-webkit-scrollbar {
+    display: none;  /* Chrome, Safari, Opera */
   }
 }
 
-@keyframes scaleIn {
-  from {
-    opacity: 0;
-    transform: scale(0.9);
-  }
-  to {
-    opacity: 1;
-    transform: scale(1);
-  }
-}
-
-@keyframes float {
+/* Figma Keyframes */
+@keyframes figmaFloat {
   0%, 100% {
     transform: translateY(0px);
   }
@@ -459,25 +343,13 @@
   }
 }
 
-@keyframes pulseSlow {
+@keyframes figmaPulse {
   0%, 100% {
     opacity: 1;
+    transform: scale(1);
   }
   50% {
     opacity: 0.8;
-  }
-}
-
-/* Print Styles */
-@media print {
-  .showcase-card {
-    box-shadow: none !important;
-    border: 1px solid #000 !important;
-  }
-
-  .showcase-btn {
-    background: #fff !important;
-    color: #000 !important;
-    border: 1px solid #000 !important;
+    transform: scale(1.05);
   }
 }

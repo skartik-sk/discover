@@ -1,96 +1,179 @@
-'use client'
+'use client';'use client'
 
-import Link from 'next/link'
-import { useAuth } from '@/contexts/auth-context'
-import { Button } from '@/components/ui/button'
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
+
+
+import Link from 'next/link';import Link from 'next/link'
+
+import { usePathname } from 'next/navigation';import { useAuth } from '@/contexts/auth-context'
+
+import { cn } from '@/lib/utils';import { FigmaButton } from '@/components/figma-ui'
+
+import { FigmaButton } from '@/components/figma-ui';import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
+
 import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu'
-import { WalletConnectButton } from '@/components/wallet/wallet-connect-button'
-import { NavigationMenu, NavigationMenuContent, NavigationMenuItem, NavigationMenuLink, NavigationMenuList, NavigationMenuTrigger } from '@/components/ui/navigation-menu'
-import { Badge } from '@/components/ui/badge'
-import {
-  Search,
-  PlusCircle,
-  User,
-  Settings,
-  LogOut,
-  Rocket,
-  Trophy,
-  Star,
-  Menu,
-  X
-} from 'lucide-react'
-import { useState, useEffect } from 'react'
-export function Header() {
-  const { user, session, loading, signOut } = useAuth()
-  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
-  const [isScrolled, setIsScrolled] = useState(false)
 
-  // Handle scroll effect
-  useEffect(() => {
-    const handleScroll = () => {
-      setIsScrolled(window.scrollY > 10)
-    }
+/**  DropdownMenu,
 
-    window.addEventListener('scroll', handleScroll)
-    return () => window.removeEventListener('scroll', handleScroll)
-  }, [])
+ * Header Component - Matches Figma Navigation Design  DropdownMenuContent,
 
-  // Close mobile menu when clicking outside
-  useEffect(() => {
-    const handleClickOutside = (event: MouseEvent) => {
-      if (isMobileMenuOpen && !(event.target as Element).closest('.mobile-menu')) {
-        setIsMobileMenuOpen(false)
-      }
-    }
+ * Fixed header with logo, nav links, and contact button  DropdownMenuItem,
 
-    document.addEventListener('mousedown', handleClickOutside)
-    return () => document.removeEventListener('mousedown', handleClickOutside)
-  }, [isMobileMenuOpen])
+ * Height: 56px, Background: #151515  DropdownMenuLabel,
+
+ */  DropdownMenuSeparator,
+
+export default function Header() {  DropdownMenuTrigger,
+
+  const pathname = usePathname();} from '@/components/ui/dropdown-menu'
+
+import { Menu, X, User, LogOut, Settings } from 'lucide-react'
+
+  const navLinks = [import { useState, useEffect } from 'react'
+
+    { href: '/', label: 'home' },import { usePathname } from 'next/navigation'
+
+    { href: '/projects?filter=plugins', label: 'plugins' },
+
+    { href: '/projects?filter=themes', label: 'themes' },/**
+
+    { href: '/projects?filter=templates', label: 'templates' }, * Header - Matches Figma navigation design
+
+    { href: '/projects', label: 'blog' }, * Height: 56px, Fixed position, Dark background (#151515)
+
+    { href: '/support', label: 'support' }, * Nav links: home, plugins, themes, templates, blog, support
+
+  ]; * Contact button: Yellow background, uppercase
+
+ */
+
+  const isActive = (href: string) => {export function Header() {
+
+    if (href === '/') return pathname === '/';  const { user, session, loading, signOut } = useAuth()
+
+    return pathname.startsWith(href);  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
+
+  };  const pathname = usePathname()
+
+
+
+  return (  // Close mobile menu when clicking outside
+
+    <header className="fixed top-0 left-0 right-0 z-50 bg-[#151515] border-b border-white/10">  useEffect(() => {
+
+      <div className="max-w-[1440px] mx-auto px-[100px]">    const handleClickOutside = (event: MouseEvent) => {
+
+        <div className="flex items-center justify-between h-[56px]">      if (isMobileMenuOpen && !(event.target as Element).closest('.mobile-menu')) {
+
+          {/* Logo */}        setIsMobileMenuOpen(false)
+
+          <Link href="/" className="flex items-center">      }
+
+            <div className="w-[102px] h-[25px] bg-white/10 rounded flex items-center justify-center">    }
+
+              <span className="text-white font-bold text-sm uppercase tracking-wider">
+
+                WPCone    document.addEventListener('mousedown', handleClickOutside)
+
+              </span>    return () => document.removeEventListener('mousedown', handleClickOutside)
+
+            </div>  }, [isMobileMenuOpen])
+
+          </Link>
 
   const handleSignOut = async () => {
-    await signOut()
-    setIsMobileMenuOpen(false)
-  }
+
+          {/* Desktop Navigation */}    await signOut()
+
+          <nav className="hidden md:flex items-center gap-8">    setIsMobileMenuOpen(false)
+
+            {navLinks.map((link) => (  }
+
+              <Link
+
+                key={link.href}  // Navigation links matching Figma
+
+                href={link.href}  const navLinks = [
+
+                className={cn(    { href: '/', label: 'home' },
+
+                  'text-[20px] font-bold capitalize leading-[1.5] transition-colors duration-200',    { href: '/projects', label: 'projects' },
+
+                  {    { href: '/categories', label: 'categories' },
+
+                    'text-[#FFDF00]': isActive(link.href),    { href: '/submit', label: 'submit' },
+
+                    'text-white hover:text-[#FFDF00]': !isActive(link.href),    { href: '/dashboard', label: 'dashboard' },
+
+                  }  ]
+
+                )}
+
+              >  const isActive = (href: string) => {
+
+                {link.label}    if (href === '/') return pathname === '/'
+
+              </Link>    return pathname.startsWith(href)
+
+            ))}  }
+
+          </nav>
 
   return (
-    <header className={`showcase-nav transition-all duration-300 ${isScrolled ? 'shadow-elevation-3 bg-background/98' : 'shadow-elevation-1 bg-background/95'}`}>
-      <div className="container-custom flex h-16 items-center justify-between">
-        {/* Enhanced Logo */}
-        <Link href="/" className="flex items-center space-x-3 group">
-          {/* <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-white border border-gray-200 shadow-sm group-hover:shadow-md transition-all duration-300 group-hover:scale-105"> */}
-            <img
-              src="/logo.png" alt="Discover Logo"
-              className="h-10 object-contain"
-            />
-          {/* </div> */}
-        </Link>
 
-        {/* Enhanced Desktop Navigation */}
-        <NavigationMenu className="hidden md:flex">
-          <NavigationMenuList className="space-x-1">
-            <NavigationMenuItem>
-              <NavigationMenuTrigger className="showcase-nav-link px-4 py-2">
-                Explore
-              </NavigationMenuTrigger>
-              <NavigationMenuContent className="bg-white border-2 border-gray-200 shadow-elevation-3 rounded-xl">
-                <div className="grid gap-3 p-6 w-[400px] bg-white">
-                  <NavigationMenuLink asChild>
-                    <Link href="/projects" className="flex items-center space-x-3 p-3 rounded-xl hover:bg-primary/10 transition-colors duration-200 group">
-                      <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-primary/10 text-primary group-hover:bg-primary group-hover:text-white transition-colors duration-200">
-                        <Search className="h-5 w-5" />
-                      </div>
-                      <div>
-                        <div className="font-semibold text-gray-900 group-hover:text-primary">All Projects</div>
-                        <div className="text-sm text-gray-600">Browse all creative work</div>
-                      </div>
+          {/* Contact Button */}    <header className="fixed top-0 left-0 right-0 z-50 bg-[#151515] border-b border-white/10">
+
+          <div className="hidden md:block">      <div className="max-w-[1440px] mx-auto px-[100px] h-[56px] flex items-center justify-between">
+
+            <FigmaButton size="sm" variant="primary" asChild>        {/* Logo */}
+
+              <Link href="/submit">Contact</Link>        <Link href="/" className="flex items-center">
+
+            </FigmaButton>          <div className="w-[102px] h-[25px] bg-white/10 rounded flex items-center justify-center">
+
+          </div>            <span className="text-white text-[14px] font-bold uppercase">Discover</span>
+
+          </div>
+
+          {/* Mobile Menu Button */}        </Link>
+
+          <button
+
+            className="md:hidden flex items-center justify-center w-10 h-10 text-white"        {/* Desktop Navigation */}
+
+            aria-label="Menu"        <nav className="hidden md:flex items-center gap-8">
+
+          >          <NavigationMenuList className="space-x-1">
+
+            <svg width="24" height="24" fill="none" viewBox="0 0 24 24">            <NavigationMenuItem>
+
+              <path              <NavigationMenuTrigger className="showcase-nav-link px-4 py-2">
+
+                stroke="currentColor"                Explore
+
+                strokeLinecap="round"              </NavigationMenuTrigger>
+
+                strokeLinejoin="round"              <NavigationMenuContent className="bg-white border-2 border-gray-200 shadow-elevation-3 rounded-xl">
+
+                strokeWidth="2"                <div className="grid gap-3 p-6 w-[400px] bg-white">
+
+                d="M4 6h16M4 12h16M4 18h16"                  <NavigationMenuLink asChild>
+
+              />                    <Link href="/projects" className="flex items-center space-x-3 p-3 rounded-xl hover:bg-primary/10 transition-colors duration-200 group">
+
+            </svg>                      <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-primary/10 text-primary group-hover:bg-primary group-hover:text-white transition-colors duration-200">
+
+          </button>                        <Search className="h-5 w-5" />
+
+        </div>                      </div>
+
+      </div>                      <div>
+
+    </header>                        <div className="font-semibold text-gray-900 group-hover:text-primary">All Projects</div>
+
+  );                        <div className="text-sm text-gray-600">Browse all creative work</div>
+
+}                      </div>
+
                     </Link>
                   </NavigationMenuLink>
                   <NavigationMenuLink asChild>

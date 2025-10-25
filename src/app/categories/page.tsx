@@ -1,215 +1,244 @@
-'use client'
+"use client";
 
-import { useState, useEffect } from 'react'
-import { Button } from '@/components/ui/button'
-import { Card, CardContent } from '@/components/ui/card'
-import { Badge } from '@/components/ui/badge'
-import { Input } from '@/components/ui/input'
+import { useState, useEffect } from "react";
+import { Input } from "@/components/ui/input";
+import { Badge } from "@/components/ui/badge";
 import {
   Search,
-  Filter,
-  Grid,
-  List,
   ArrowRight,
-  Rocket
-} from 'lucide-react'
-import Link from 'next/link'
-import { Skeleton } from '@/components/ui/skeleton'
-import { CategoryCard } from '@/components/cards/category-card'
+  Rocket,
+  TrendingUp,
+  Sparkles,
+  Zap,
+  X,
+} from "lucide-react";
+import Link from "next/link";
 
 interface Category {
-  id: string
-  slug: string
-  name: string
-  description: string
-  icon: string
-  color: string
-  gradient: string
-  projects_count: number
-  is_active: boolean
-  created_at: string
+  id: string;
+  slug: string;
+  name: string;
+  description: string;
+  icon: string;
+  color: string | null;
+  gradient: string | null;
+  projects_count: number;
+  is_active: boolean;
 }
 
 export default function CategoriesPage() {
-  const [categories, setCategories] = useState<Category[]>([])
-  const [loading, setLoading] = useState(true)
-  const [searchQuery, setSearchQuery] = useState('')
-  const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid')
-  const [filteredCategories, setFilteredCategories] = useState<Category[]>([])
+  const [categories, setCategories] = useState<Category[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [searchQuery, setSearchQuery] = useState("");
+  const [filteredCategories, setFilteredCategories] = useState<Category[]>([]);
 
   useEffect(() => {
-    fetchCategories()
-  }, [])
+    fetchCategories();
+  }, []);
 
   useEffect(() => {
-    const filtered = categories.filter(category =>
-      category.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      category.description.toLowerCase().includes(searchQuery.toLowerCase())
-    )
-    setFilteredCategories(filtered)
-  }, [categories, searchQuery])
+    const filtered = categories.filter(
+      (category) =>
+        category.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        category.description.toLowerCase().includes(searchQuery.toLowerCase()),
+    );
+    setFilteredCategories(filtered);
+  }, [categories, searchQuery]);
 
   const fetchCategories = async () => {
     try {
-      const response = await fetch('/api/categories')
-      if (!response.ok) throw new Error('Failed to fetch categories')
-
-      const data = await response.json()
-      setCategories(data)
-      setFilteredCategories(data)
+      const response = await fetch("/api/categories");
+      if (!response.ok) throw new Error("Failed to fetch categories");
+      const data = await response.json();
+      setCategories(data);
+      setFilteredCategories(data);
     } catch (error) {
-      console.error('Error fetching categories:', error)
+      console.error("Error fetching categories:", error);
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
-  }
+  };
+
+  const totalProjects = categories.reduce(
+    (acc, cat) => acc + cat.projects_count,
+    0,
+  );
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-white">
-        <div className="container-custom py-8">
-          <div className="max-w-6xl mx-auto">
-            <Skeleton className="h-8 w-48 mb-4" />
-            <Skeleton className="h-10 w-full max-w-md mb-8" />
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {[...Array(6)].map((_, i) => (
-                <Card key={i} className="p-6 border border-gray-200">
-                  <Skeleton className="h-8 w-8 mb-4 rounded-full" />
-                  <Skeleton className="h-6 w-32 mb-2" />
-                  <Skeleton className="h-4 w-full mb-4" />
-                  <Skeleton className="h-4 w-20" />
-                </Card>
-              ))}
-            </div>
+      <div className="min-h-screen bg-[#0A0A0A] flex items-center justify-center">
+        <div className="text-center">
+          <div className="relative w-24 h-24 mx-auto mb-8">
+            <div className="absolute inset-0 border-8 border-[#FFDF00]/20 rounded-full"></div>
+            <div className="absolute inset-0 border-8 border-[#FFDF00] border-t-transparent rounded-full animate-spin"></div>
           </div>
+          <p className="text-white/60 text-xl font-bold uppercase tracking-wider">
+            Loading Categories...
+          </p>
         </div>
       </div>
-    )
+    );
   }
 
   return (
-    <div className="min-h-screen bg-background">
-      {/* Header Section */}
-      <section className="showcase-hero section-padding-xs">
-        <div className="container-custom">
+    <div className="min-h-screen bg-[#0A0A0A]">
+      {/* Hero Section */}
+      <section className="relative pt-32 pb-20 md:pt-40 md:pb-28 overflow-hidden bg-gradient-to-b from-[#151515] via-[#0A0A0A] to-[#0A0A0A]">
+        {/* Background effects */}
+        <div className="absolute inset-0 overflow-hidden pointer-events-none">
+          <div className="absolute top-20 left-1/4 w-[500px] h-[500px] bg-[#FFDF00]/5 rounded-full blur-[120px]" />
+          <div className="absolute top-1/3 right-1/4 w-[600px] h-[600px] bg-cyan-500/5 rounded-full blur-[150px]" />
+        </div>
+
+        <div className="container-custom relative z-10">
           <div className="max-w-4xl mx-auto text-center">
             {/* Badge */}
-            <div className="animate-float inline-flex items-center mb-6">
-              <Badge className="showcase-badge">
-                <Filter className="w-3 h-3 mr-2" />
+            <div className="inline-flex items-center gap-2 px-6 py-3 rounded-full bg-[#FFDF00]/10 border border-[#FFDF00]/20 backdrop-blur-sm mb-8">
+              <Sparkles className="w-5 h-5 text-[#FFDF00]" />
+              <span className="text-sm font-bold text-[#FFDF00] uppercase tracking-wider">
                 Browse by Category
-              </Badge>
+              </span>
             </div>
 
-            {/* Heading */}
-            <h1 className="text-4xl md:text-5xl lg:text-6xl font-display font-bold text-gradient-primary mb-6 animate-fade-in-up">
+            {/* Main Heading */}
+            <h1 className="text-[3.5rem] lg:text-[5rem] font-black uppercase leading-[0.9] text-white mb-6 tracking-tight">
               Explore
               <br />
-              <span className="text-gradient-accent">Web3 Categories</span>
+              <span className="text-[#FFDF00]">Web3 Categories</span>
             </h1>
 
             {/* Description */}
-            <p className="text-xl text-gray-600 mb-8 max-w-2xl mx-auto leading-relaxed">
-              Discover innovative Web3 projects organized by category. From DeFi to NFTs, find what interests you.
+            <p className="text-xl lg:text-2xl text-white/60 font-medium mb-12 leading-relaxed max-w-2xl mx-auto">
+              Discover innovative Web3 projects organized by category. From DeFi
+              to NFTs, find what interests you.
             </p>
 
-            {/* Search bar */}
-            <div className="max-w-2xl mx-auto relative mb-8">
-              <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400 h-5 w-5" />
-              <Input
-                type="text"
-                placeholder="Search categories..."
-                className="showcase-input pl-12 pr-4 py-4 text-base"
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-              />
+            {/* Search Bar */}
+            <div className="max-w-2xl mx-auto mb-12">
+              <div className="relative">
+                <Search className="absolute left-6 top-1/2 -translate-y-1/2 h-6 w-6 text-white/40" />
+                <Input
+                  type="text"
+                  placeholder="Search categories..."
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  className="h-16 bg-[#151515] border-2 border-white/10 text-white placeholder:text-white/40 pl-16 pr-16 rounded-2xl text-lg font-medium focus:border-[#FFDF00] transition-all"
+                />
+                {searchQuery && (
+                  <button
+                    onClick={() => setSearchQuery("")}
+                    className="absolute right-6 top-1/2 -translate-y-1/2 text-white/40 hover:text-white transition-colors"
+                  >
+                    <X className="h-6 w-6" />
+                  </button>
+                )}
+              </div>
             </div>
 
             {/* Stats */}
-            <div className="flex flex-wrap justify-center gap-8 text-base">
-              <div className="flex items-center gap-2">
-                <div className="w-2 h-2 bg-blue-500 rounded-full animate-pulse"></div>
-                <span className="font-semibold text-gray-900">{filteredCategories.length}</span>
-                <span className="text-gray-600">Categories</span>
+            <div className="flex flex-wrap justify-center gap-12">
+              <div className="text-center">
+                <div className="flex items-center justify-center gap-2 mb-2">
+                  <div className="w-3 h-3 bg-[#FFDF00] rounded-full animate-pulse"></div>
+                  <div className="text-5xl font-black text-white">
+                    {filteredCategories.length}
+                  </div>
+                </div>
+                <div className="text-sm font-bold text-white/60 uppercase tracking-wide">
+                  Categories
+                </div>
               </div>
-              <div className="flex items-center gap-2">
-                <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
-                <span className="font-semibold text-gray-900">{categories.reduce((acc, cat) => acc + cat.projects_count, 0)}</span>
-                <span className="text-gray-600">Projects</span>
+              <div className="text-center">
+                <div className="flex items-center justify-center gap-2 mb-2">
+                  <div className="w-3 h-3 bg-cyan-500 rounded-full animate-pulse"></div>
+                  <div className="text-5xl font-black text-white">
+                    {totalProjects}
+                  </div>
+                </div>
+                <div className="text-sm font-bold text-white/60 uppercase tracking-wide">
+                  Projects
+                </div>
               </div>
             </div>
           </div>
         </div>
       </section>
 
-      {/* Breadcrumb and Controls */}
-      <section className="py-4 bg-white border-b-2 border-gray-100">
-        <div className="container-custom">
-          <div className="flex flex-col sm:flex-row justify-between items-center gap-4">
-            <div className="flex items-center space-x-2 text-sm text-gray-600">
-              <Link href="/" className="hover:text-blue-600 transition-colors font-medium">
-                Home
-              </Link>
-              <ArrowRight className="h-3 w-3" />
-              <span className="font-semibold text-gray-900">Categories</span>
-            </div>
-
-            {/* View Mode Toggle */}
-            <div className="flex items-center gap-2 bg-gray-100 rounded-xl p-1 shadow-inner">
-              <Button
-                variant={viewMode === 'grid' ? 'default' : 'ghost'}
-                size="sm"
-                onClick={() => setViewMode('grid')}
-                className={`rounded-lg transition-all ${viewMode === 'grid' ? 'bg-white shadow-elevation-2' : 'text-gray-600 hover:text-gray-900 hover:bg-gray-50'}`}
-              >
-                <Grid className="h-4 w-4 mr-1" />
-                Grid
-              </Button>
-              <Button
-                variant={viewMode === 'list' ? 'default' : 'ghost'}
-                size="sm"
-                onClick={() => setViewMode('list')}
-                className={`rounded-lg transition-all ${viewMode === 'list' ? 'bg-white shadow-elevation-2' : 'text-gray-600 hover:text-gray-900 hover:bg-gray-50'}`}
-              >
-                <List className="h-4 w-4 mr-1" />
-                List
-              </Button>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* Categories Grid/List */}
-      <section className="section-padding bg-gradient-to-b from-white to-gray-50">
+      {/* Categories Grid */}
+      <section className="py-20 lg:py-28">
         <div className="container-custom">
           {filteredCategories.length === 0 ? (
-            <div className="text-center py-20">
-              <div className="inline-flex items-center justify-center w-20 h-20 bg-gradient-to-br from-gray-100 to-gray-200 rounded-full mb-6">
-                <Filter className="h-10 w-10 text-gray-500" />
+            <div className="relative overflow-hidden bg-[#151515] rounded-3xl p-20 text-center border-2 border-dashed border-white/10 max-w-2xl mx-auto">
+              <div className="absolute inset-0 bg-gradient-to-br from-[#FFDF00]/5 to-transparent"></div>
+              <div className="relative z-10">
+                <div className="w-24 h-24 mx-auto mb-8 bg-gradient-to-br from-[#FFDF00]/20 to-transparent rounded-3xl flex items-center justify-center">
+                  <Search className="h-12 w-12 text-[#FFDF00]/50" />
+                </div>
+                <h3 className="text-3xl font-black text-white mb-4 uppercase">
+                  No Categories Found
+                </h3>
+                <p className="text-white/60 mb-10 max-w-md mx-auto text-lg leading-relaxed">
+                  Try adjusting your search terms to find what you're looking
+                  for.
+                </p>
+                <button
+                  onClick={() => setSearchQuery("")}
+                  className="inline-flex items-center justify-center h-14 px-8 bg-[#FFDF00] hover:bg-[#FFE94D] text-black font-black uppercase text-sm tracking-wider rounded-full transition-all duration-300 transform hover:scale-105"
+                >
+                  Clear Search
+                </button>
               </div>
-              <h3 className="text-2xl font-bold mb-3 text-gray-900">No categories found</h3>
-              <p className="text-gray-600 mb-8 text-lg max-w-md mx-auto">
-                Try adjusting your search terms to find more categories.
-              </p>
-              <Button
-                onClick={() => setSearchQuery('')}
-                className="showcase-btn-outline"
-              >
-                Clear Search
-              </Button>
             </div>
           ) : (
-            <div className={viewMode === 'grid'
-              ? 'grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8'
-              : 'space-y-6 max-w-4xl mx-auto'
-            }>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
               {filteredCategories.map((category, index) => (
-                <CategoryCard
+                <Link
                   key={category.id}
-                  category={category}
-                  viewMode={viewMode}
-                  index={index}
-                />
+                  href={`/categories/${category.slug}`}
+                  className="group"
+                  style={{ animationDelay: `${index * 100}ms` }}
+                >
+                  <div className="relative overflow-hidden bg-[#151515] rounded-3xl p-8 border border-white/10 hover:border-[#FFDF00]/50 transition-all duration-500 h-full">
+                    {/* Glow effect on hover */}
+                    <div className="absolute inset-0 bg-gradient-to-br from-[#FFDF00]/0 to-[#FFDF00]/0 group-hover:from-[#FFDF00]/5 group-hover:to-transparent transition-all duration-500"></div>
+
+                    <div className="relative z-10">
+                      {/* Icon */}
+                      <div className="mb-6">
+                        <div className="relative inline-block">
+                          <div className="absolute inset-0 bg-gradient-to-br from-[#FFDF00] to-amber-500 rounded-2xl blur-lg opacity-0 group-hover:opacity-50 transition-opacity duration-500"></div>
+                          <div className="relative w-16 h-16 rounded-2xl bg-gradient-to-br from-[#FFDF00] to-amber-500 flex items-center justify-center text-3xl">
+                            {category.icon}
+                          </div>
+                        </div>
+                      </div>
+
+                      {/* Content */}
+                      <div className="mb-6">
+                        <h3 className="text-2xl font-black text-white mb-3 uppercase group-hover:text-[#FFDF00] transition-colors">
+                          {category.name}
+                        </h3>
+                        <p className="text-white/60 leading-relaxed line-clamp-2">
+                          {category.description}
+                        </p>
+                      </div>
+
+                      {/* Footer */}
+                      <div className="flex items-center justify-between pt-6 border-t border-white/10">
+                        <div className="flex items-center gap-2">
+                          <Badge className="bg-[#FFDF00]/10 text-[#FFDF00] hover:bg-[#FFDF00]/20 border-[#FFDF00]/20 font-bold">
+                            <TrendingUp className="h-3 w-3 mr-1" />
+                            {category.projects_count} projects
+                          </Badge>
+                        </div>
+                        <div className="flex items-center gap-2 text-white/60 group-hover:text-[#FFDF00] transition-colors font-bold uppercase text-sm">
+                          <span>Explore</span>
+                          <ArrowRight className="h-5 w-5 group-hover:translate-x-1 transition-transform" />
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </Link>
               ))}
             </div>
           )}
@@ -217,32 +246,41 @@ export default function CategoriesPage() {
       </section>
 
       {/* CTA Section */}
-      <section className="section-padding bg-gradient-to-br from-blue-50 via-cyan-50 to-green-50 border-t-2 border-gray-200">
-        <div className="container-custom">
+      <section className="py-20 lg:py-28 relative overflow-hidden">
+        {/* Background gradient */}
+        <div className="absolute inset-0 bg-gradient-to-b from-[#0A0A0A] via-[#151515] to-[#0A0A0A]"></div>
+        <div className="absolute inset-0 overflow-hidden pointer-events-none">
+          <div className="absolute bottom-0 left-1/4 w-[600px] h-[600px] bg-[#FFDF00]/5 rounded-full blur-[120px]" />
+        </div>
+
+        <div className="container-custom relative z-10">
           <div className="max-w-4xl mx-auto text-center">
-            <div className="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-br from-blue-500 to-cyan-500 rounded-full mb-6 shadow-elevation-3">
-              <Rocket className="h-8 w-8 text-white" />
+            <div className="relative inline-block mb-8">
+              <div className="absolute inset-0 bg-gradient-to-br from-[#FFDF00] to-amber-500 rounded-3xl blur-xl opacity-50"></div>
+              <div className="relative w-20 h-20 rounded-3xl bg-gradient-to-br from-[#FFDF00] to-amber-500 flex items-center justify-center">
+                <Rocket className="h-10 w-10 text-black" />
+              </div>
             </div>
-            <h2 className="text-3xl md:text-4xl font-display font-bold text-gray-900 mb-4">
+
+            <h2 className="text-4xl lg:text-5xl font-black text-white mb-6 uppercase leading-[1.1]">
               Can't Find Your Category?
             </h2>
-            <p className="text-xl text-gray-600 mb-8 max-w-2xl mx-auto leading-relaxed">
-              Submit your project to be featured in our directory and reach thousands of Web3 enthusiasts
+            <p className="text-xl text-white/60 mb-10 max-w-2xl mx-auto leading-relaxed font-medium">
+              Submit your project to be featured in our directory and reach
+              thousands of Web3 enthusiasts
             </p>
-            <Button
-              size="lg"
-              className="showcase-btn px-8 py-4 text-base font-semibold shadow-elevation-3"
-              asChild
+
+            <Link
+              href="/submit"
+              className="inline-flex items-center justify-center h-16 px-10 bg-[#FFDF00] hover:bg-[#FFE94D] text-black font-black uppercase text-sm tracking-wider rounded-full transition-all duration-300 transform hover:scale-105 shadow-[0_0_40px_rgba(255,223,0,0.3)]"
             >
-              <Link href="/submit">
-                <Rocket className="mr-2 h-5 w-5" />
-                Submit Your Project
-                <ArrowRight className="ml-2 h-5 w-5" />
-              </Link>
-            </Button>
+              <Rocket className="h-5 w-5 mr-3" />
+              Submit Your Project
+              <ArrowRight className="h-5 w-5 ml-3" />
+            </Link>
           </div>
         </div>
       </section>
     </div>
-  )
+  );
 }

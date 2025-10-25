@@ -1,12 +1,25 @@
-'use client'
+"use client";
 
-import { useState, useEffect, useRef, useCallback } from 'react'
-import { Button } from '@/components/ui/button'
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
-import { Badge } from '@/components/ui/badge'
-import { Input } from '@/components/ui/input'
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
+import { useState, useEffect, useRef } from "react";
+import Link from "next/link";
+import { Button } from "@/components/ui/button";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import { Input } from "@/components/ui/input";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import {
   Search,
   Filter,
@@ -17,428 +30,707 @@ import {
   ExternalLink,
   Grid,
   List,
-  Loader2
-} from 'lucide-react'
-import Link from 'next/link'
+  Loader2,
+  Eye,
+  Github,
+  Globe,
+  Calendar,
+  Sparkles,
+  TrendingUp,
+  X,
+} from "lucide-react";
+import { supabase } from "@/lib/supabase";
+
+interface Category {
+  id: string;
+  slug: string;
+  name: string;
+  description: string | null;
+  icon: string | null;
+  color: string | null;
+  gradient: string | null;
+}
 
 interface Project {
-  id: string
-  title: string
-  slug: string
-  description: string
-  logo_url: string
-  website_url: string
-  github_url: string
-  is_featured: boolean
-  views: number
-  created_at: string
-  tags: string[]
-  owner: {
-    username: string
-    displayName: string
-  }
-  categories: {
-    id: string
-    name: string
-    slug: string
-    color: string
-    gradient: string
-  }
+  id: string;
+  title: string;
+  slug: string;
+  description: string | null;
+  logo_url: string | null;
+  website_url: string | null;
+  github_url: string | null;
+  is_featured: boolean;
+  is_active: boolean;
+  views: number;
+  created_at: string;
+  user: {
+    username: string | null;
+    display_name: string | null;
+    avatar_url: string | null;
+  } | null;
+  category: Category | null;
+  tags: string[];
 }
 
 const sortOptions = [
-  { value: "featured", label: "Featured" },
-  { value: "newest", label: "Newest" },
-  { value: "views", label: "Most Viewed" }
-]
+  { value: "featured", label: "Featured First" },
+  { value: "newest", label: "Newest First" },
+  { value: "views", label: "Most Viewed" },
+  { value: "oldest", label: "Oldest First" },
+];
 
-const PROJECTS_PER_PAGE = 12
+const PROJECTS_PER_PAGE = 12;
 
 export default function ProjectsPage() {
-  const [searchQuery, setSearchQuery] = useState('')
-  const [selectedCategory, setSelectedCategory] = useState('all')
-  const [sortBy, setSortBy] = useState('featured')
-  const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid')
-  const [projects, setProjects] = useState<Project[]>([])
-  const [displayedProjects, setDisplayedProjects] = useState<Project[]>([])
-  const [categories, setCategories] = useState<any[]>([])
-  const [loading, setLoading] = useState(true)
-  const [loadingMore, setLoadingMore] = useState(false)
-  const [isFilterOpen, setIsFilterOpen] = useState(false)
-  const [page, setPage] = useState(1)
-  const [hasMore, setHasMore] = useState(true)
-  
-  const observerTarget = useRef<HTMLDivElement>(null)
+  const [searchQuery, setSearchQuery] = useState("");
+  const [selectedCategory, setSelectedCategory] = useState("all");
+  const [sortBy, setSortBy] = useState("featured");
+  const [viewMode, setViewMode] = useState<"grid" | "list">("grid");
+  const [projects, setProjects] = useState<Project[]>([]);
+  const [filteredProjects, setFilteredProjects] = useState<Project[]>([]);
+  const [displayedProjects, setDisplayedProjects] = useState<Project[]>([]);
+  const [categories, setCategories] = useState<Category[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [loadingMore, setLoadingMore] = useState(false);
+  const [isFilterOpen, setIsFilterOpen] = useState(false);
+  const [page, setPage] = useState(1);
+  const [hasMore, setHasMore] = useState(true);
+
+  const observerTarget = useRef<HTMLDivElement>(null);
 
   // Fetch categories and projects on mount
   useEffect(() => {
-    const fetchData = async () => {
-      try {
-        // Fetch categories
-        const categoriesResponse = await fetch('/api/categories')
-        if (categoriesResponse.ok) {
-          const categoriesData = await categoriesResponse.json()
-          setCategories([
-            { value: "all", label: "All Categories" },
-            ...categoriesData.map((cat: any) => ({
-              value: cat.slug,
-              label: cat.name
-            }))
-          ])
-        }
+    fetchInitialData();
+  }, []);
 
-        // Fetch projects
-        await fetchProjects()
-      } catch (error) {
-        console.error('Error fetching data:', error)
-      } finally {
-        setLoading(false)
-      }
-    }
-
-    fetchData()
-  }, [])
-
-  const fetchProjects = async (category?: string, search?: string, sort?: string) => {
-    setLoading(true)
+  const fetchInitialData = async () => {
     try {
-      const params = new URLSearchParams()
-      if (category && category !== 'all') params.append('category', category)
-      if (search) params.append('search', search)
-      if (sort === 'featured') params.append('featured', 'true')
+      setLoading(true);
 
-      const response = await fetch(`/api/projects?${params.toString()}`)
-      if (response.ok) {
-        const data = await response.json()
-        let fetchedProjects = data.projects || []
+      // Fetch categories
+      const { data: categoriesData, error: categoriesError } = await supabase
+        .from("categories")
+        .select("*")
+        .eq("is_active", true)
+        .order("sort_order", { ascending: true });
 
-        // Sort projects client-side if needed
-        if (sort === 'views') {
-          fetchedProjects.sort((a: Project, b: Project) => b.views - a.views)
-        } else if (sort === 'newest') {
-          fetchedProjects.sort((a: Project, b: Project) =>
-            new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
-          )
-        }
+      if (categoriesError) throw categoriesError;
+      setCategories(categoriesData || []);
 
-        setProjects(fetchedProjects)
+      // Fetch all active projects
+      const { data: projectsData, error: projectsError } = await supabase
+        .from("projects")
+        .select("*")
+        .eq("is_active", true)
+        .order("created_at", { ascending: false });
+
+      if (projectsError) throw projectsError;
+
+      if (!projectsData || projectsData.length === 0) {
+        setProjects([]);
+        return;
       }
+
+      // Get unique user IDs and category IDs
+      const userIds = [
+        ...new Set(projectsData.map((p: any) => p.creator_id).filter(Boolean)),
+      ];
+      const categoryIds = [
+        ...new Set(projectsData.map((p: any) => p.category_id).filter(Boolean)),
+      ];
+
+      // Fetch users
+      const { data: usersData } = await supabase
+        .from("users")
+        .select("id, username, display_name, avatar_url")
+        .in("id", userIds);
+
+      // Fetch project tags
+      const projectIds = projectsData.map((p: any) => p.id);
+      const { data: tagsData } = await supabase
+        .from("project_tags")
+        .select("project_id, tag_name")
+        .in("project_id", projectIds);
+
+      // Create lookup maps
+      const usersMap = new Map(usersData?.map((u) => [u.id, u]) || []);
+      const categoriesMap = new Map(
+        categoriesData?.map((c) => [c.id, c]) || [],
+      );
+      const tagsMap = new Map<string, string[]>();
+
+      tagsData?.forEach((tag) => {
+        if (!tagsMap.has(tag.project_id)) {
+          tagsMap.set(tag.project_id, []);
+        }
+        tagsMap.get(tag.project_id)?.push(tag.tag_name);
+      });
+
+      // Transform projects data
+      const transformedProjects = projectsData.map((project: any) => ({
+        ...project,
+        user: usersMap.get(project.creator_id) || null,
+        category: categoriesMap.get(project.category_id) || null,
+        tags: tagsMap.get(project.id) || [],
+      }));
+
+      setProjects(transformedProjects);
     } catch (error) {
-      console.error('Error fetching projects:', error)
+      console.error("Error fetching data:", error);
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
-  }
+  };
 
-  // Update projects when filters change
+  // Filter and sort projects when dependencies change
   useEffect(() => {
-    setPage(1)
-    setDisplayedProjects([])
-    fetchProjects(selectedCategory, searchQuery, sortBy)
-  }, [selectedCategory, searchQuery, sortBy])
+    let filtered = [...projects];
 
-  // Lazy loading effect
-  useEffect(() => {
-    if (projects.length > 0) {
-      const endIndex = page * PROJECTS_PER_PAGE
-      const newDisplayedProjects = projects.slice(0, endIndex)
-      setDisplayedProjects(newDisplayedProjects)
-      setHasMore(endIndex < projects.length)
+    // Filter by category
+    if (selectedCategory !== "all") {
+      filtered = filtered.filter((p) => p.category?.slug === selectedCategory);
     }
-  }, [projects, page])
+
+    // Filter by search query
+    if (searchQuery.trim()) {
+      const query = searchQuery.toLowerCase();
+      filtered = filtered.filter(
+        (p) =>
+          p.title.toLowerCase().includes(query) ||
+          p.description?.toLowerCase().includes(query) ||
+          p.tags.some((tag) => tag.toLowerCase().includes(query)),
+      );
+    }
+
+    // Sort projects
+    filtered.sort((a, b) => {
+      switch (sortBy) {
+        case "featured":
+          if (a.is_featured && !b.is_featured) return -1;
+          if (!a.is_featured && b.is_featured) return 1;
+          return (
+            new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
+          );
+        case "newest":
+          return (
+            new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
+          );
+        case "oldest":
+          return (
+            new Date(a.created_at).getTime() - new Date(b.created_at).getTime()
+          );
+        case "views":
+          return (b.views || 0) - (a.views || 0);
+        default:
+          return 0;
+      }
+    });
+
+    setFilteredProjects(filtered);
+    setPage(1); // Reset to first page when filters change
+  }, [projects, selectedCategory, searchQuery, sortBy]);
+
+  // Update displayed projects based on pagination
+  useEffect(() => {
+    const endIndex = page * PROJECTS_PER_PAGE;
+    const newDisplayedProjects = filteredProjects.slice(0, endIndex);
+    setDisplayedProjects(newDisplayedProjects);
+    setHasMore(endIndex < filteredProjects.length);
+  }, [filteredProjects, page]);
 
   // Intersection Observer for infinite scroll
   useEffect(() => {
     const observer = new IntersectionObserver(
-      entries => {
-        if (entries[0].isIntersecting && hasMore && !loadingMore && !loading) {
-          setLoadingMore(true)
+      (entries) => {
+        if (entries[0].isIntersecting && hasMore && !loadingMore) {
+          setLoadingMore(true);
           setTimeout(() => {
-            setPage(prev => prev + 1)
-            setLoadingMore(false)
-          }, 500)
+            setPage((prev) => prev + 1);
+            setLoadingMore(false);
+          }, 500);
         }
       },
-      { threshold: 0.1 }
-    )
+      { threshold: 0.1 },
+    );
 
-    const currentTarget = observerTarget.current
-    if (currentTarget) {
-      observer.observe(currentTarget)
+    if (observerTarget.current) {
+      observer.observe(observerTarget.current);
     }
 
-    return () => {
-      if (currentTarget) {
-        observer.unobserve(currentTarget)
-      }
-    }
-  }, [hasMore, loadingMore, loading])
+    return () => observer.disconnect();
+  }, [hasMore, loadingMore]);
 
-  const handleProjectClick = (projectSlug: string, username: string) => {
-    window.open(`/projects/${username}/${projectSlug}`, '_blank')
-  }
+  const clearFilters = () => {
+    setSearchQuery("");
+    setSelectedCategory("all");
+    setSortBy("featured");
+  };
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-background flex items-center justify-center">
+      <div className="min-h-screen bg-[#0A0A0A] flex items-center justify-center">
         <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto mb-4"></div>
-          <p className="text-gray-600">Loading projects...</p>
+          <div className="animate-spin rounded-full h-16 w-16 border-b-4 border-[#FFDF00] mx-auto mb-6"></div>
+          <p className="text-white/60 text-lg font-medium">
+            Loading projects...
+          </p>
         </div>
       </div>
-    )
+    );
   }
 
   return (
-    <div className="min-h-screen bg-background">
-      {/* Enhanced Header Section */}
-      <section className="showcase-hero section-padding-xs">
+    <div className="min-h-screen bg-[#0A0A0A]">
+      {/* Hero Section */}
+      <section className="section-padding bg-gradient-to-b from-[#151515] to-[#0A0A0A]">
         <div className="container-custom">
-          <div className="max-w-5xl mx-auto text-center">
-            {/* Floating badge */}
-            <div className="animate-float inline-flex items-center mb-8">
-              <div className="showcase-badge">
-                <Search className="w-3 h-3 mr-2" />
-                🔍 Explore Web3 Projects
-              </div>
-            </div>
-
-            {/* Enhanced heading */}
-            <h1 className="text-5xl md:text-6xl lg:text-7xl font-display font-bold text-gradient-primary mb-6 animate-fade-in-up">
-              Explore
+          <div className="max-w-4xl mx-auto text-center mb-12">
+            <h1 className="text-[3.5rem] lg:text-[5rem] font-black uppercase leading-[0.9] text-white mb-6">
+              Explore Web3
               <br />
-              <span className="text-gradient-accent">Innovative Projects</span>
+              <span className="text-[#FFDF00]">Projects</span>
             </h1>
-
-            {/* Enhanced description */}
-            <p className="text-xl md:text-2xl text-gray-600 mb-8 max-w-3xl mx-auto animate-slide-in-left leading-relaxed">
-              Discover cutting-edge Web3 projects and be among the first to test
-              <br className="hidden md:block" />
-              revolutionary blockchain technology.
+            <p className="text-xl lg:text-2xl text-white/60 font-medium">
+              Discover innovative blockchain projects, DeFi protocols, NFT
+              platforms, and more
             </p>
+          </div>
 
-            {/* Enhanced search bar */}
-            <div className="max-w-2xl mx-auto relative mb-8 animate-slide-in-left">
-              <Search className="absolute left-5 top-1/2 transform -translate-y-1/2 text-gray-400 h-5 w-5" />
-              <Input
-                type="text"
-                placeholder="Search Web3 projects, protocols, or categories..."
-                className="showcase-input pl-14 pr-6 py-4 text-lg border-2 focus:border-primary"
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-              />
-            </div>
-
-            {/* Enhanced stats */}
-            <div className="flex flex-wrap justify-center gap-8 text-sm md:text-base animate-scale-in">
-              <div className="flex items-center space-x-2">
-                <span className="font-semibold text-gray-900">{projects.length}</span>
-                <span className="text-gray-600">Projects Found</span>
-              </div>
-              <div className="flex items-center space-x-2">
-                <span className="font-semibold text-gray-900">{projects.reduce((sum, p) => sum + p.views, 0).toLocaleString()}</span>
-                <span className="text-gray-600">Total Views</span>
-              </div>
-            </div>
+          {/* Stats */}
+          <div className="grid grid-cols-2 lg:grid-cols-4 gap-6 max-w-5xl mx-auto">
+            <Card className="card-dark text-center">
+              <CardContent className="p-6">
+                <div className="text-4xl font-black text-[#FFDF00] mb-2">
+                  {projects.length}
+                </div>
+                <div className="text-sm font-medium text-white/60 uppercase">
+                  Total Projects
+                </div>
+              </CardContent>
+            </Card>
+            <Card className="card-dark text-center">
+              <CardContent className="p-6">
+                <div className="text-4xl font-black text-cyan-500 mb-2">
+                  {categories.length}
+                </div>
+                <div className="text-sm font-medium text-white/60 uppercase">
+                  Categories
+                </div>
+              </CardContent>
+            </Card>
+            <Card className="card-dark text-center">
+              <CardContent className="p-6">
+                <div className="text-4xl font-black text-purple-500 mb-2">
+                  {projects.filter((p) => p.is_featured).length}
+                </div>
+                <div className="text-sm font-medium text-white/60 uppercase">
+                  Featured
+                </div>
+              </CardContent>
+            </Card>
+            <Card className="card-dark text-center">
+              <CardContent className="p-6">
+                <div className="text-4xl font-black text-green-500 mb-2">
+                  {projects
+                    .reduce((sum, p) => sum + (p.views || 0), 0)
+                    .toLocaleString()}
+                </div>
+                <div className="text-sm font-medium text-white/60 uppercase">
+                  Total Views
+                </div>
+              </CardContent>
+            </Card>
           </div>
         </div>
       </section>
 
-      {/* Enhanced Filters and Controls */}
-      <section className="section-padding-sm bg-gradient-subtle">
+      {/* Filters and Content */}
+      <section className="section-padding">
         <div className="container-custom">
-          <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-6">
-            {/* Enhanced Filters */}
-            <div className="flex flex-wrap items-center gap-4">
-              <Select value={selectedCategory} onValueChange={setSelectedCategory}>
-                <SelectTrigger className="showcase-input w-52 border-2 font-semibold">
-                  <Filter className="h-4 w-4 mr-2 text-gray-500" />
-                  <SelectValue placeholder="All Categories" />
-                </SelectTrigger>
-                <SelectContent className="bg-white rounded-xl border-2 border-gray-200 shadow-elevation-3 z-50">
-                  {categories.map((category) => (
-                    <SelectItem 
-                      key={category.value} 
-                      value={category.value} 
-                      className="cursor-pointer hover:bg-blue-50 focus:bg-blue-50 rounded-lg my-1 mx-1 font-medium"
-                    >
-                      {category.label}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-
-              <Select value={sortBy} onValueChange={setSortBy}>
-                <SelectTrigger className="showcase-input w-52 border-2 font-semibold">
-                  <Star className="h-4 w-4 mr-2 text-gray-500" />
-                  <SelectValue placeholder="Sort by" />
-                </SelectTrigger>
-                <SelectContent className="bg-white rounded-xl border-2 border-gray-200 shadow-elevation-3 z-50">
-                  {sortOptions.map((option) => (
-                    <SelectItem 
-                      key={option.value} 
-                      value={option.value} 
-                      className="cursor-pointer hover:bg-blue-50 focus:bg-blue-50 rounded-lg my-1 mx-1 font-medium"
-                    >
-                      {option.label}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={() => setIsFilterOpen(!isFilterOpen)}
-                className="showcase-btn-outline lg:hidden rounded-xl"
-              >
-                <Filter className="h-4 w-4 mr-2" />
-                Filters
-              </Button>
-            </div>
-
-            {/* Enhanced View Controls */}
-            <div className="flex items-center gap-2">
-              <Button
-                variant={viewMode === 'grid' ? 'default' : 'outline'}
-                size="sm"
-                onClick={() => setViewMode('grid')}
-                className={`rounded-xl ${viewMode === 'grid' ? 'showcase-btn' : 'showcase-btn-outline'}`}
-              >
-                <Grid className="h-4 w-4" />
-              </Button>
-              <Button
-                variant={viewMode === 'list' ? 'default' : 'outline'}
-                size="sm"
-                onClick={() => setViewMode('list')}
-                className={`rounded-xl ${viewMode === 'list' ? 'showcase-btn' : 'showcase-btn-outline'}`}
-              >
-                <List className="h-4 w-4" />
-              </Button>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* Enhanced Projects Grid/List */}
-      <section className="section-padding bg-background">
-        <div className="container-custom">
-          {projects.length === 0 && !loading ? (
-            <div className="text-center py-20">
-              <div className="inline-flex items-center justify-center w-20 h-20 bg-gradient-to-br from-gray-100 to-gray-200 rounded-full mb-6">
-                <Search className="h-10 w-10 text-gray-500" />
-              </div>
-              <h3 className="text-2xl font-bold mb-3 font-display text-gray-900">No projects found</h3>
-              <p className="text-gray-600 text-lg mb-6">
-                Try adjusting your search terms or filters to find more projects.
-              </p>
-              <Button asChild className="showcase-btn">
-                <Link href="/submit">Submit the First Project</Link>
-              </Button>
-            </div>
-          ) : (
-            <>
-              <div className={viewMode === 'grid'
-                ? 'grid md:grid-cols-2 lg:grid-cols-3 gap-8'
-                : 'space-y-6'
-              }>
-                {displayedProjects.map((project, index) => (
-                <Card
-                  key={project.id}
-                  className={`showcase-project-card cursor-pointer group animate-scale-in ${
-                    viewMode === 'list' ? 'flex flex-row' : ''
-                  }`}
-                  style={{ animationDelay: `${index * 100}ms` }}
-                  onClick={() => handleProjectClick(project.slug, project.owner?.username || 'demo')}
-                >
-                  <CardHeader className={viewMode === 'list' ? 'flex-1 pb-4' : 'pb-4'}>
-                    <div className="flex items-start justify-between mb-4">
-                      <div className="flex items-center space-x-4">
-                        <Avatar className="h-14 w-14 border-2 border-gray-200 shadow-elevation-1">
-                          <AvatarImage src={project.logo_url} alt={project.title} />
-                          <AvatarFallback className="bg-gradient-to-br from-primary to-accent text-white font-bold text-lg">
-                            {project.title.charAt(0)}
-                          </AvatarFallback>
-                        </Avatar>
-                        <div>
-                          <CardTitle className="text-xl font-display text-gray-900 group-hover:text-primary transition-colors duration-200">
-                            {project.title}
-                          </CardTitle>
-                          <div className="flex items-center space-x-2 mt-2">
-                            <Badge variant="secondary" className="bg-primary/10 text-primary border-primary/20 font-medium text-xs">
-                              {project.categories?.name || 'Web3'}
-                            </Badge>
-                            {project.is_featured && (
-                              <Trophy className="h-4 w-4 text-yellow-500" />
-                            )}
-                          </div>
-                        </div>
-                      </div>
+          {/* Filter Bar */}
+          <div className="mb-12">
+            <Card className="card-dark">
+              <CardContent className="p-6">
+                <div className="grid grid-cols-1 lg:grid-cols-12 gap-4">
+                  {/* Search */}
+                  <div className="lg:col-span-5">
+                    <div className="relative">
+                      <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-white/40" />
+                      <Input
+                        placeholder="Search projects, tags, or keywords..."
+                        value={searchQuery}
+                        onChange={(e) => setSearchQuery(e.target.value)}
+                        className="input-dark pl-12"
+                      />
+                      {searchQuery && (
+                        <button
+                          onClick={() => setSearchQuery("")}
+                          className="absolute right-4 top-1/2 -translate-y-1/2 text-white/40 hover:text-white"
+                        >
+                          <X className="h-5 w-5" />
+                        </button>
+                      )}
                     </div>
-                  </CardHeader>
+                  </div>
 
-                  <CardContent className="pt-0">
-                    <CardDescription className="mb-6 text-base leading-relaxed text-gray-600 line-clamp-2">
-                      {project.description}
-                    </CardDescription>
+                  {/* Category Filter */}
+                  <div className="lg:col-span-3">
+                    <Select
+                      value={selectedCategory}
+                      onValueChange={setSelectedCategory}
+                    >
+                      <SelectTrigger className="input-dark">
+                        <SelectValue placeholder="All Categories" />
+                      </SelectTrigger>
+                      <SelectContent className="bg-[#1B1B1B] border-white/10">
+                        <SelectItem value="all" className="text-white">
+                          All Categories
+                        </SelectItem>
+                        {categories.map((cat) => (
+                          <SelectItem
+                            key={cat.id}
+                            value={cat.slug}
+                            className="text-white"
+                          >
+                            {cat.icon} {cat.name}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
 
-                    <div className="flex flex-wrap gap-2 mb-6">
-                      {project.tags.slice(0, 3).map((tag, tagIndex) => (
-                        <Badge key={tagIndex} variant="outline" className="text-xs border-gray-200 text-gray-600 bg-gray-50 font-medium">
-                          {tag}
+                  {/* Sort */}
+                  <div className="lg:col-span-3">
+                    <Select value={sortBy} onValueChange={setSortBy}>
+                      <SelectTrigger className="input-dark">
+                        <SelectValue placeholder="Sort by" />
+                      </SelectTrigger>
+                      <SelectContent className="bg-[#1B1B1B] border-white/10">
+                        {sortOptions.map((option) => (
+                          <SelectItem
+                            key={option.value}
+                            value={option.value}
+                            className="text-white"
+                          >
+                            {option.label}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+
+                  {/* View Mode Toggle */}
+                  <div className="lg:col-span-1 flex gap-2">
+                    <Button
+                      variant="outline"
+                      size="icon"
+                      onClick={() => setViewMode("grid")}
+                      className={`btn-outline ${
+                        viewMode === "grid" ? "bg-[#FFDF00] text-black" : ""
+                      }`}
+                    >
+                      <Grid className="h-5 w-5" />
+                    </Button>
+                    <Button
+                      variant="outline"
+                      size="icon"
+                      onClick={() => setViewMode("list")}
+                      className={`btn-outline ${
+                        viewMode === "list" ? "bg-[#FFDF00] text-black" : ""
+                      }`}
+                    >
+                      <List className="h-5 w-5" />
+                    </Button>
+                  </div>
+                </div>
+
+                {/* Active Filters */}
+                {(searchQuery ||
+                  selectedCategory !== "all" ||
+                  sortBy !== "featured") && (
+                  <div className="flex items-center gap-3 mt-4 pt-4 border-t border-white/10">
+                    <span className="text-sm font-medium text-white/60">
+                      Active filters:
+                    </span>
+                    <div className="flex flex-wrap gap-2 flex-1">
+                      {searchQuery && (
+                        <Badge className="bg-[#FFDF00] text-black">
+                          Search: {searchQuery}
                         </Badge>
-                      ))}
-                      {project.tags.length > 3 && (
-                        <Badge variant="outline" className="text-xs border-gray-200 text-gray-600 bg-gray-50 font-medium">
-                          +{project.tags.length - 3}
+                      )}
+                      {selectedCategory !== "all" && (
+                        <Badge className="bg-cyan-500 text-black">
+                          Category:{" "}
+                          {
+                            categories.find((c) => c.slug === selectedCategory)
+                              ?.name
+                          }
+                        </Badge>
+                      )}
+                      {sortBy !== "featured" && (
+                        <Badge className="bg-purple-500 text-black">
+                          Sort:{" "}
+                          {sortOptions.find((o) => o.value === sortBy)?.label}
                         </Badge>
                       )}
                     </div>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={clearFilters}
+                      className="btn-outline"
+                    >
+                      Clear All
+                    </Button>
+                  </div>
+                )}
+              </CardContent>
+            </Card>
+          </div>
 
-                    <div className="flex items-center justify-between">
-                      <div className="flex items-center space-x-4 text-sm text-gray-500">
-                        <div className="flex items-center space-x-1">
-                          <Users className="h-4 w-4" />
-                          <span className="text-xs">{project.owner?.displayName || project.owner?.username || 'Anonymous'}</span>
+          {/* Results Count */}
+          <div className="mb-6">
+            <p className="text-white/60 text-lg font-medium">
+              Showing{" "}
+              <span className="text-white font-bold">
+                {displayedProjects.length}
+              </span>{" "}
+              of{" "}
+              <span className="text-white font-bold">
+                {filteredProjects.length}
+              </span>{" "}
+              projects
+            </p>
+          </div>
+
+          {/* Projects Grid/List */}
+          {filteredProjects.length === 0 ? (
+            <Card className="card-dark">
+              <CardContent className="py-20 text-center">
+                <Search className="h-16 w-16 mx-auto mb-6 text-white/20" />
+                <h3 className="text-2xl font-black text-white mb-3 uppercase">
+                  No Projects Found
+                </h3>
+                <p className="text-white/60 mb-8 max-w-md mx-auto">
+                  Try adjusting your filters or search terms to find what you're
+                  looking for.
+                </p>
+                <Button onClick={clearFilters} className="btn-primary">
+                  Clear Filters
+                </Button>
+              </CardContent>
+            </Card>
+          ) : (
+            <>
+              <div
+                className={
+                  viewMode === "grid"
+                    ? "grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"
+                    : "space-y-6"
+                }
+              >
+                {displayedProjects.map((project) => {
+                  // Generate project URL
+                  const projectSlug =
+                    project.slug ||
+                    project.title
+                      .toLowerCase()
+                      .trim()
+                      .replace(/[^\w\s-]/g, "")
+                      .replace(/[\s_-]+/g, "-")
+                      .replace(/^-+|-+$/g, "");
+                  const username = project.user?.username || "demo";
+                  const projectUrl = `/projects/${username}/${projectSlug}`;
+
+                  return (
+                    <Card
+                      key={project.id}
+                      className="card-dark group hover:border-[#FFDF00]/50 transition-all duration-300 overflow-hidden"
+                    >
+                      <CardContent className="p-6">
+                        {/* Project Header */}
+                        <div className="flex items-start justify-between mb-4">
+                          <div className="flex items-start gap-4 flex-1 min-w-0">
+                            {project.logo_url && (
+                              <div className="w-14 h-14 rounded-xl bg-gradient-to-br from-[#FFDF00] to-amber-500 flex items-center justify-center flex-shrink-0">
+                                <img
+                                  src={project.logo_url}
+                                  alt={project.title}
+                                  className="w-10 h-10 object-contain"
+                                />
+                              </div>
+                            )}
+                            <div className="flex-1 min-w-0">
+                              <h3 className="text-xl font-black text-white mb-2 uppercase truncate group-hover:text-[#FFDF00] transition-colors">
+                                {project.title}
+                              </h3>
+                              {project.category && (
+                                <Badge className="bg-white/10 text-white hover:bg-white/20">
+                                  {project.category.icon}{" "}
+                                  {project.category.name}
+                                </Badge>
+                              )}
+                            </div>
+                          </div>
+                          {project.is_featured && (
+                            <Badge className="bg-[#FFDF00] text-black hover:bg-[#FFDF00]/90 ml-2 flex-shrink-0">
+                              <Star className="h-3 w-3 mr-1" />
+                              Featured
+                            </Badge>
+                          )}
                         </div>
-                        <div className="flex items-center space-x-1">
-                          <ExternalLink className="h-4 w-4" />
-                          <span>{project.views.toLocaleString()} views</span>
+
+                        {/* Description */}
+                        {project.description && (
+                          <p className="text-white/60 mb-4 line-clamp-3">
+                            {project.description}
+                          </p>
+                        )}
+
+                        {/* Tags */}
+                        {project.tags.length > 0 && (
+                          <div className="flex flex-wrap gap-2 mb-4">
+                            {project.tags.slice(0, 4).map((tag, i) => (
+                              <Badge
+                                key={i}
+                                variant="outline"
+                                className="border-white/20 text-white/80 text-xs"
+                              >
+                                {tag}
+                              </Badge>
+                            ))}
+                            {project.tags.length > 4 && (
+                              <Badge
+                                variant="outline"
+                                className="border-white/20 text-white/60 text-xs"
+                              >
+                                +{project.tags.length - 4}
+                              </Badge>
+                            )}
+                          </div>
+                        )}
+
+                        {/* Stats */}
+                        <div className="flex items-center gap-6 mb-4 text-sm text-white/60">
+                          <div className="flex items-center gap-2">
+                            <Eye className="h-4 w-4" />
+                            <span>{project.views || 0} views</span>
+                          </div>
+                          <div className="flex items-center gap-2">
+                            <Calendar className="h-4 w-4" />
+                            <span>
+                              {new Date(
+                                project.created_at,
+                              ).toLocaleDateString()}
+                            </span>
+                          </div>
                         </div>
-                      </div>
-                      <Button size="sm" className="showcase-btn px-4 py-2 text-xs font-semibold">
-                        View Project
-                        <ArrowRight className="ml-1 h-3 w-3" />
-                      </Button>
+
+                        {/* Author */}
+                        {project.user && (
+                          <div className="flex items-center gap-3 mb-4 pb-4 border-b border-white/10">
+                            <Avatar className="h-8 w-8">
+                              <AvatarImage
+                                src={project.user.avatar_url || undefined}
+                                alt={project.user.display_name || "User"}
+                              />
+                              <AvatarFallback className="bg-[#FFDF00] text-black text-xs font-black">
+                                {(project.user.display_name ||
+                                  project.user.username ||
+                                  "U")[0].toUpperCase()}
+                              </AvatarFallback>
+                            </Avatar>
+                            <div className="flex-1 min-w-0">
+                              <p className="text-sm font-medium text-white truncate">
+                                {project.user.display_name ||
+                                  project.user.username}
+                              </p>
+                              <p className="text-xs text-white/40 truncate">
+                                @{project.user.username || "anonymous"}
+                              </p>
+                            </div>
+                          </div>
+                        )}
+
+                        {/* Actions */}
+                        <div className="flex gap-3">
+                          {project.website_url && (
+                            <Button
+                              asChild
+                              variant="outline"
+                              size="sm"
+                              className="btn-outline flex-1"
+                            >
+                              <a
+                                href={project.website_url}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                              >
+                                <Globe className="h-4 w-4 mr-2" />
+                                Visit
+                              </a>
+                            </Button>
+                          )}
+                          {project.github_url && (
+                            <Button
+                              asChild
+                              variant="outline"
+                              size="sm"
+                              className="btn-outline flex-1"
+                            >
+                              <a
+                                href={project.github_url}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                              >
+                                <Github className="h-4 w-4 mr-2" />
+                                Code
+                              </a>
+                            </Button>
+                          )}
+                          <Button
+                            asChild
+                            variant="outline"
+                            size="sm"
+                            className="btn-outline"
+                          >
+                            <Link href={projectUrl}>
+                              <ArrowRight className="h-4 w-4" />
+                            </Link>
+                          </Button>
+                        </div>
+                      </CardContent>
+                    </Card>
+                  );
+                })}
+              </div>
+
+              {/* Load More Observer */}
+              {hasMore && (
+                <div ref={observerTarget} className="py-12 text-center">
+                  {loadingMore && (
+                    <div className="flex flex-col items-center gap-4">
+                      <Loader2 className="h-12 w-12 animate-spin text-[#FFDF00]" />
+                      <p className="text-white/60 font-medium">
+                        Loading more projects...
+                      </p>
                     </div>
-                  </CardContent>
-                </Card>
-              ))}
-              </div>
+                  )}
+                </div>
+              )}
 
-              {/* Loading indicator for infinite scroll */}
-              <div ref={observerTarget} className="flex justify-center py-12">
-                {loadingMore && (
-                  <div className="flex items-center gap-3">
-                    <Loader2 className="h-6 w-6 animate-spin text-blue-600" />
-                    <span className="text-gray-600 font-medium">Loading more projects...</span>
-                  </div>
-                )}
-                {!hasMore && displayedProjects.length > 0 && (
-                  <div className="text-center">
-                    <p className="text-gray-500 text-sm font-medium">
-                      You've reached the end! 🎉
-                    </p>
-                    <p className="text-gray-400 text-xs mt-1">
-                      Showing all {displayedProjects.length} projects
-                    </p>
-                  </div>
-                )}
-              </div>
+              {/* End of Results */}
+              {!hasMore && filteredProjects.length > PROJECTS_PER_PAGE && (
+                <div className="py-12 text-center">
+                  <p className="text-white/60 font-medium">
+                    You've reached the end of the list
+                  </p>
+                </div>
+              )}
             </>
           )}
         </div>
       </section>
     </div>
-  )
+  );
 }
