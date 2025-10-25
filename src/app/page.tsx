@@ -190,14 +190,14 @@ export default async function HomePage() {
             <div className="flex justify-center mb-8 animate-fade-in">
               <div className="inline-flex items-center gap-2 px-6 py-3 rounded-full bg-gradient-to-r from-[#FFDF00]/20 to-cyan-500/20 border border-white/10 backdrop-blur-sm">
                 <Sparkles className="h-5 w-5 text-[#FFDF00] animate-pulse" />
-                <span className="text-sm font-bold text-white/90 uppercase tracking-wider">
+                <span className="text-xs font-bold text-white/90 uppercase tracking-wider">
                   The Ultimate Web3 Showcase Platform
                 </span>
               </div>
             </div>
 
             {/* Main Heading */}
-            <h1 className="text-center text-4xl md:text-5xl lg:text-6xl font-black uppercase leading-[0.95] mb-8 tracking-tight animate-fade-in-up">
+            <h1 className="text-center text-5xl md:text-6xl lg:text-7xl font-black uppercase leading-[0.95] mb-8 tracking-tight animate-fade-in-up">
               <span className="block text-white">Discover &</span>
               <span className="block bg-gradient-to-r from-[#FFDF00] via-amber-400 to-[#FFDF00] bg-clip-text text-transparent animate-gradient bg-300% mt-2">
                 Showcase Web3
@@ -207,7 +207,7 @@ export default async function HomePage() {
 
             {/* Description */}
             <p
-              className="text-center text-xl md:text-2xl text-white/70 leading-relaxed mb-10 max-w-4xl mx-auto animate-fade-in-up"
+              className="text-center text-lg md:text-xl text-white/70 leading-relaxed mb-10 max-w-4xl mx-auto animate-fade-in-up"
               style={{ animationDelay: "100ms" }}
             >
               The leading platform for Web3 builders to showcase innovative
@@ -317,14 +317,14 @@ export default async function HomePage() {
               <div>
                 <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-[#FFDF00]/10 border border-[#FFDF00]/20 mb-4">
                   <Star className="h-5 w-5 text-[#FFDF00] fill-current" />
-                  <span className="text-sm font-bold text-[#FFDF00] uppercase tracking-wider">
+                  <span className="text-xs font-bold text-[#FFDF00] uppercase tracking-wider">
                     Featured
                   </span>
                 </div>
-                <h2 className="text-3xl md:text-4xl lg:text-5xl font-black text-white uppercase leading-tight">
+                <h2 className="text-4xl md:text-5xl lg:text-6xl font-black text-white uppercase leading-tight">
                   Trending This Week
                 </h2>
-                <p className="text-lg text-white/60 mt-3 max-w-2xl">
+                <p className="text-base text-white/60 mt-3 max-w-2xl">
                   Hand-picked exceptional projects gaining traction in our
                   community
                 </p>
@@ -483,14 +483,14 @@ export default async function HomePage() {
           <div className="text-center mb-16">
             <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-purple-500/10 border border-purple-500/20 mb-6">
               <Sparkles className="h-5 w-5 text-purple-500" />
-              <span className="text-sm font-bold text-purple-500 uppercase tracking-wider">
+              <span className="text-xs font-bold text-purple-500 uppercase tracking-wider">
                 Benefits
               </span>
             </div>
-            <h2 className="text-3xl md:text-4xl lg:text-5xl font-black text-white uppercase mb-6 leading-tight">
+            <h2 className="text-4xl md:text-5xl lg:text-6xl font-black text-white uppercase mb-6 leading-tight">
               Why Choose Our Platform?
             </h2>
-            <p className="text-lg md:text-xl text-white/60 max-w-3xl mx-auto leading-relaxed">
+            <p className="text-base md:text-lg text-white/60 max-w-3xl mx-auto leading-relaxed">
               The ultimate platform for Web3 creators to showcase their
               innovative projects
             </p>
@@ -505,7 +505,7 @@ export default async function HomePage() {
                     <Zap className="h-10 w-10 text-[#FFDF00]" />
                   </div>
                 </div>
-                <h3 className="text-2xl font-black text-white uppercase mb-4 group-hover:text-[#FFDF00] transition-colors">
+                <h3 className="text-xl font-black text-white uppercase mb-4 group-hover:text-[#FFDF00] transition-colors">
                   Get Discovered
                 </h3>
                 <p className="text-white/60 leading-relaxed text-base">
@@ -523,7 +523,7 @@ export default async function HomePage() {
                     <CheckCircle className="h-10 w-10 text-cyan-500" />
                   </div>
                 </div>
-                <h3 className="text-2xl font-black text-white uppercase mb-4 group-hover:text-cyan-500 transition-colors">
+                <h3 className="text-xl font-black text-white uppercase mb-4 group-hover:text-cyan-500 transition-colors">
                   Quality Projects
                 </h3>
                 <p className="text-white/60 leading-relaxed text-base">
@@ -541,7 +541,7 @@ export default async function HomePage() {
                     <Shield className="h-10 w-10 text-purple-500" />
                   </div>
                 </div>
-                <h3 className="text-2xl font-black text-white uppercase mb-4 group-hover:text-purple-500 transition-colors">
+                <h3 className="text-xl font-black text-white uppercase mb-4 group-hover:text-purple-500 transition-colors">
                   Build Your Brand
                 </h3>
                 <p className="text-white/60 leading-relaxed text-base">
@@ -560,14 +560,14 @@ export default async function HomePage() {
           <div className="text-center mb-16">
             <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-green-500/10 border border-green-500/20 mb-6">
               <Boxes className="h-5 w-5 text-green-500" />
-              <span className="text-sm font-bold text-green-500 uppercase tracking-wider">
+              <span className="text-xs font-bold text-green-500 uppercase tracking-wider">
                 Process
               </span>
             </div>
-            <h2 className="text-3xl md:text-4xl lg:text-5xl font-black text-white uppercase mb-6 leading-tight">
+            <h2 className="text-4xl md:text-5xl lg:text-6xl font-black text-white uppercase mb-6 leading-tight">
               How It Works
             </h2>
-            <p className="text-lg md:text-xl text-white/60 max-w-3xl mx-auto leading-relaxed">
+            <p className="text-base md:text-lg text-white/60 max-w-3xl mx-auto leading-relaxed">
               Get your Web3 project featured in just three simple steps
             </p>
           </div>
@@ -584,7 +584,7 @@ export default async function HomePage() {
                   <div className="w-16 h-16 rounded-2xl bg-[#FFDF00]/10 flex items-center justify-center mx-auto mb-6">
                     <Rocket className="h-8 w-8 text-[#FFDF00]" />
                   </div>
-                  <h3 className="text-xl font-black text-white uppercase mb-3">
+                  <h3 className="text-lg font-black text-white uppercase mb-3">
                     Submit Project
                   </h3>
                   <p className="text-white/60 leading-relaxed text-sm">
@@ -606,7 +606,7 @@ export default async function HomePage() {
                   <div className="w-16 h-16 rounded-2xl bg-cyan-500/10 flex items-center justify-center mx-auto mb-6">
                     <CheckCircle className="h-8 w-8 text-cyan-500" />
                   </div>
-                  <h3 className="text-xl font-black text-white uppercase mb-3">
+                  <h3 className="text-lg font-black text-white uppercase mb-3">
                     Get Reviewed
                   </h3>
                   <p className="text-white/60 leading-relaxed text-sm">
@@ -628,7 +628,7 @@ export default async function HomePage() {
                   <div className="w-16 h-16 rounded-2xl bg-purple-500/10 flex items-center justify-center mx-auto mb-6">
                     <TrendingUp className="h-8 w-8 text-purple-500" />
                   </div>
-                  <h3 className="text-xl font-black text-white uppercase mb-3">
+                  <h3 className="text-lg font-black text-white uppercase mb-3">
                     Go Live
                   </h3>
                   <p className="text-white/60 leading-relaxed text-sm">
@@ -657,18 +657,18 @@ export default async function HomePage() {
             <CardContent className="p-12 md:p-20 text-center relative z-10">
               <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-[#FFDF00]/10 border border-[#FFDF00]/20 mb-8">
                 <Rocket className="h-5 w-5 text-[#FFDF00]" />
-                <span className="text-sm font-bold text-[#FFDF00] uppercase tracking-wider">
+                <span className="text-xs font-bold text-[#FFDF00] uppercase tracking-wider">
                   Ready to Launch?
                 </span>
               </div>
-              <h2 className="text-4xl md:text-5xl lg:text-6xl font-black text-white uppercase mb-6 leading-[1.1]">
+              <h2 className="text-5xl md:text-6xl lg:text-7xl font-black text-white uppercase mb-6 leading-[1.1]">
                 Showcase Your
                 <br />
                 <span className="bg-gradient-to-r from-[#FFDF00] via-amber-400 to-[#FFDF00] bg-clip-text text-transparent">
                   Web3 Project Today
                 </span>
               </h2>
-              <p className="text-lg md:text-xl text-white/60 mb-10 max-w-2xl mx-auto leading-relaxed">
+              <p className="text-base md:text-lg text-white/60 mb-10 max-w-2xl mx-auto leading-relaxed">
                 Join thousands of Web3 builders and get your project in front of
                 the right audience
               </p>
