@@ -101,7 +101,7 @@ export default function SignUpPage() {
           <div className="inline-flex items-center justify-center w-16 h-16 bg-primary/20 rounded-full mb-6">
             <CheckCircle className="w-8 h-8 text-primary" />
           </div>
-          <h2 className="text-3xl font-bold uppercase mb-4">
+          <h2 className="text-4xl md:text-5xl lg:text-6xl font-black uppercase mb-4">
             Account Created!
           </h2>
           <p className="text-gray-400 mb-6">
@@ -123,7 +123,7 @@ export default function SignUpPage() {
             className="inline-flex items-center text-gray-400 hover:text-primary mb-8 transition-colors"
           >
             <ArrowRight className="w-4 h-4 mr-2 rotate-180" />
-            <span className="uppercase text-sm font-bold tracking-wider">
+            <span className="uppercase text-xs font-bold tracking-wider">
               Back to Home
             </span>
           </Link>
@@ -135,7 +135,7 @@ export default function SignUpPage() {
             </div>
           </div>
 
-          <h1 className="text-4xl md:text-5xl font-bold uppercase mb-4">
+          <h1 className="text-5xl md:text-6xl lg:text-7xl font-black uppercase mb-4">
             Sign Up
           </h1>
           <p className="section-description">
@@ -274,7 +274,7 @@ export default function SignUpPage() {
             <div className="absolute inset-0 flex items-center">
               <div className="w-full border-t border-white/10"></div>
             </div>
-            <div className="relative flex justify-center text-sm">
+            <div className="relative flex justify-center text-xs">
               <span className="px-4 bg-dark-lighter text-gray-400 uppercase tracking-wider font-bold">
                 Or
               </span>
@@ -325,13 +325,13 @@ export default function SignUpPage() {
             Already have an account?{" "}
             <Link
               href="/auth/signin"
-              className="text-primary hover:text-primary/80 font-bold uppercase text-sm tracking-wider transition-colors"
+              className="text-primary hover:text-primary/80 font-bold uppercase text-xs tracking-wider transition-colors"
             >
               Sign In
             </Link>
           </p>
 
-          <div className="flex items-center justify-center gap-4 text-xs text-gray-500">
+          <div className="flex items-center justify-center gap-4 text-[10px] text-gray-500">
             <Link
               href="/privacy"
               className="hover:text-primary transition-colors uppercase tracking-wider"

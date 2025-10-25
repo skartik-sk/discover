@@ -181,7 +181,7 @@ export default function SubmitProjectPage() {
       <div className="min-h-screen flex items-center justify-center">
         <div className="text-center">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto mb-4"></div>
-          <p className="text-gray-400">Loading...</p>
+          <p className="text-white/60 text-base">Loading...</p>
         </div>
       </div>
     );
@@ -200,7 +200,7 @@ export default function SubmitProjectPage() {
                 </div>
               </div>
 
-              <h1 className="text-figma-hero mb-6 animate-fade-in-up">
+              <h1 className="text-5xl md:text-6xl lg:text-7xl font-black uppercase leading-[0.95] mb-6 animate-fade-in-up text-white">
                 Sign In to Submit
               </h1>
 
@@ -210,13 +210,13 @@ export default function SubmitProjectPage() {
 
               <div className="flex flex-col sm:flex-row gap-4 justify-center">
                 <Link href="/auth/signin">
-                  <button className="inline-flex items-center gap-3 px-8 py-4 bg-primary text-dark font-bold uppercase tracking-wider rounded-lg hover:bg-primary/90 transition-all hover:scale-105">
+                  <button className="inline-flex items-center gap-3 px-8 py-4 bg-primary text-dark font-black uppercase text-base tracking-wider rounded-lg hover:bg-primary/90 transition-all hover:scale-105">
                     Sign In
                     <ArrowRight className="w-5 h-5" />
                   </button>
                 </Link>
                 <Link href="/projects">
-                  <button className="inline-flex items-center gap-3 px-8 py-4 bg-dark-lighter border-2 border-white/10 text-white font-bold uppercase tracking-wider rounded-lg hover:border-primary/50 transition-all">
+                  <button className="inline-flex items-center gap-3 px-8 py-4 bg-dark-lighter border-2 border-white/10 text-white font-black uppercase text-base tracking-wider rounded-lg hover:border-primary/50 transition-all">
                     Browse Projects
                   </button>
                 </Link>
@@ -241,7 +241,7 @@ export default function SubmitProjectPage() {
                 </div>
               </div>
 
-              <h1 className="text-figma-hero mb-6 animate-fade-in-up">
+              <h1 className="text-5xl md:text-6xl lg:text-7xl font-black uppercase leading-[0.95] mb-6 animate-fade-in-up text-white">
                 Project Submitted
               </h1>
 
@@ -252,7 +252,7 @@ export default function SubmitProjectPage() {
 
               <div className="flex items-center justify-center space-x-4">
                 <Link href="/projects">
-                  <button className="inline-flex items-center gap-3 px-8 py-4 bg-primary text-dark font-bold uppercase tracking-wider rounded-lg hover:bg-primary/90 transition-all hover:scale-105">
+                  <button className="inline-flex items-center gap-3 px-8 py-4 bg-primary text-dark font-black uppercase text-base tracking-wider rounded-lg hover:bg-primary/90 transition-all hover:scale-105">
                     View All Projects
                   </button>
                 </Link>
@@ -275,7 +275,7 @@ export default function SubmitProjectPage() {
               className="inline-flex items-center text-gray-400 hover:text-primary mb-8 transition-colors"
             >
               <ArrowLeft className="w-4 h-4 mr-2" />
-              <span className="uppercase text-sm font-bold tracking-wider">
+              <span className="uppercase text-xs font-bold tracking-wider">
                 Back to Projects
               </span>
             </Link>
@@ -316,7 +316,7 @@ export default function SubmitProjectPage() {
             <form onSubmit={handleSubmit} className="space-y-8">
               {/* Basic Information Card */}
               <div className="card-dark p-8">
-                <h2 className="text-2xl font-bold uppercase mb-6 text-white">
+                <h2 className="text-4xl md:text-5xl lg:text-6xl font-black uppercase mb-6 text-white">
                   Project Information
                 </h2>
 

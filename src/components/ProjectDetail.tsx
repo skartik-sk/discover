@@ -136,7 +136,7 @@ export default function ProjectDetail({ project }: ProjectDetailProps) {
                   <div className="flex-1 space-y-3">
                     <div className="flex items-center gap-3 flex-wrap">
                       {project.categories && (
-                        <Badge className="bg-white/10 hover:bg-white/20 text-white border-0 text-sm">
+                        <Badge className="bg-white/10 hover:bg-white/20 text-white border-0 text-xs">
                           {project.categories.name}
                         </Badge>
                       )}
@@ -147,14 +147,14 @@ export default function ProjectDetail({ project }: ProjectDetailProps) {
                         </Badge>
                       )}
                     </div>
-                    <h1 className="text-4xl lg:text-5xl font-black text-white uppercase leading-tight">
+                    <h1 className="text-5xl md:text-6xl lg:text-7xl font-black text-white uppercase leading-tight">
                       {project.title}
                     </h1>
                   </div>
                 </div>
 
                 {/* Description */}
-                <p className="text-lg text-white/80 leading-relaxed">
+                <p className="text-base md:text-lg text-white/80 leading-relaxed">
                   {project.description}
                 </p>
 
@@ -241,10 +241,10 @@ export default function ProjectDetail({ project }: ProjectDetailProps) {
                 <Card className="card-dark">
                   <CardContent className="p-6 text-center">
                     <Eye className="h-8 w-8 mx-auto mb-3 text-cyan-500" />
-                    <div className="text-3xl font-black text-white mb-1">
+                    <div className="text-4xl md:text-5xl font-black text-white mb-1">
                       {project.views?.toLocaleString() || 0}
                     </div>
-                    <div className="text-sm text-white/60 uppercase font-medium">
+                    <div className="text-xs text-white/60 uppercase font-medium">
                       Views
                     </div>
                   </CardContent>
@@ -252,10 +252,10 @@ export default function ProjectDetail({ project }: ProjectDetailProps) {
                 <Card className="card-dark">
                   <CardContent className="p-6 text-center">
                     <Star className="h-8 w-8 mx-auto mb-3 text-[#FFDF00]" />
-                    <div className="text-3xl font-black text-white mb-1">
+                    <div className="text-4xl md:text-5xl font-black text-white mb-1">
                       {averageRating}
                     </div>
-                    <div className="text-sm text-white/60 uppercase font-medium">
+                    <div className="text-xs text-white/60 uppercase font-medium">
                       Rating
                     </div>
                   </CardContent>
@@ -263,10 +263,10 @@ export default function ProjectDetail({ project }: ProjectDetailProps) {
                 <Card className="card-dark">
                   <CardContent className="p-6 text-center">
                     <MessageSquare className="h-8 w-8 mx-auto mb-3 text-purple-500" />
-                    <div className="text-3xl font-black text-white mb-1">
+                    <div className="text-4xl md:text-5xl font-black text-white mb-1">
                       {project.reviews?.length || 0}
                     </div>
-                    <div className="text-sm text-white/60 uppercase font-medium">
+                    <div className="text-xs text-white/60 uppercase font-medium">
                       Reviews
                     </div>
                   </CardContent>
@@ -278,7 +278,7 @@ export default function ProjectDetail({ project }: ProjectDetailProps) {
                 <CardContent className="p-8">
                   <div className="flex items-center gap-3 mb-6">
                     <MessageSquare className="h-6 w-6 text-[#FFDF00]" />
-                    <h2 className="text-2xl font-black text-white uppercase">
+                    <h2 className="text-4xl md:text-5xl lg:text-6xl font-black text-white uppercase">
                       Community Reviews
                     </h2>
                   </div>
@@ -355,7 +355,7 @@ export default function ProjectDetail({ project }: ProjectDetailProps) {
                 <CardContent className="p-6">
                   <div className="flex items-center gap-3 mb-4">
                     <Users className="h-5 w-5 text-[#FFDF00]" />
-                    <h3 className="text-lg font-black text-white uppercase">
+                    <h3 className="text-xl md:text-2xl font-black text-white uppercase">
                       Project Owner
                     </h3>
                   </div>
@@ -373,7 +373,7 @@ export default function ProjectDetail({ project }: ProjectDetailProps) {
                         </AvatarFallback>
                       </Avatar>
                       <div className="flex-1">
-                        <div className="font-bold text-white text-lg">
+                        <div className="font-bold text-white text-base">
                           {project.owner?.displayName ||
                             project.owner?.username}
                         </div>
@@ -406,7 +406,7 @@ export default function ProjectDetail({ project }: ProjectDetailProps) {
                   <CardContent className="p-6">
                     <div className="flex items-center gap-3 mb-4">
                       <Sparkles className="h-5 w-5 text-[#FFDF00]" />
-                      <h3 className="text-lg font-black text-white uppercase">
+                      <h3 className="text-xl md:text-2xl font-black text-white uppercase">
                         Category
                       </h3>
                     </div>
@@ -441,7 +441,7 @@ export default function ProjectDetail({ project }: ProjectDetailProps) {
                 <CardContent className="p-6 space-y-4">
                   <div className="flex items-center gap-3 mb-4">
                     <Award className="h-5 w-5 text-[#FFDF00]" />
-                    <h3 className="text-lg font-black text-white uppercase">
+                    <h3 className="text-xl md:text-2xl font-black text-white uppercase">
                       Project Info
                     </h3>
                   </div>

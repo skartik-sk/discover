@@ -271,7 +271,7 @@ export default function ProjectsPage() {
       <div className="min-h-screen bg-[#0A0A0A] flex items-center justify-center">
         <div className="text-center">
           <div className="animate-spin rounded-full h-16 w-16 border-b-4 border-[#FFDF00] mx-auto mb-6"></div>
-          <p className="text-white/60 text-lg font-medium">
+          <p className="text-white/60 text-base font-medium">
             Loading projects...
           </p>
         </div>
@@ -285,12 +285,12 @@ export default function ProjectsPage() {
       <section className="section-padding bg-gradient-to-b from-[#151515] to-[#0A0A0A]">
         <div className="container-custom">
           <div className="max-w-4xl mx-auto text-center mb-12">
-            <h1 className="text-[3.5rem] lg:text-[5rem] font-black uppercase leading-[0.9] text-white mb-6">
+            <h1 className="text-5xl md:text-6xl lg:text-7xl font-black uppercase leading-[0.9] text-white mb-6">
               Explore Web3
               <br />
               <span className="text-[#FFDF00]">Projects</span>
             </h1>
-            <p className="text-xl lg:text-2xl text-white/60 font-medium">
+            <p className="text-lg md:text-xl text-white/60 font-medium">
               Discover innovative blockchain projects, DeFi protocols, NFT
               platforms, and more
             </p>
@@ -300,42 +300,42 @@ export default function ProjectsPage() {
           <div className="grid grid-cols-2 lg:grid-cols-4 gap-6 max-w-5xl mx-auto">
             <Card className="card-dark text-center">
               <CardContent className="p-6">
-                <div className="text-4xl font-black text-[#FFDF00] mb-2">
+                <div className="text-4xl md:text-5xl font-black text-[#FFDF00] mb-2">
                   {projects.length}
                 </div>
-                <div className="text-sm font-medium text-white/60 uppercase">
+                <div className="text-xs font-medium text-white/60 uppercase">
                   Total Projects
                 </div>
               </CardContent>
             </Card>
             <Card className="card-dark text-center">
               <CardContent className="p-6">
-                <div className="text-4xl font-black text-cyan-500 mb-2">
+                <div className="text-4xl md:text-5xl font-black text-cyan-500 mb-2">
                   {categories.length}
                 </div>
-                <div className="text-sm font-medium text-white/60 uppercase">
+                <div className="text-xs font-medium text-white/60 uppercase">
                   Categories
                 </div>
               </CardContent>
             </Card>
             <Card className="card-dark text-center">
               <CardContent className="p-6">
-                <div className="text-4xl font-black text-purple-500 mb-2">
+                <div className="text-4xl md:text-5xl font-black text-purple-500 mb-2">
                   {projects.filter((p) => p.is_featured).length}
                 </div>
-                <div className="text-sm font-medium text-white/60 uppercase">
+                <div className="text-xs font-medium text-white/60 uppercase">
                   Featured
                 </div>
               </CardContent>
             </Card>
             <Card className="card-dark text-center">
               <CardContent className="p-6">
-                <div className="text-4xl font-black text-green-500 mb-2">
+                <div className="text-4xl md:text-5xl font-black text-green-500 mb-2">
                   {projects
                     .reduce((sum, p) => sum + (p.views || 0), 0)
                     .toLocaleString()}
                 </div>
-                <div className="text-sm font-medium text-white/60 uppercase">
+                <div className="text-xs font-medium text-white/60 uppercase">
                   Total Views
                 </div>
               </CardContent>

@@ -63,7 +63,7 @@ export default function SignInPage() {
             className="inline-flex items-center text-gray-400 hover:text-primary mb-8 transition-colors"
           >
             <ArrowRight className="w-4 h-4 mr-2 rotate-180" />
-            <span className="uppercase text-sm font-bold tracking-wider">
+            <span className="uppercase text-xs font-bold tracking-wider">
               Back to Home
             </span>
           </Link>
@@ -75,7 +75,7 @@ export default function SignInPage() {
             </div>
           </div>
 
-          <h1 className="text-4xl md:text-5xl font-bold uppercase mb-4">
+          <h1 className="text-5xl md:text-6xl lg:text-7xl font-black uppercase mb-4">
             Sign In
           </h1>
           <p className="section-description">
@@ -155,7 +155,7 @@ export default function SignInPage() {
             <div className="absolute inset-0 flex items-center">
               <div className="w-full border-t border-white/10"></div>
             </div>
-            <div className="relative flex justify-center text-sm">
+            <div className="relative flex justify-center text-xs">
               <span className="px-4 bg-dark-lighter text-gray-400 uppercase tracking-wider font-bold">
                 Or
               </span>
@@ -188,13 +188,13 @@ export default function SignInPage() {
             Don't have an account?{" "}
             <Link
               href="/auth/signup"
-              className="text-primary hover:text-primary/80 font-bold uppercase text-sm tracking-wider transition-colors"
+              className="text-primary hover:text-primary/80 font-bold uppercase text-xs tracking-wider transition-colors"
             >
               Sign Up
             </Link>
           </p>
 
-          <div className="flex items-center justify-center gap-4 text-xs text-gray-500">
+          <div className="flex items-center justify-center gap-4 text-[10px] text-gray-500">
             <Link
               href="/privacy"
               className="hover:text-primary transition-colors uppercase tracking-wider"

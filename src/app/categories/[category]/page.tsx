@@ -285,7 +285,7 @@ export default function CategoryPage() {
 
             {/* Category Name */}
             <h1
-              className="text-center text-4xl md:text-5xl lg:text-6xl font-black uppercase leading-[0.95] text-white mb-6 tracking-tight animate-fade-in-up"
+              className="text-center text-5xl md:text-6xl lg:text-7xl font-black uppercase leading-[0.95] text-white mb-6 tracking-tight animate-fade-in-up"
               style={{ animationDelay: "100ms" }}
             >
               {category.name}
@@ -295,7 +295,7 @@ export default function CategoryPage() {
 
             {/* Description */}
             <p
-              className="text-center text-xl md:text-2xl text-white/60 font-medium mb-12 max-w-2xl mx-auto animate-fade-in-up"
+              className="text-center text-lg md:text-xl text-white/60 font-medium mb-12 max-w-2xl mx-auto animate-fade-in-up"
               style={{ animationDelay: "200ms" }}
             >
               {category.description}
@@ -313,7 +313,7 @@ export default function CategoryPage() {
                   placeholder={`Search ${category.name.toLowerCase()} projects...`}
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
-                  className="h-16 bg-[#151515] border-2 border-white/10 text-white placeholder:text-white/40 pl-16 pr-16 rounded-2xl text-lg font-medium focus:border-[#FFDF00] transition-all"
+                  className="h-16 bg-[#151515] border-2 border-white/10 text-white placeholder:text-white/40 pl-16 pr-16 rounded-2xl text-base font-medium focus:border-[#FFDF00] transition-all"
                 />
                 {searchQuery && (
                   <button
@@ -345,7 +345,7 @@ export default function CategoryPage() {
               <div className="text-center">
                 <div className="flex items-center justify-center gap-2 mb-2">
                   <div className="w-3 h-3 bg-cyan-500 rounded-full animate-pulse"></div>
-                  <div className="text-4xl md:text-5xl font-black text-white">
+                  <div className="text-4xl md:text-5xl font-black text-cyan-500 mb-2">
                     {category.projects_count}
                   </div>
                 </div>

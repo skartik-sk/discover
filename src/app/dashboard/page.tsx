@@ -226,7 +226,7 @@ export default function DashboardPage() {
             <div className="absolute inset-0 border-8 border-[#FFDF00]/20 rounded-full"></div>
             <div className="absolute inset-0 border-8 border-[#FFDF00] border-t-transparent rounded-full animate-spin"></div>
           </div>
-          <p className="text-white/60 text-xl font-bold uppercase tracking-wider">
+          <p className="text-white/60 text-base font-bold uppercase tracking-wider">
             Loading Dashboard...
           </p>
         </div>
@@ -241,15 +241,15 @@ export default function DashboardPage() {
           <div className="w-20 h-20 mx-auto mb-6 bg-gradient-to-br from-[#FFDF00] to-amber-500 rounded-2xl flex items-center justify-center">
             <Shield className="h-10 w-10 text-black" />
           </div>
-          <h3 className="text-3xl font-black text-white mb-4 uppercase">
+          <h3 className="text-4xl md:text-5xl lg:text-6xl font-black text-white mb-4 uppercase">
             Authentication Required
           </h3>
-          <p className="text-white/60 mb-8 text-lg leading-relaxed">
+          <p className="text-white/60 mb-8 text-base md:text-lg leading-relaxed">
             Please sign in to access your dashboard and manage your projects.
           </p>
           <Link
             href="/auth/signin"
-            className="inline-flex items-center justify-center w-full h-14 bg-[#FFDF00] hover:bg-[#FFE94D] text-black font-black uppercase text-sm tracking-wider rounded-full transition-all duration-300 transform hover:scale-105"
+            className="inline-flex items-center justify-center w-full h-14 bg-[#FFDF00] hover:bg-[#FFE94D] text-black font-black uppercase text-xs tracking-wider rounded-full transition-all duration-300 transform hover:scale-105"
           >
             <ArrowUpRight className="w-5 h-5 mr-2" />
             Sign In Now
@@ -266,22 +266,22 @@ export default function DashboardPage() {
           <div className="w-20 h-20 mx-auto mb-6 bg-gradient-to-br from-red-500 to-red-600 rounded-2xl flex items-center justify-center">
             <Shield className="h-10 w-10 text-white" />
           </div>
-          <h3 className="text-3xl font-black text-white mb-4 uppercase">
+          <h3 className="text-4xl md:text-5xl lg:text-6xl font-black text-white mb-4 uppercase">
             Error Loading Data
           </h3>
-          <p className="text-white/60 mb-8 text-lg">
+          <p className="text-white/60 mb-8 text-base md:text-lg">
             {error || "Failed to load dashboard data."}
           </p>
           <div className="flex gap-4">
             <button
               onClick={fetchDashboardData}
-              className="flex-1 h-14 bg-[#FFDF00] hover:bg-[#FFE94D] text-black font-black uppercase text-sm tracking-wider rounded-full transition-all duration-300"
+              className="flex-1 h-14 bg-[#FFDF00] hover:bg-[#FFE94D] text-black font-black uppercase text-xs tracking-wider rounded-full transition-all duration-300"
             >
               Retry
             </button>
             <Link
               href="/projects"
-              className="flex-1 h-14 bg-white/10 hover:bg-white/20 text-white font-black uppercase text-sm tracking-wider rounded-full transition-all duration-300 flex items-center justify-center border-2 border-white/20"
+              className="flex-1 h-14 bg-white/10 hover:bg-white/20 text-white font-black uppercase text-xs tracking-wider rounded-full transition-all duration-300 flex items-center justify-center border-2 border-white/20"
             >
               Browse Projects
             </Link>
@@ -318,18 +318,18 @@ export default function DashboardPage() {
             {/* Info */}
             <div className="flex-1">
               <div className="flex items-center gap-3 mb-3">
-                <h1 className="text-5xl lg:text-6xl font-black uppercase leading-[0.9] text-white">
+                <h1 className="text-5xl md:text-6xl lg:text-7xl font-black uppercase leading-[0.9] text-white">
                   {profile.display_name || profile.username || "Dashboard"}
                 </h1>
                 <Badge className="bg-[#FFDF00] text-black hover:bg-[#FFDF00]/90 px-4 py-2 text-xs font-black uppercase">
                   {profile.role}
                 </Badge>
               </div>
-              <p className="text-xl text-white/60 mb-4">
+              <p className="text-lg md:text-xl text-white/60 mb-4">
                 @{profile.username || "no-username"}
               </p>
               {profile.bio && (
-                <p className="text-lg text-white/80 max-w-2xl leading-relaxed">
+                <p className="text-base md:text-lg text-white/80 max-w-2xl leading-relaxed">
                   {profile.bio}
                 </p>
               )}
@@ -339,7 +339,7 @@ export default function DashboardPage() {
             <div className="flex gap-3">
               <Link
                 href="/submit"
-                className="inline-flex items-center justify-center h-14 px-8 bg-[#FFDF00] hover:bg-[#FFE94D] text-black font-black uppercase text-sm tracking-wider rounded-full transition-all duration-300 transform hover:scale-105"
+                className="inline-flex items-center justify-center h-14 px-8 bg-[#FFDF00] hover:bg-[#FFE94D] text-black font-black uppercase text-xs tracking-wider rounded-full transition-all duration-300 transform hover:scale-105"
               >
                 <PlusCircle className="w-5 h-5 mr-2" />
                 New Project

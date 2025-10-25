@@ -72,7 +72,7 @@ export default function CategoriesPage() {
             <div className="absolute inset-0 border-8 border-[#FFDF00]/20 rounded-full"></div>
             <div className="absolute inset-0 border-8 border-[#FFDF00] border-t-transparent rounded-full animate-spin"></div>
           </div>
-          <p className="text-white/60 text-xl font-bold uppercase tracking-wider">
+          <p className="text-white/60 text-base font-bold uppercase tracking-wider">
             Loading Categories...
           </p>
         </div>
@@ -95,20 +95,20 @@ export default function CategoriesPage() {
             {/* Badge */}
             <div className="inline-flex items-center gap-2 px-6 py-3 rounded-full bg-[#FFDF00]/10 border border-[#FFDF00]/20 backdrop-blur-sm mb-8">
               <Sparkles className="w-5 h-5 text-[#FFDF00]" />
-              <span className="text-sm font-bold text-[#FFDF00] uppercase tracking-wider">
+              <span className="text-xs font-bold text-[#FFDF00] uppercase tracking-wider">
                 Browse by Category
               </span>
             </div>
 
             {/* Main Heading */}
-            <h1 className="text-[3.5rem] lg:text-[5rem] font-black uppercase leading-[0.9] text-white mb-6 tracking-tight">
+            <h1 className="text-5xl md:text-6xl lg:text-7xl font-black uppercase leading-[0.9] text-white mb-6 tracking-tight">
               Explore
               <br />
               <span className="text-[#FFDF00]">Web3 Categories</span>
             </h1>
 
             {/* Description */}
-            <p className="text-xl lg:text-2xl text-white/60 font-medium mb-12 leading-relaxed max-w-2xl mx-auto">
+            <p className="text-lg md:text-xl text-white/60 font-medium mb-12 leading-relaxed max-w-2xl mx-auto">
               Discover innovative Web3 projects organized by category. From DeFi
               to NFTs, find what interests you.
             </p>
@@ -122,7 +122,7 @@ export default function CategoriesPage() {
                   placeholder="Search categories..."
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
-                  className="h-16 bg-[#151515] border-2 border-white/10 text-white placeholder:text-white/40 pl-16 pr-16 rounded-2xl text-lg font-medium focus:border-[#FFDF00] transition-all"
+                  className="h-16 bg-[#151515] border-2 border-white/10 text-white placeholder:text-white/40 pl-16 pr-16 rounded-2xl text-base font-medium focus:border-[#FFDF00] transition-all"
                 />
                 {searchQuery && (
                   <button
@@ -140,22 +140,22 @@ export default function CategoriesPage() {
               <div className="text-center">
                 <div className="flex items-center justify-center gap-2 mb-2">
                   <div className="w-3 h-3 bg-[#FFDF00] rounded-full animate-pulse"></div>
-                  <div className="text-5xl font-black text-white">
+                  <div className="text-4xl md:text-5xl font-black text-white">
                     {filteredCategories.length}
                   </div>
                 </div>
-                <div className="text-sm font-bold text-white/60 uppercase tracking-wide">
+                <div className="text-xs font-bold text-white/60 uppercase tracking-wide">
                   Categories
                 </div>
               </div>
               <div className="text-center">
                 <div className="flex items-center justify-center gap-2 mb-2">
                   <div className="w-3 h-3 bg-cyan-500 rounded-full animate-pulse"></div>
-                  <div className="text-5xl font-black text-white">
+                  <div className="text-4xl md:text-5xl font-black text-white">
                     {totalProjects}
                   </div>
                 </div>
-                <div className="text-sm font-bold text-white/60 uppercase tracking-wide">
+                <div className="text-xs font-bold text-white/60 uppercase tracking-wide">
                   Projects
                 </div>
               </div>
@@ -174,7 +174,7 @@ export default function CategoriesPage() {
                 <div className="w-24 h-24 mx-auto mb-8 bg-gradient-to-br from-[#FFDF00]/20 to-transparent rounded-3xl flex items-center justify-center">
                   <Search className="h-12 w-12 text-[#FFDF00]/50" />
                 </div>
-                <h3 className="text-3xl font-black text-white mb-4 uppercase">
+                <h3 className="text-xl md:text-2xl font-black text-white mb-4 uppercase">
                   No Categories Found
                 </h3>
                 <p className="text-white/60 mb-10 max-w-md mx-auto text-lg leading-relaxed">
