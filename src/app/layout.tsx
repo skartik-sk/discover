@@ -20,11 +20,22 @@ const cabinetGrotesk = Space_Grotesk({
 
 export const metadata: Metadata = {
   title: "Discover - Web3 Innovation Platform | Showcase Your Projects",
-  description: "The leading platform for Web3 builders to showcase innovative decentralized applications. Discover DeFi protocols, NFT projects, DAOs, and blockchain solutions.",
+  description:
+    "The leading platform for Web3 builders to showcase innovative decentralized applications. Discover DeFi protocols, NFT projects, DAOs, and blockchain solutions.",
   keywords: [
-    "web3", "blockchain", "defi", "nft", "dao", "crypto", 
-    "decentralized apps", "smart contracts", "ethereum", "web3 projects",
-    "blockchain innovation", "cryptocurrency", "web3 showcase"
+    "web3",
+    "blockchain",
+    "defi",
+    "nft",
+    "dao",
+    "crypto",
+    "decentralized apps",
+    "smart contracts",
+    "ethereum",
+    "web3 projects",
+    "blockchain innovation",
+    "cryptocurrency",
+    "web3 showcase",
   ],
   authors: [{ name: "Discover Platform" }],
   creator: "Discover Team",
@@ -34,7 +45,8 @@ export const metadata: Metadata = {
     locale: "en_US",
     url: "https://discover-web3.com",
     title: "Discover - Web3 Innovation Platform",
-    description: "Showcase and discover cutting-edge Web3 projects. Connect with builders, investors, and users in the decentralized ecosystem.",
+    description:
+      "Showcase and discover cutting-edge Web3 projects. Connect with builders, investors, and users in the decentralized ecosystem.",
     siteName: "Discover",
     images: [
       {
@@ -48,7 +60,8 @@ export const metadata: Metadata = {
   twitter: {
     card: "summary_large_image",
     title: "Discover - Web3 Innovation Platform",
-    description: "Showcase and discover cutting-edge Web3 projects. Connect with builders, investors, and users.",
+    description:
+      "Showcase and discover cutting-edge Web3 projects. Connect with builders, investors, and users.",
     creator: "@discoverWeb3",
     images: ["/og-image.png"],
   },
@@ -58,23 +71,23 @@ export const metadata: Metadata = {
     googleBot: {
       index: true,
       follow: true,
-      'max-video-preview': -1,
-      'max-image-preview': 'large',
-      'max-snippet': -1,
+      "max-video-preview": -1,
+      "max-image-preview": "large",
+      "max-snippet": -1,
     },
   },
   verification: {
-    google: 'your-google-verification-code',
+    google: "your-google-verification-code",
   },
   alternates: {
-    canonical: 'https://discover-web3.com',
+    canonical: "https://discover-web3.com",
   },
   icons: {
-    icon: '/favicon.ico',
-    shortcut: '/favicon-16x16.png',
-    apple: '/apple-touch-icon.png',
+    icon: "/favicon.ico",
+    shortcut: "/favicon-16x16.png",
+    apple: "/apple-touch-icon.png",
   },
-  manifest: '/site.webmanifest',
+  manifest: "/site.webmanifest",
 };
 
 export default function RootLayout({
@@ -85,8 +98,7 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning className="dark">
       <body
-        className={`${cabinetGrotesk.variable} antialiased min-h-screen flex flex-col bg-background text-foreground`}
-        style={{ fontFamily: 'var(--font-cabinet-grotesk), sans-serif' }}
+        className={`${cabinetGrotesk.variable} font-sans antialiased min-h-screen flex flex-col bg-background text-foreground`}
       >
         <SkipLink />
         <ErrorBoundary>

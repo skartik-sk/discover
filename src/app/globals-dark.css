@@ -5,6 +5,14 @@
 
 @import "tailwindcss";
 
+/* Tailwind v4 Font Configuration */
+@theme {
+    --font-sans:
+        "Space Grotesk", system-ui, -apple-system, BlinkMacSystemFont,
+        "Segoe UI", Roboto, sans-serif;
+    --font-family-sans: var(--font-sans);
+}
+
 /* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
    1. CSS VARIABLES - Design Tokens
    ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
@@ -108,18 +116,32 @@
 @layer base {
     * {
         border-color: rgba(255, 255, 255, 0.1);
+        font-family:
+            "Space Grotesk",
+            system-ui,
+            -apple-system,
+            sans-serif;
     }
 
     html {
         scroll-behavior: smooth;
         -webkit-font-smoothing: antialiased;
         -moz-osx-font-smoothing: grayscale;
+        font-family:
+            "Space Grotesk",
+            system-ui,
+            -apple-system,
+            sans-serif;
     }
 
     body {
         background-color: var(--color-dark);
         color: var(--color-white);
-        font-family: var(--font-primary);
+        font-family:
+            "Space Grotesk",
+            system-ui,
+            -apple-system,
+            sans-serif !important;
         line-height: 1.6;
         overflow-x: hidden;
     }
@@ -131,6 +153,11 @@
     h4,
     h5,
     h6 {
+        font-family:
+            "Space Grotesk",
+            system-ui,
+            -apple-system,
+            sans-serif !important;
         font-weight: 900;
         letter-spacing: -0.02em;
         text-transform: uppercase;
@@ -151,11 +178,21 @@
     }
 
     p {
+        font-family:
+            "Space Grotesk",
+            system-ui,
+            -apple-system,
+            sans-serif !important;
         line-height: 1.7;
     }
 
     /* Links */
     a {
+        font-family:
+            "Space Grotesk",
+            system-ui,
+            -apple-system,
+            sans-serif !important;
         color: var(--color-white);
         text-decoration: none;
         transition: color var(--transition-base);
@@ -173,7 +210,11 @@
 
     /* Buttons */
     button {
-        font-family: inherit;
+        font-family:
+            "Space Grotesk",
+            system-ui,
+            -apple-system,
+            sans-serif !important;
         cursor: pointer;
     }
 
@@ -187,6 +228,26 @@
         max-width: 100%;
         height: auto;
         display: block;
+    }
+
+    input,
+    textarea,
+    select {
+        font-family:
+            "Space Grotesk",
+            system-ui,
+            -apple-system,
+            sans-serif !important;
+    }
+
+    label,
+    span,
+    div {
+        font-family:
+            "Space Grotesk",
+            system-ui,
+            -apple-system,
+            sans-serif !important;
     }
 
     /* Selection */

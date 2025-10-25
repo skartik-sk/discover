@@ -74,12 +74,11 @@ export function DarkHeader() {
         <div className="flex items-center justify-between h-20">
           {/* Logo */}
           <Link href="/" className="flex items-center gap-3 group">
-            <div className="w-10 h-10 rounded-lg bg-[#FFDF00] flex items-center justify-center transition-transform duration-300 group-hover:scale-110">
-              <span className="text-[#151515] text-xl font-black">D</span>
-            </div>
-            <span className="text-2xl font-black text-white uppercase tracking-tight">
-              Discover
-            </span>
+            <img
+              src="/logo.png"
+              alt="Discover Logo"
+              className="h-10 w-auto transition-transform duration-300 group-hover:scale-105"
+            />
           </Link>
 
           {/* Desktop Navigation */}
