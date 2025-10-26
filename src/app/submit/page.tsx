@@ -24,11 +24,15 @@ import {
   Star,
   Globe,
   Github,
-  ExternalLink,
   Sparkles,
+  Zap,
+  Layers,
+  Image as ImageIcon,
+  Tag,
 } from "lucide-react";
 import Link from "next/link";
 import LoadingScreen from "@/components/LoadingScreen";
+import { AnimatedBackground } from "@/components/AnimatedBackground";
 
 interface Category {
   id: string;
@@ -92,6 +96,8 @@ export default function SubmitProjectPage() {
     }
     if (!formData.description.trim()) {
       newErrors.description = "Description is required";
+    } else if (formData.description.length < 50) {
+      newErrors.description = "Description must be at least 50 characters";
     }
 
     setErrors(newErrors);
@@ -154,7 +160,7 @@ export default function SubmitProjectPage() {
 
   const addTag = () => {
     const tag = formData.tagInput.trim();
-    if (tag && !formData.tags.includes(tag)) {
+    if (tag && !formData.tags.includes(tag) && formData.tags.length < 10) {
       setFormData((prev) => ({
         ...prev,
         tags: [...prev.tags, tag],
@@ -183,34 +189,33 @@ export default function SubmitProjectPage() {
 
   if (!session) {
     return (
-      <div className="min-h-screen">
-        <section className="section-padding">
-          <div className="container-custom">
-            <div className="max-w-4xl mx-auto text-center">
-              <div className="inline-flex items-center mb-8">
-                <div className="badge-secondary">
-                  <AlertCircle className="w-4 h-4" />
-                  <span>Authentication Required</span>
-                </div>
+      <div className="min-h-screen bg-background relative overflow-hidden">
+        <AnimatedBackground />
+        <section className="relative z-10 py-20 px-4">
+          <div className="container-custom max-w-2xl mx-auto">
+            <div className="text-center space-y-6 animate-fade-in-up">
+              <div className="inline-flex items-center justify-center w-20 h-20 rounded-2xl bg-primary/10 mb-4">
+                <AlertCircle className="w-10 h-10 text-primary" />
               </div>
 
-              <h1 className="text-5xl md:text-6xl lg:text-7xl font-black uppercase leading-[0.95] mb-6 animate-fade-in-up text-white">
-                Sign In to Submit
+              <h1 className="text-4xl md:text-5xl font-black uppercase leading-tight text-foreground">
+                Authentication Required
               </h1>
 
-              <p className="section-description mb-12">
-                You need to sign in to submit your Web3 project to our platform.
+              <p className="text-lg text-muted max-w-md mx-auto">
+                Sign in to submit your Web3 project and join our growing
+                community of builders.
               </p>
 
-              <div className="flex flex-col sm:flex-row gap-4 justify-center">
+              <div className="flex flex-col sm:flex-row gap-4 justify-center pt-4">
                 <Link href="/auth/signin">
-                  <button className="inline-flex items-center gap-3 px-8 py-4 bg-primary text-dark font-black uppercase text-base tracking-wider rounded-lg hover:bg-primary/90 transition-all hover:scale-105">
+                  <button className="inline-flex items-center gap-3 px-8 py-4 bg-primary text-dark font-black uppercase text-sm tracking-wider rounded-xl hover:shadow-lg hover:shadow-primary/50 transition-all hover:scale-105">
                     Sign In
                     <ArrowRight className="w-5 h-5" />
                   </button>
                 </Link>
                 <Link href="/projects">
-                  <button className="inline-flex items-center gap-3 px-8 py-4 bg-dark-lighter border-2 border-white/10 text-white font-black uppercase text-base tracking-wider rounded-lg hover:border-primary/50 transition-all">
+                  <button className="inline-flex items-center gap-3 px-8 py-4 bg-white/5 backdrop-blur-sm border-2 border-border text-foreground font-black uppercase text-sm tracking-wider rounded-xl hover:border-primary/50 transition-all">
                     Browse Projects
                   </button>
                 </Link>
@@ -224,32 +229,29 @@ export default function SubmitProjectPage() {
 
   if (isSubmitted) {
     return (
-      <div className="min-h-screen">
-        <section className="section-padding">
-          <div className="container-custom">
-            <div className="max-w-4xl mx-auto text-center">
-              <div className="inline-flex items-center mb-8">
-                <div className="badge-primary">
-                  <CheckCircle className="w-4 h-4" />
-                  <span>Success!</span>
-                </div>
+      <div className="min-h-screen bg-background relative overflow-hidden">
+        <AnimatedBackground />
+        <section className="relative z-10 py-20 px-4">
+          <div className="container-custom max-w-2xl mx-auto">
+            <div className="text-center space-y-6 animate-fade-in-up">
+              <div className="inline-flex items-center justify-center w-24 h-24 rounded-3xl bg-gradient-to-br from-green-500/20 to-emerald-500/20 mb-4 animate-pulse-glow">
+                <CheckCircle className="w-12 h-12 text-green-400" />
               </div>
 
-              <h1 className="text-5xl md:text-6xl lg:text-7xl font-black uppercase leading-[0.95] mb-6 animate-fade-in-up text-white">
-                Project Submitted
+              <h1 className="text-4xl md:text-5xl font-black uppercase leading-tight text-foreground">
+                Project Submitted!
               </h1>
 
-              <p className="section-description mb-12">
+              <p className="text-lg text-muted max-w-md mx-auto">
                 Your project has been successfully submitted and is now under
-                review. You will be redirected to your project page shortly.
+                review. Redirecting you to your project page...
               </p>
 
-              <div className="flex items-center justify-center space-x-4">
-                <Link href="/projects">
-                  <button className="inline-flex items-center gap-3 px-8 py-4 bg-primary text-dark font-black uppercase text-base tracking-wider rounded-lg hover:bg-primary/90 transition-all hover:scale-105">
-                    View All Projects
-                  </button>
-                </Link>
+              <div className="pt-4">
+                <div className="inline-flex items-center gap-2 text-primary text-sm font-bold uppercase tracking-wider">
+                  <div className="animate-spin rounded-full h-4 w-4 border-2 border-primary border-t-transparent"></div>
+                  Redirecting...
+                </div>
               </div>
             </div>
           </div>
@@ -259,312 +261,334 @@ export default function SubmitProjectPage() {
   }
 
   return (
-    <div className="min-h-screen">
+    <div className="min-h-screen bg-background relative overflow-hidden">
+      <AnimatedBackground />
+
       {/* Header */}
-      <section className="section-padding-sm border-b border-white/5">
-        <div className="container-custom">
-          <div className="max-w-5xl mx-auto">
-            <Link
-              href="/projects"
-              className="inline-flex items-center text-gray-400 hover:text-primary mb-8 transition-colors"
-            >
-              <ArrowLeft className="w-4 h-4 mr-2" />
-              <span className="uppercase text-xs font-bold tracking-wider">
-                Back to Projects
+      <section className="relative z-10 py-12 px-4 border-b border-white/5">
+        <div className="container-custom max-w-4xl mx-auto">
+          <Link
+            href="/projects"
+            className="inline-flex items-center text-muted hover:text-primary mb-8 transition-colors group"
+          >
+            <ArrowLeft className="w-4 h-4 mr-2 group-hover:-translate-x-1 transition-transform" />
+            <span className="uppercase text-xs font-bold tracking-wider">
+              Back to Projects
+            </span>
+          </Link>
+
+          <div className="text-center space-y-4">
+            <div className="inline-flex items-center justify-center gap-2 px-4 py-2 rounded-full bg-primary/10 border border-primary/20 animate-pulse-glow">
+              <Rocket className="w-4 h-4 text-primary" />
+              <span className="text-primary text-xs font-bold uppercase tracking-wider">
+                Submit Your Project
               </span>
-            </Link>
-
-            <div className="text-center">
-              <div className="inline-flex items-center mb-6">
-                <div className="badge-primary animate-pulse-glow">
-                  <Rocket className="w-4 h-4" />
-                  <span>Submit Your Project</span>
-                </div>
-              </div>
-
-              <h1 className="section-title mb-6 animate-fade-in-up">
-                Share Your Web3 Innovation
-              </h1>
-
-              <p className="section-description mb-8">
-                Submit your Web3 project to reach thousands of enthusiasts and
-                early adopters. Get discovered by the community and grow your
-                project.
-              </p>
             </div>
+
+            <h1 className="text-4xl md:text-5xl lg:text-6xl font-black uppercase leading-tight text-foreground animate-fade-in-up">
+              Share Your Web3 Innovation
+            </h1>
+
+            <p className="text-lg text-muted max-w-2xl mx-auto">
+              Submit your Web3 project to reach thousands of enthusiasts and
+              early adopters. Get discovered by the community and grow your
+              project.
+            </p>
           </div>
         </div>
       </section>
 
       {/* Form Section */}
-      <section className="section-padding">
-        <div className="container-custom">
-          <div className="max-w-5xl mx-auto">
-            {error && (
-              <div className="mb-8 p-6 bg-red-500/10 border-2 border-red-500/50 rounded-lg flex items-start gap-3">
-                <AlertCircle className="h-6 w-6 text-red-400 flex-shrink-0 mt-0.5" />
-                <p className="text-red-200 font-medium">{error}</p>
-              </div>
-            )}
+      <section className="relative z-10 py-12 px-4">
+        <div className="container-custom max-w-4xl mx-auto">
+          {error && (
+            <div className="mb-6 p-5 bg-red-500/10 backdrop-blur-sm border-2 border-red-500/50 rounded-xl flex items-start gap-3 animate-fade-in">
+              <AlertCircle className="h-5 w-5 text-red-400 flex-shrink-0 mt-0.5" />
+              <p className="text-red-200 font-medium text-sm">{error}</p>
+            </div>
+          )}
 
-            <form onSubmit={handleSubmit} className="space-y-8">
-              {/* Basic Information Card */}
-              <div className="card-dark p-8">
-                <h2 className="text-4xl md:text-5xl lg:text-6xl font-black uppercase mb-6 text-white">
+          <form onSubmit={handleSubmit} className="space-y-6">
+            {/* Basic Information Card */}
+            <div className="bg-white/5 backdrop-blur-sm border border-white/10 rounded-2xl p-6 md:p-8 hover:border-primary/20 transition-all group">
+              <div className="flex items-center gap-3 mb-6">
+                <div className="w-12 h-12 rounded-xl bg-primary/20 flex items-center justify-center group-hover:scale-110 transition-transform">
+                  <Layers className="w-6 h-6 text-primary" />
+                </div>
+                <h2 className="text-2xl md:text-3xl font-black uppercase text-foreground">
                   Project Information
                 </h2>
-
-                <div className="space-y-6">
-                  {/* Title */}
-                  <div>
-                    <label className="block text-sm font-bold uppercase tracking-wider text-white mb-3">
-                      Project Title <span className="text-primary">*</span>
-                    </label>
-                    <input
-                      type="text"
-                      placeholder="e.g., DeFi Trading Platform"
-                      value={formData.title}
-                      onChange={(e) =>
-                        setFormData((prev) => ({
-                          ...prev,
-                          title: e.target.value,
-                        }))
-                      }
-                      className={`input-dark ${errors.title ? "border-red-500" : ""}`}
-                    />
-                    {errors.title && (
-                      <p className="text-sm text-red-400 mt-2 flex items-center gap-1">
-                        <AlertCircle className="h-3 w-3" />
-                        {errors.title}
-                      </p>
-                    )}
-                  </div>
-
-                  {/* Category */}
-                  <div>
-                    <label className="block text-sm font-bold uppercase tracking-wider text-white mb-3">
-                      Category <span className="text-primary">*</span>
-                    </label>
-                    <Select
-                      value={formData.category}
-                      onValueChange={(value) =>
-                        setFormData((prev) => ({ ...prev, category: value }))
-                      }
-                    >
-                      <SelectTrigger
-                        className={`input-dark ${errors.category ? "border-red-500" : ""}`}
-                      >
-                        <SelectValue placeholder="Select a category" />
-                      </SelectTrigger>
-                      <SelectContent className="bg-dark-lighter border-2 border-white/10 rounded-lg">
-                        {categories.map((category) => (
-                          <SelectItem
-                            key={category.id}
-                            value={category.slug}
-                            className="text-white hover:bg-white/5 cursor-pointer"
-                          >
-                            <span className="flex items-center gap-2">
-                              <span>{category.icon}</span>
-                              <span className="font-medium">
-                                {category.name}
-                              </span>
-                            </span>
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                    {errors.category && (
-                      <p className="text-sm text-red-400 mt-2 flex items-center gap-1">
-                        <AlertCircle className="h-3 w-3" />
-                        {errors.category}
-                      </p>
-                    )}
-                  </div>
-
-                  {/* Description */}
-                  <div>
-                    <label className="block text-sm font-bold uppercase tracking-wider text-white mb-3">
-                      Description <span className="text-primary">*</span>
-                    </label>
-                    <textarea
-                      placeholder="Tell us about your project, its features, and what makes it unique..."
-                      value={formData.description}
-                      onChange={(e) =>
-                        setFormData((prev) => ({
-                          ...prev,
-                          description: e.target.value,
-                        }))
-                      }
-                      rows={6}
-                      className={`input-dark resize-none ${errors.description ? "border-red-500" : ""}`}
-                    />
-                    {errors.description && (
-                      <p className="text-sm text-red-400 mt-2 flex items-center gap-1">
-                        <AlertCircle className="h-3 w-3" />
-                        {errors.description}
-                      </p>
-                    )}
-                    <p className="text-xs text-gray-500 mt-2">
-                      Minimum 50 characters recommended
-                    </p>
-                  </div>
-                </div>
               </div>
 
-              {/* Links Card */}
-              <div className="card-dark p-8">
-                <h2 className="text-2xl font-bold uppercase mb-6 text-white">
+              <div className="space-y-5">
+                {/* Title */}
+                <div>
+                  <label className="block text-xs font-bold uppercase tracking-wider text-foreground mb-2">
+                    Project Title <span className="text-primary">*</span>
+                  </label>
+                  <input
+                    type="text"
+                    placeholder="e.g., DeFi Trading Platform"
+                    value={formData.title}
+                    onChange={(e) =>
+                      setFormData((prev) => ({
+                        ...prev,
+                        title: e.target.value,
+                      }))
+                    }
+                    className={`w-full px-4 py-3 bg-card/50 border-2 ${
+                      errors.title ? "border-red-500" : "border-border"
+                    } rounded-xl text-foreground placeholder:text-muted-foreground focus:border-primary focus:outline-none transition-all`}
+                  />
+                  {errors.title && (
+                    <p className="text-xs text-red-400 mt-2 flex items-center gap-1">
+                      <AlertCircle className="h-3 w-3" />
+                      {errors.title}
+                    </p>
+                  )}
+                </div>
+
+                {/* Category */}
+                <div>
+                  <label className="block text-xs font-bold uppercase tracking-wider text-foreground mb-2">
+                    Category <span className="text-primary">*</span>
+                  </label>
+                  <Select
+                    value={formData.category}
+                    onValueChange={(value) =>
+                      setFormData((prev) => ({ ...prev, category: value }))
+                    }
+                  >
+                    <SelectTrigger
+                      className={`w-full px-4 py-3 bg-card/50 border-2 ${
+                        errors.category ? "border-red-500" : "border-border"
+                      } rounded-xl text-foreground focus:border-primary transition-all`}
+                    >
+                      <SelectValue placeholder="Select a category" />
+                    </SelectTrigger>
+                    <SelectContent className="bg-card border-2 border-border rounded-xl">
+                      {categories.map((category) => (
+                        <SelectItem
+                          key={category.id}
+                          value={category.slug}
+                          className="text-foreground hover:bg-white/5 dark:hover:bg-white/5 cursor-pointer"
+                        >
+                          <span className="flex items-center gap-2">
+                            <span>{category.icon}</span>
+                            <span className="font-medium">{category.name}</span>
+                          </span>
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                  {errors.category && (
+                    <p className="text-xs text-red-400 mt-2 flex items-center gap-1">
+                      <AlertCircle className="h-3 w-3" />
+                      {errors.category}
+                    </p>
+                  )}
+                </div>
+
+                {/* Description */}
+                <div>
+                  <label className="block text-xs font-bold uppercase tracking-wider text-foreground mb-2">
+                    Description <span className="text-primary">*</span>
+                  </label>
+                  <textarea
+                    placeholder="Tell us about your project, its features, and what makes it unique..."
+                    value={formData.description}
+                    onChange={(e) =>
+                      setFormData((prev) => ({
+                        ...prev,
+                        description: e.target.value,
+                      }))
+                    }
+                    rows={6}
+                    className={`w-full px-4 py-3 bg-card/50 border-2 ${
+                      errors.description ? "border-red-500" : "border-border"
+                    } rounded-xl text-foreground placeholder:text-muted-foreground focus:border-primary focus:outline-none transition-all resize-none`}
+                  />
+                  {errors.description && (
+                    <p className="text-xs text-red-400 mt-2 flex items-center gap-1">
+                      <AlertCircle className="h-3 w-3" />
+                      {errors.description}
+                    </p>
+                  )}
+                  <p className="text-xs text-muted-foreground mt-2">
+                    {formData.description.length} / 50 characters minimum
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            {/* Links Card */}
+            <div className="bg-white/5 backdrop-blur-sm border border-white/10 rounded-2xl p-6 md:p-8 hover:border-primary/20 transition-all group">
+              <div className="flex items-center gap-3 mb-6">
+                <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-blue-500/20 to-purple-500/20 flex items-center justify-center group-hover:scale-110 transition-transform">
+                  <Globe className="w-6 h-6 text-blue-400" />
+                </div>
+                <h2 className="text-2xl md:text-3xl font-black uppercase text-foreground">
                   Project Links
                 </h2>
-
-                <div className="space-y-6">
-                  {/* Website URL */}
-                  <div>
-                    <label className="block text-sm font-bold uppercase tracking-wider text-white mb-3 flex items-center gap-2">
-                      <Globe className="w-4 h-4" />
-                      Website URL
-                    </label>
-                    <input
-                      type="url"
-                      placeholder="https://yourproject.com"
-                      value={formData.website_url}
-                      onChange={(e) =>
-                        setFormData((prev) => ({
-                          ...prev,
-                          website_url: e.target.value,
-                        }))
-                      }
-                      className="input-dark"
-                    />
-                  </div>
-
-                  {/* GitHub URL */}
-                  <div>
-                    <label className="block text-sm font-bold uppercase tracking-wider text-white mb-3 flex items-center gap-2">
-                      <Github className="w-4 h-4" />
-                      GitHub Repository
-                    </label>
-                    <input
-                      type="url"
-                      placeholder="https://github.com/username/repo"
-                      value={formData.github_url}
-                      onChange={(e) =>
-                        setFormData((prev) => ({
-                          ...prev,
-                          github_url: e.target.value,
-                        }))
-                      }
-                      className="input-dark"
-                    />
-                  </div>
-
-                  {/* Logo URL */}
-                  <div>
-                    <label className="block text-sm font-bold uppercase tracking-wider text-white mb-3 flex items-center gap-2">
-                      <Star className="w-4 h-4" />
-                      Logo URL
-                    </label>
-                    <input
-                      type="url"
-                      placeholder="https://yourproject.com/logo.png"
-                      value={formData.logo_url}
-                      onChange={(e) =>
-                        setFormData((prev) => ({
-                          ...prev,
-                          logo_url: e.target.value,
-                        }))
-                      }
-                      className="input-dark"
-                    />
-                    <p className="text-xs text-gray-500 mt-2">
-                      Recommended: Square image, min 400x400px
-                    </p>
-                  </div>
-                </div>
               </div>
 
-              {/* Tags Card */}
-              <div className="card-dark p-8">
-                <h2 className="text-2xl font-bold uppercase mb-6 text-white">
+              <div className="space-y-5">
+                {/* Website URL */}
+                <div>
+                  <label className="block text-xs font-bold uppercase tracking-wider text-foreground mb-2 flex items-center gap-2">
+                    <Globe className="w-3.5 h-3.5" />
+                    Website URL
+                  </label>
+                  <input
+                    type="url"
+                    placeholder="https://yourproject.com"
+                    value={formData.website_url}
+                    onChange={(e) =>
+                      setFormData((prev) => ({
+                        ...prev,
+                        website_url: e.target.value,
+                      }))
+                    }
+                    className="w-full px-4 py-3 bg-card/50 border-2 border-border rounded-xl text-foreground placeholder:text-muted-foreground focus:border-primary focus:outline-none transition-all"
+                  />
+                </div>
+
+                {/* GitHub URL */}
+                <div>
+                  <label className="block text-xs font-bold uppercase tracking-wider text-foreground mb-2 flex items-center gap-2">
+                    <Github className="w-3.5 h-3.5" />
+                    GitHub Repository
+                  </label>
+                  <input
+                    type="url"
+                    placeholder="https://github.com/username/repo"
+                    value={formData.github_url}
+                    onChange={(e) =>
+                      setFormData((prev) => ({
+                        ...prev,
+                        github_url: e.target.value,
+                      }))
+                    }
+                    className="w-full px-4 py-3 bg-card/50 border-2 border-border rounded-xl text-foreground placeholder:text-muted-foreground focus:border-primary focus:outline-none transition-all"
+                  />
+                </div>
+
+                {/* Logo URL */}
+                <div>
+                  <label className="block text-xs font-bold uppercase tracking-wider text-foreground mb-2 flex items-center gap-2">
+                    <ImageIcon className="w-3.5 h-3.5" />
+                    Logo URL
+                  </label>
+                  <input
+                    type="url"
+                    placeholder="https://yourproject.com/logo.png"
+                    value={formData.logo_url}
+                    onChange={(e) =>
+                      setFormData((prev) => ({
+                        ...prev,
+                        logo_url: e.target.value,
+                      }))
+                    }
+                    className="w-full px-4 py-3 bg-card/50 border-2 border-border rounded-xl text-foreground placeholder:text-muted-foreground focus:border-primary focus:outline-none transition-all"
+                  />
+                  <p className="text-xs text-muted-foreground mt-2">
+                    Recommended: Square image, minimum 400x400px
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            {/* Tags Card */}
+            <div className="bg-white/5 backdrop-blur-sm border border-white/10 rounded-2xl p-6 md:p-8 hover:border-primary/20 transition-all group">
+              <div className="flex items-center gap-3 mb-6">
+                <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-green-500/20 to-emerald-500/20 flex items-center justify-center group-hover:scale-110 transition-transform">
+                  <Tag className="w-6 h-6 text-green-400" />
+                </div>
+                <h2 className="text-2xl md:text-3xl font-black uppercase text-foreground">
                   Tags
                 </h2>
-
-                <div className="space-y-4">
-                  <div className="flex gap-2">
-                    <input
-                      type="text"
-                      placeholder="Add a tag (e.g., DeFi, NFT, DAO)"
-                      value={formData.tagInput}
-                      onChange={(e) =>
-                        setFormData((prev) => ({
-                          ...prev,
-                          tagInput: e.target.value,
-                        }))
-                      }
-                      onKeyPress={handleTagInputKeyPress}
-                      className="input-dark flex-1"
-                    />
-                    <button
-                      type="button"
-                      onClick={addTag}
-                      className="px-6 py-3 bg-primary text-dark font-bold uppercase tracking-wider rounded-lg hover:bg-primary/90 transition-all"
-                    >
-                      <Plus className="w-5 h-5" />
-                    </button>
-                  </div>
-
-                  {formData.tags.length > 0 && (
-                    <div className="flex flex-wrap gap-2">
-                      {formData.tags.map((tag, index) => (
-                        <div
-                          key={index}
-                          className="badge-tag flex items-center gap-2"
-                        >
-                          {tag}
-                          <button
-                            type="button"
-                            onClick={() => removeTag(tag)}
-                            className="hover:text-primary transition-colors"
-                          >
-                            <X className="w-3 h-3" />
-                          </button>
-                        </div>
-                      ))}
-                    </div>
-                  )}
-                </div>
               </div>
 
-              {/* Submit Button */}
-              <div className="flex items-center justify-end gap-4">
-                <Link href="/projects">
+              <div className="space-y-4">
+                <div className="flex gap-2">
+                  <input
+                    type="text"
+                    placeholder="Add a tag (e.g., DeFi, NFT, DAO)"
+                    value={formData.tagInput}
+                    onChange={(e) =>
+                      setFormData((prev) => ({
+                        ...prev,
+                        tagInput: e.target.value,
+                      }))
+                    }
+                    onKeyPress={handleTagInputKeyPress}
+                    className="flex-1 px-4 py-3 bg-card/50 border-2 border-border rounded-xl text-foreground placeholder:text-muted-foreground focus:border-primary focus:outline-none transition-all"
+                  />
                   <button
                     type="button"
-                    className="px-8 py-4 bg-dark-lighter border-2 border-white/10 text-white font-bold uppercase tracking-wider rounded-lg hover:border-primary/50 transition-all"
+                    onClick={addTag}
+                    disabled={formData.tags.length >= 10}
+                    className="px-5 py-3 bg-primary text-dark font-bold rounded-xl hover:shadow-lg hover:shadow-primary/50 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
                   >
-                    Cancel
+                    <Plus className="w-5 h-5" />
                   </button>
-                </Link>
-                <button
-                  type="submit"
-                  disabled={isSubmitting}
-                  className="inline-flex items-center gap-3 px-8 py-4 bg-primary text-dark font-bold uppercase tracking-wider rounded-lg hover:bg-primary/90 transition-all hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100"
-                >
-                  {isSubmitting ? (
-                    <>
-                      <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-dark"></div>
-                      Submitting...
-                    </>
-                  ) : (
-                    <>
-                      <Sparkles className="w-5 h-5" />
-                      Submit Project
-                    </>
-                  )}
-                </button>
+                </div>
+
+                {formData.tags.length > 0 && (
+                  <div className="flex flex-wrap gap-2">
+                    {formData.tags.map((tag, index) => (
+                      <div
+                        key={index}
+                        className="inline-flex items-center gap-2 px-3 py-1.5 bg-primary/10 border border-primary/30 text-primary text-xs font-bold uppercase tracking-wider rounded-lg hover:bg-primary/20 transition-all group/tag"
+                      >
+                        {tag}
+                        <button
+                          type="button"
+                          onClick={() => removeTag(tag)}
+                          className="hover:text-white transition-colors"
+                        >
+                          <X className="w-3.5 h-3.5" />
+                        </button>
+                      </div>
+                    ))}
+                  </div>
+                )}
+
+                <p className="text-xs text-muted-foreground">
+                  {formData.tags.length} / 10 tags added
+                </p>
               </div>
-            </form>
-          </div>
+            </div>
+
+            {/* Submit Button */}
+            <div className="flex flex-col sm:flex-row items-center justify-between gap-4 pt-4">
+              <Link href="/projects" className="w-full sm:w-auto">
+                <button
+                  type="button"
+                  className="w-full sm:w-auto px-8 py-4 bg-white/5 backdrop-blur-sm border-2 border-border text-foreground font-bold uppercase text-sm tracking-wider rounded-xl hover:border-border/50 transition-all"
+                >
+                  Cancel
+                </button>
+              </Link>
+              <button
+                type="submit"
+                disabled={isSubmitting}
+                className="w-full sm:w-auto inline-flex items-center justify-center gap-3 px-10 py-4 bg-primary text-dark font-black uppercase text-sm tracking-wider rounded-xl hover:shadow-lg hover:shadow-primary/50 transition-all hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100"
+              >
+                {isSubmitting ? (
+                  <>
+                    <div className="animate-spin rounded-full h-5 w-5 border-2 border-dark border-t-transparent"></div>
+                    Submitting...
+                  </>
+                ) : (
+                  <>
+                    <Sparkles className="w-5 h-5" />
+                    Submit Project
+                  </>
+                )}
+              </button>
+            </div>
+          </form>
         </div>
       </section>
     </div>

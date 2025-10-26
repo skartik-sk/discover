@@ -1,57 +1,66 @@
-'use client'
+"use client";
 
-import Link from 'next/link'
-import { Calendar, ExternalLink, Github, MapPin, Twitter, Globe, User as UserIcon, Package } from 'lucide-react'
-import { Button } from '@/components/ui/button'
-import { Badge } from '@/components/ui/badge'
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
+import Link from "next/link";
+import {
+  Calendar,
+  ExternalLink,
+  Github,
+  MapPin,
+  Twitter,
+  Globe,
+  User as UserIcon,
+  Package,
+} from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 
 interface UserProfileProps {
   user: {
-    id: string
-    username: string
-    display_name: string
-    avatar_url: string
-    bio: string
-    website: string
-    twitter: string
-    github: string
-    created_at: string
-    role: string
-  }
+    id: string;
+    username: string;
+    display_name: string;
+    avatar_url: string;
+    bio: string;
+    website: string;
+    twitter: string;
+    github: string;
+    created_at: string;
+    role: string;
+  };
   projects: Array<{
-    id: string
-    title: string
-    description: string
-    logo_url: string
-    website_url: string
-    github_url: string
-    slug: string
-    created_at: string
-    views: number
-    is_featured: boolean
-    tags: string[]
+    id: string;
+    title: string;
+    description: string;
+    logo_url: string;
+    website_url: string;
+    github_url: string;
+    slug: string;
+    created_at: string;
+    views: number;
+    is_featured: boolean;
+    tags: string[];
     categories: {
-      id: string
-      name: string
-      slug: string
-      color: string
-      gradient: string
-    }
-  }>
+      id: string;
+      name: string;
+      slug: string;
+      color: string;
+      gradient: string;
+    };
+  }>;
 }
 
 export default function UserProfile({ user, projects }: UserProfileProps) {
   const formatDate = (dateString: string) => {
-    return new Date(dateString).toLocaleDateString('en-US', {
-      year: 'numeric',
-      month: 'long',
-      day: 'numeric'
-    })
-  }
+    return new Date(dateString).toLocaleDateString("en-US", {
+      year: "numeric",
+      month: "long",
+      day: "numeric",
+    });
+  };
 
-  const totalViews = projects.reduce((sum, project) => sum + project.views, 0)
+  const totalViews = projects.reduce((sum, project) => sum + project.views, 0);
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100 dark:from-slate-900 dark:to-slate-800">
@@ -80,21 +89,33 @@ export default function UserProfile({ user, projects }: UserProfileProps) {
                 <div className="flex space-x-2 mt-4 sm:mt-0">
                   {user.website && (
                     <Button variant="outline" size="sm" asChild>
-                      <a href={user.website} target="_blank" rel="noopener noreferrer">
+                      <a
+                        href={user.website}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                      >
                         <Globe className="w-4 h-4" />
                       </a>
                     </Button>
                   )}
                   {user.twitter && (
                     <Button variant="outline" size="sm" asChild>
-                      <a href={`https://twitter.com/${user.twitter}`} target="_blank" rel="noopener noreferrer">
+                      <a
+                        href={`https://twitter.com/${user.twitter}`}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                      >
                         <Twitter className="w-4 h-4" />
                       </a>
                     </Button>
                   )}
                   {user.github && (
                     <Button variant="outline" size="sm" asChild>
-                      <a href={`https://github.com/${user.github}`} target="_blank" rel="noopener noreferrer">
+                      <a
+                        href={`https://github.com/${user.github}`}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                      >
                         <Github className="w-4 h-4" />
                       </a>
                     </Button>
@@ -148,20 +169,37 @@ export default function UserProfile({ user, projects }: UserProfileProps) {
           {projects.length > 0 ? (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
               {projects.map((project) => (
-                <Card key={project.id} className="group hover:shadow-lg transition-shadow duration-300">
+                <Card
+                  key={project.id}
+                  className="group hover:shadow-lg transition-shadow duration-300"
+                >
                   <CardContent className="p-6">
                     <div className="flex items-start space-x-4 mb-4">
-                      <img
-                        src={project.logo_url || '/api/placeholder/48/48'}
-                        alt={project.title}
-                        className="w-12 h-12 rounded-lg object-cover"
-                      />
+                      {project.logo_url &&
+                      !project.logo_url.includes("placeholder") ? (
+                        <img
+                          src={project.logo_url}
+                          alt={project.title}
+                          className="w-12 h-12 rounded-lg object-cover"
+                        />
+                      ) : (
+                        <div className="w-12 h-12 rounded-lg bg-primary/10 flex items-center justify-center border-2 border-border">
+                          <span className="text-xl font-black text-primary">
+                            {project.title.charAt(0).toUpperCase()}
+                          </span>
+                        </div>
+                      )}
                       <div className="flex-1">
-                        <Link href={`/projects/${user.username}/${project.slug}`}>
+                        <Link
+                          href={`/projects/${user.username}/${project.slug}`}
+                        >
                           <h3 className="font-semibold text-slate-900 dark:text-slate-100 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors mb-1">
                             {project.title}
                             {project.is_featured && (
-                              <Badge variant="secondary" className="ml-2 text-xs">
+                              <Badge
+                                variant="secondary"
+                                className="ml-2 text-xs"
+                              >
                                 Featured
                               </Badge>
                             )}
@@ -179,7 +217,9 @@ export default function UserProfile({ user, projects }: UserProfileProps) {
                         href={`/categories/${project.categories.slug}`}
                         className="inline-flex items-center space-x-1 text-xs text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-100"
                       >
-                        <div className={`w-4 h-4 rounded bg-gradient-to-r ${project.categories.gradient}`}></div>
+                        <div
+                          className={`w-4 h-4 rounded bg-gradient-to-r ${project.categories.gradient}`}
+                        ></div>
                         <span>{project.categories.name}</span>
                       </Link>
                     </div>
@@ -187,7 +227,11 @@ export default function UserProfile({ user, projects }: UserProfileProps) {
                     {/* Tags */}
                     <div className="flex flex-wrap gap-1 mb-4">
                       {project.tags.slice(0, 3).map((tag) => (
-                        <Badge key={tag} variant="secondary" className="text-xs">
+                        <Badge
+                          key={tag}
+                          variant="secondary"
+                          className="text-xs"
+                        >
                           {tag}
                         </Badge>
                       ))}
@@ -214,14 +258,22 @@ export default function UserProfile({ user, projects }: UserProfileProps) {
                       <div className="flex space-x-1">
                         {project.website_url && (
                           <Button variant="ghost" size="sm" asChild>
-                            <a href={project.website_url} target="_blank" rel="noopener noreferrer">
+                            <a
+                              href={project.website_url}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                            >
                               <ExternalLink className="w-3 h-3" />
                             </a>
                           </Button>
                         )}
                         {project.github_url && (
                           <Button variant="ghost" size="sm" asChild>
-                            <a href={project.github_url} target="_blank" rel="noopener noreferrer">
+                            <a
+                              href={project.github_url}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                            >
                               <Github className="w-3 h-3" />
                             </a>
                           </Button>
@@ -240,7 +292,8 @@ export default function UserProfile({ user, projects }: UserProfileProps) {
                   No projects yet
                 </h3>
                 <p className="text-slate-600 dark:text-slate-400 mb-6">
-                  {user.display_name || user.username} hasn't published any projects yet.
+                  {user.display_name || user.username} hasn&apos;t published any
+                  projects yet.
                 </p>
                 <Button asChild>
                   <Link href="/submit">Submit a Project</Link>
@@ -251,5 +304,5 @@ export default function UserProfile({ user, projects }: UserProfileProps) {
         </div>
       </div>
     </div>
-  )
+  );
 }

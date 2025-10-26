@@ -18,6 +18,8 @@ import {
 import Link from "next/link";
 import { useParams } from "next/navigation";
 import { supabase } from "@/lib/supabase";
+import { AnimatedBackground } from "@/components/AnimatedBackground";
+import LoadingScreen from "@/components/LoadingScreen";
 
 interface Category {
   id: string;
@@ -104,11 +106,12 @@ export default function CategoryPage() {
     } else {
       setFilteredProjects(projects);
     }
-  }, [projects, searchQuery]);
+  }, [searchQuery, projects]);
 
   const fetchData = async () => {
     try {
       setLoading(true);
+      setError(null);
 
       // Fetch category
       const { data: categoryData, error: categoryError } = await supabase
@@ -119,122 +122,83 @@ export default function CategoryPage() {
         .single();
 
       if (categoryError) throw categoryError;
-      if (!categoryData) throw new Error("Category not found");
+
+      if (!categoryData) {
+        setError("Category not found");
+        setLoading(false);
+        return;
+      }
 
       setCategory(categoryData);
 
-      // Fetch projects for this category
+      // Fetch projects with relations
       const { data: projectsData, error: projectsError } = await supabase
         .from("projects")
-        .select("*")
+        .select(
+          `
+          *,
+          owner:users!projects_creator_id_fkey(username, display_name, avatar_url),
+          category:categories(name, slug, icon)
+        `,
+        )
         .eq("category_id", categoryData.id)
         .eq("is_active", true)
         .order("created_at", { ascending: false });
 
       if (projectsError) throw projectsError;
 
-      if (!projectsData || projectsData.length === 0) {
-        setProjects([]);
-        setFilteredProjects([]);
-        setLoading(false);
-        return;
-      }
+      // Fetch tags for each project
+      const projectsWithTags = await Promise.all(
+        (projectsData || []).map(async (project) => {
+          const { data: tagsData } = await supabase
+            .from("project_tags")
+            .select("tag_name")
+            .eq("project_id", project.id);
 
-      // Get unique user IDs
-      const userIds = [
-        ...new Set(projectsData.map((p) => p.creator_id).filter(Boolean)),
-      ];
+          return {
+            ...project,
+            tags: tagsData?.map((t) => t.tag_name) || [],
+          };
+        }),
+      );
 
-      // Fetch users
-      const { data: usersData } = await supabase
-        .from("users")
-        .select("id, username, display_name, avatar_url")
-        .in("id", userIds);
-
-      // Fetch project tags
-      const projectIds = projectsData.map((p) => p.id);
-      const { data: tagsData } = await supabase
-        .from("project_tags")
-        .select("project_id, tag_name")
-        .in("project_id", projectIds);
-
-      // Create lookup maps
-      const usersMap = new Map(usersData?.map((u) => [u.id, u]) || []);
-      const tagsMap = new Map<string, string[]>();
-
-      tagsData?.forEach((tag) => {
-        if (!tagsMap.has(tag.project_id)) {
-          tagsMap.set(tag.project_id, []);
-        }
-        tagsMap.get(tag.project_id)?.push(tag.tag_name);
-      });
-
-      // Transform projects data
-      const transformedProjects = projectsData.map((project) => {
-        const user = usersMap.get(project.creator_id);
-        return {
-          ...project,
-          owner: user
-            ? {
-                username: user.username,
-                display_name: user.display_name || user.username,
-                avatar_url: user.avatar_url,
-              }
-            : null,
-          category: {
-            name: categoryData.name,
-            slug: categoryData.slug,
-            icon: categoryData.icon,
-          },
-          tags: tagsMap.get(project.id) || [],
-        };
-      });
-
-      setProjects(transformedProjects);
-      setFilteredProjects(transformedProjects);
+      setProjects(projectsWithTags);
+      setFilteredProjects(projectsWithTags);
     } catch (err) {
-      console.error("Error fetching data:", err);
-      setError(err instanceof Error ? err.message : "Failed to load data");
+      console.error("Error fetching category data:", err);
+      setError("Failed to load category");
     } finally {
       setLoading(false);
     }
   };
 
   if (loading) {
-    return (
-      <div className="min-h-screen bg-[#0A0A0A] flex items-center justify-center">
-        <div className="text-center">
-          <div className="relative w-24 h-24 mx-auto mb-8">
-            <div className="absolute inset-0 border-8 border-[#FFDF00]/20 rounded-full"></div>
-            <div className="absolute inset-0 border-8 border-[#FFDF00] border-t-transparent rounded-full animate-spin"></div>
-          </div>
-          <p className="text-white/60 text-xl font-bold uppercase tracking-wider">
-            Loading Category...
-          </p>
-        </div>
-      </div>
-    );
+    return <LoadingScreen message="Loading Category..." />;
   }
 
   if (error || !category) {
     return (
-      <div className="min-h-screen bg-[#0A0A0A] flex items-center justify-center">
-        <div className="text-center max-w-lg mx-auto px-6">
-          <div className="w-24 h-24 mx-auto mb-8 bg-gradient-to-br from-red-500/20 to-transparent rounded-3xl flex items-center justify-center">
-            <X className="h-12 w-12 text-red-500" />
+      <div className="min-h-screen bg-background relative overflow-hidden">
+        <AnimatedBackground />
+        <div className="relative z-10 flex items-center justify-center min-h-screen">
+          <div className="text-center max-w-lg mx-auto px-6 animate-fade-in-up">
+            <div className="w-24 h-24 mx-auto mb-8 bg-gradient-to-br from-red-500/20 to-transparent rounded-3xl flex items-center justify-center">
+              <X className="h-12 w-12 text-red-500" />
+            </div>
+            <h1 className="text-4xl font-black text-foreground mb-4 uppercase">
+              Category Not Found
+            </h1>
+            <p className="text-muted mb-8 text-lg">
+              The category &quot;{categorySlug}&quot; does not exist or is not
+              active.
+            </p>
+            <Button asChild className="btn-primary">
+              <Link href="/categories">
+                <ArrowRight className="h-5 w-5 mr-2 rotate-180" />
+                Browse All Categories
+              </Link>
+            </Button>
           </div>
-          <h1 className="text-4xl font-black text-white mb-4 uppercase">
-            Category Not Found
-          </h1>
-          <p className="text-white/60 mb-8 text-lg">
-            The category "{categorySlug}" does not exist or is not active.
-          </p>
-          <Button asChild className="btn-primary">
-            <Link href="/categories">
-              <ArrowRight className="h-5 w-5 mr-2 rotate-180" />
-              Browse All Categories
-            </Link>
-          </Button>
         </div>
       </div>
     );
@@ -243,115 +207,116 @@ export default function CategoryPage() {
   const categoryIcon = categoryIcons[category.slug] || category.icon || "🚀";
 
   return (
-    <div className="min-h-screen bg-[#0A0A0A]">
+    <div className="min-h-screen bg-background relative overflow-hidden">
+      <AnimatedBackground />
+
       {/* Category Header */}
-      <section className="relative pt-32 pb-20 md:pt-40 md:pb-28 overflow-hidden bg-gradient-to-b from-[#151515] via-[#0A0A0A] to-[#0A0A0A]">
+      <section className="relative pt-32 pb-20 md:pt-40 md:pb-28 overflow-hidden">
         {/* Background effects */}
-        <div className="absolute inset-0 overflow-hidden pointer-events-none">
-          <div className="absolute top-20 left-1/4 w-[500px] h-[500px] bg-[#FFDF00]/5 rounded-full blur-[120px]" />
-          <div className="absolute top-1/3 right-1/4 w-[600px] h-[600px] bg-cyan-500/5 rounded-full blur-[150px]" />
+        <div className="absolute inset-0 overflow-hidden pointer-events-none opacity-30 dark:opacity-50">
+          <div className="absolute top-20 left-1/4 w-[500px] h-[500px] bg-primary/10 rounded-full blur-[120px]" />
+          <div className="absolute top-1/3 right-1/4 w-[600px] h-[600px] bg-cyan-500/10 rounded-full blur-[150px]" />
         </div>
 
-        {/* Dot Pattern */}
-        <div className="absolute inset-0 bg-[radial-gradient(circle_at_1px_1px,_rgb(255,255,255,0.05)_1px,_transparent_0)] bg-[size:40px_40px] pointer-events-none opacity-30" />
-
-        <div className="container-custom relative z-10">
+        <div className="relative z-10 container-custom">
           <div className="max-w-4xl mx-auto">
             {/* Breadcrumb */}
-            <nav className="flex items-center space-x-2 text-sm text-white/40 mb-8 animate-fade-in">
-              <Link href="/" className="hover:text-white/80 transition-colors">
+            <nav className="flex items-center space-x-2 text-sm text-muted-foreground mb-8 animate-fade-in">
+              <Link
+                href="/"
+                className="hover:text-foreground transition-colors"
+              >
                 Home
               </Link>
               <span>/</span>
               <Link
                 href="/categories"
-                className="hover:text-white/80 transition-colors"
+                className="hover:text-foreground transition-colors"
               >
                 Categories
               </Link>
               <span>/</span>
-              <span className="text-white/80 font-medium">{category.name}</span>
+              <span className="text-foreground font-medium">
+                {category.name}
+              </span>
             </nav>
 
-            {/* Icon */}
-            <div className="flex justify-center mb-8 animate-fade-in-up">
-              <div className="relative inline-block">
-                <div className="absolute inset-0 bg-gradient-to-br from-[#FFDF00] to-amber-500 rounded-3xl blur-xl opacity-50"></div>
-                <div className="relative w-20 h-20 md:w-24 md:h-24 rounded-3xl bg-gradient-to-br from-[#FFDF00] to-amber-500 flex items-center justify-center text-4xl md:text-5xl">
-                  {categoryIcon}
-                </div>
-              </div>
+            {/* Category Icon */}
+            <div
+              className="inline-flex items-center justify-center w-20 h-20 md:w-24 md:h-24 rounded-3xl bg-primary/10 mb-8 animate-fade-in-up"
+              style={{ animationDelay: "0ms" }}
+            >
+              <span className="text-5xl md:text-6xl">{categoryIcon}</span>
             </div>
 
-            {/* Category Name */}
+            {/* Category Title */}
             <h1
-              className="text-center text-5xl md:text-6xl lg:text-7xl font-black uppercase leading-[0.95] text-white mb-6 tracking-tight animate-fade-in-up"
+              className="text-center text-5xl md:text-6xl lg:text-7xl font-black uppercase leading-[0.95] mb-6 tracking-tight animate-fade-in-up"
               style={{ animationDelay: "100ms" }}
             >
-              {category.name}
-              <br />
-              <span className="text-[#FFDF00]">Projects</span>
+              <span className="bg-gradient-to-r from-primary via-primary to-primary bg-clip-text text-transparent">
+                {category.name}
+              </span>{" "}
+              <span className="text-foreground">Projects</span>
             </h1>
 
-            {/* Description */}
+            {/* Category Description */}
             <p
-              className="text-center text-lg md:text-xl text-white/60 font-medium mb-12 max-w-2xl mx-auto animate-fade-in-up"
+              className="text-center text-lg md:text-xl text-muted font-medium mb-12 max-w-2xl mx-auto animate-fade-in-up"
               style={{ animationDelay: "200ms" }}
             >
               {category.description}
             </p>
 
-            {/* Search Bar */}
+            {/* Stats */}
             <div
-              className="max-w-2xl mx-auto mb-12 animate-fade-in-up"
+              className="flex flex-wrap items-center justify-center gap-6 mb-12 animate-fade-in-up"
               style={{ animationDelay: "300ms" }}
             >
+              <div className="flex items-center gap-2 px-4 py-2 rounded-xl bg-white/5 backdrop-blur-sm border border-border">
+                <Rocket className="h-5 w-5 text-primary" />
+                <span className="text-foreground font-bold">
+                  {filteredProjects.length} Projects
+                </span>
+              </div>
+              <div className="flex items-center gap-2 px-4 py-2 rounded-xl bg-white/5 backdrop-blur-sm border border-border">
+                <Eye className="h-5 w-5 text-primary" />
+                <span className="text-foreground font-bold">
+                  {filteredProjects.reduce((acc, p) => acc + (p.views || 0), 0)}{" "}
+                  Views
+                </span>
+              </div>
+              <div className="flex items-center gap-2 px-4 py-2 rounded-xl bg-white/5 backdrop-blur-sm border border-border">
+                <Sparkles className="h-5 w-5 text-primary" />
+                <span className="text-foreground font-bold">
+                  {filteredProjects.filter((p) => p.is_featured).length}{" "}
+                  Featured
+                </span>
+              </div>
+            </div>
+
+            {/* Search Bar */}
+            <div
+              className="max-w-2xl mx-auto animate-fade-in-up"
+              style={{ animationDelay: "400ms" }}
+            >
               <div className="relative">
-                <Search className="absolute left-6 top-1/2 -translate-y-1/2 h-6 w-6 text-white/40" />
+                <Search className="absolute left-6 top-1/2 -translate-y-1/2 h-6 w-6 text-muted-foreground" />
                 <Input
                   type="text"
                   placeholder={`Search ${category.name.toLowerCase()} projects...`}
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
-                  className="h-16 bg-[#151515] border-2 border-white/10 text-white placeholder:text-white/40 pl-16 pr-16 rounded-2xl text-base font-medium focus:border-[#FFDF00] transition-all"
+                  className="h-16 bg-card border-2 border-border text-foreground placeholder:text-muted-foreground pl-16 pr-16 rounded-2xl text-base font-medium focus:border-primary transition-all"
                 />
                 {searchQuery && (
                   <button
                     onClick={() => setSearchQuery("")}
-                    className="absolute right-6 top-1/2 -translate-y-1/2 text-white/40 hover:text-white transition-colors"
+                    className="absolute right-6 top-1/2 -translate-y-1/2 h-8 w-8 rounded-lg bg-white/10 hover:bg-white/20 flex items-center justify-center transition-all"
                   >
-                    <X className="h-6 w-6" />
+                    <X className="h-4 w-4 text-foreground" />
                   </button>
                 )}
-              </div>
-            </div>
-
-            {/* Stats */}
-            <div
-              className="flex justify-center gap-12 animate-fade-in-up"
-              style={{ animationDelay: "400ms" }}
-            >
-              <div className="text-center">
-                <div className="flex items-center justify-center gap-2 mb-2">
-                  <div className="w-3 h-3 bg-[#FFDF00] rounded-full animate-pulse"></div>
-                  <div className="text-4xl md:text-5xl font-black text-white">
-                    {filteredProjects.length}
-                  </div>
-                </div>
-                <div className="text-sm font-bold text-white/60 uppercase tracking-wide">
-                  {searchQuery ? "Filtered" : "Active"} Projects
-                </div>
-              </div>
-              <div className="text-center">
-                <div className="flex items-center justify-center gap-2 mb-2">
-                  <div className="w-3 h-3 bg-cyan-500 rounded-full animate-pulse"></div>
-                  <div className="text-4xl md:text-5xl font-black text-cyan-500 mb-2">
-                    {category.projects_count}
-                  </div>
-                </div>
-                <div className="text-sm font-bold text-white/60 uppercase tracking-wide">
-                  Total Projects
-                </div>
               </div>
             </div>
           </div>
@@ -359,165 +324,157 @@ export default function CategoryPage() {
       </section>
 
       {/* Projects Grid */}
-      <section className="py-20 lg:py-28">
+      <section className="relative z-10 py-12 md:py-16">
         <div className="container-custom">
           {filteredProjects.length === 0 ? (
-            <div className="relative overflow-hidden bg-[#151515] rounded-3xl p-20 text-center border-2 border-dashed border-white/10 max-w-2xl mx-auto">
-              <div className="absolute inset-0 bg-gradient-to-br from-[#FFDF00]/5 to-transparent"></div>
-              <div className="relative z-10">
-                <div className="w-24 h-24 mx-auto mb-8 bg-gradient-to-br from-[#FFDF00]/20 to-transparent rounded-3xl flex items-center justify-center">
-                  <Search className="h-12 w-12 text-[#FFDF00]/50" />
-                </div>
-                <h3 className="text-3xl font-black text-white mb-4 uppercase">
-                  No Projects Found
-                </h3>
-                <p className="text-white/60 mb-10 max-w-md mx-auto text-lg leading-relaxed">
-                  {searchQuery
-                    ? "Try adjusting your search terms to find more projects."
-                    : `No projects have been submitted to the ${category.name} category yet.`}
-                </p>
-                {searchQuery ? (
-                  <button
-                    onClick={() => setSearchQuery("")}
-                    className="inline-flex items-center justify-center h-14 px-8 bg-[#FFDF00] hover:bg-[#FFE94D] text-black font-black uppercase text-sm tracking-wider rounded-full transition-all duration-300 transform hover:scale-105"
-                  >
-                    Clear Search
-                  </button>
-                ) : (
-                  <Button asChild className="btn-primary">
-                    <Link href="/submit">
-                      <Rocket className="h-5 w-5 mr-2" />
-                      Submit First Project
-                      <ArrowRight className="h-5 w-5 ml-2" />
-                    </Link>
-                  </Button>
-                )}
+            <div className="text-center py-20 animate-fade-in">
+              <div className="inline-flex items-center justify-center w-20 h-20 rounded-2xl bg-gradient-to-br from-white/5 to-transparent mb-6">
+                <Search className="h-10 w-10 text-muted" />
               </div>
+              <h3 className="text-2xl font-bold text-foreground mb-3">
+                No Projects Found
+              </h3>
+              <p className="text-muted max-w-md mx-auto">
+                {searchQuery
+                  ? `No projects match your search "${searchQuery}". Try different keywords.`
+                  : `No projects in this category yet. Be the first to submit one!`}
+              </p>
+              {searchQuery && (
+                <Button
+                  onClick={() => setSearchQuery("")}
+                  className="mt-6 btn-secondary"
+                >
+                  Clear Search
+                </Button>
+              )}
             </div>
           ) : (
-            <>
-              <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-                {filteredProjects.map((project, index) => {
-                  const projectSlug =
-                    project.slug ||
-                    project.title
-                      .toLowerCase()
-                      .trim()
-                      .replace(/[^\w\s-]/g, "")
-                      .replace(/[\s_-]+/g, "-")
-                      .replace(/^-+|-+$/g, "");
-                  const username = project.owner?.username || "demo";
-                  const projectUrl = `/projects/${username}/${projectSlug}`;
-
-                  return (
-                    <Link
-                      key={project.id}
-                      href={projectUrl}
-                      className="group animate-fade-in-up"
-                      style={{ animationDelay: `${index * 50}ms` }}
-                    >
-                      <Card className="card-dark hover:border-[#FFDF00]/50 transition-all duration-300 h-full overflow-hidden group-hover:shadow-[0_0_30px_rgba(255,223,0,0.15)]">
-                        <CardContent className="p-6">
-                          {/* Header */}
-                          <div className="flex items-start gap-4 mb-4">
-                            {project.logo_url && (
-                              <div className="relative">
-                                <div className="absolute inset-0 bg-gradient-to-br from-[#FFDF00] to-amber-500 rounded-xl blur opacity-0 group-hover:opacity-50 transition-opacity" />
-                                <div className="relative w-14 h-14 rounded-xl bg-gradient-to-br from-[#FFDF00] to-amber-500 flex items-center justify-center flex-shrink-0 group-hover:scale-110 transition-transform duration-300">
-                                  <img
-                                    src={project.logo_url}
-                                    alt={project.title}
-                                    className="w-10 h-10 object-contain"
-                                  />
-                                </div>
-                              </div>
-                            )}
-                            <div className="flex-1 min-w-0">
-                              <h3 className="text-xl font-black text-white mb-2 uppercase truncate group-hover:text-[#FFDF00] transition-colors">
-                                {project.title}
-                              </h3>
-                              {project.category && (
-                                <Badge className="bg-white/10 text-white hover:bg-white/20 text-xs border-0">
-                                  {categoryIcon} {project.category.name}
-                                </Badge>
-                              )}
-                            </div>
-                          </div>
-
-                          {/* Description */}
-                          <p className="text-white/60 text-sm mb-4 line-clamp-2 leading-relaxed">
-                            {project.description || "No description available."}
-                          </p>
-
-                          {/* Tags */}
-                          {project.tags.length > 0 && (
-                            <div className="flex flex-wrap gap-2 mb-4">
-                              {project.tags.slice(0, 3).map((tag, idx) => (
-                                <Badge
-                                  key={idx}
-                                  className="bg-white/5 text-white/60 hover:bg-white/10 border-0 text-xs"
-                                >
-                                  {tag}
-                                </Badge>
-                              ))}
-                            </div>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8">
+              {filteredProjects.map((project, index) => (
+                <Link
+                  key={project.id}
+                  href={`/projects/${project.owner?.username || "demo"}/${project.slug}`}
+                  className="group animate-fade-in-up"
+                  style={{ animationDelay: `${index * 50}ms` }}
+                >
+                  <Card className="h-full bg-card border-border hover:border-primary transition-all duration-300 hover:shadow-lg hover:shadow-primary/10 hover:-translate-y-1">
+                    <CardContent className="p-6">
+                      {/* Project Header */}
+                      <div className="flex items-start gap-4 mb-4">
+                        {/* Logo */}
+                        <div className="flex-shrink-0 w-16 h-16 rounded-xl bg-primary/10 flex items-center justify-center overflow-hidden border-2 border-border">
+                          {project.logo_url &&
+                          !project.logo_url.includes("placeholder") ? (
+                            <img
+                              src={project.logo_url}
+                              alt={project.title}
+                              className="w-full h-full object-cover"
+                            />
+                          ) : (
+                            <span className="text-2xl font-black text-primary">
+                              {project.title.charAt(0).toUpperCase()}
+                            </span>
                           )}
+                        </div>
 
-                          {/* Footer */}
-                          <div className="flex items-center justify-between pt-4 border-t border-white/10">
-                            <div className="flex items-center gap-4 text-sm text-white/40">
-                              <div className="flex items-center gap-1">
-                                <Eye className="h-4 w-4" />
-                                <span>{project.views || 0}</span>
-                              </div>
-                              {project.owner && (
-                                <div className="flex items-center gap-1 truncate">
-                                  <Users className="h-4 w-4" />
-                                  <span className="truncate text-xs">
-                                    {project.owner.display_name}
-                                  </span>
-                                </div>
-                              )}
-                            </div>
-                            <ArrowRight className="h-5 w-5 text-white/40 group-hover:text-[#FFDF00] group-hover:translate-x-1 transition-all" />
+                        {/* Title & Featured Badge */}
+                        <div className="flex-1 min-w-0">
+                          <h3 className="text-lg font-bold text-foreground mb-1 line-clamp-1 group-hover:text-primary transition-colors">
+                            {project.title}
+                          </h3>
+                          {project.is_featured && (
+                            <Badge className="badge-primary">
+                              <Sparkles className="h-3 w-3 mr-1" />
+                              Featured
+                            </Badge>
+                          )}
+                        </div>
+                      </div>
+
+                      {/* Description */}
+                      <p className="text-muted text-sm line-clamp-3 mb-4">
+                        {project.description || "No description available"}
+                      </p>
+
+                      {/* Tags */}
+                      {project.tags.length > 0 && (
+                        <div className="flex flex-wrap gap-2 mb-4">
+                          {project.tags.slice(0, 3).map((tag: string) => (
+                            <Badge
+                              key={tag}
+                              className="bg-white/5 dark:bg-white/10 text-muted-foreground hover:bg-white/10 dark:hover:bg-white/15 border-0 text-xs"
+                            >
+                              {tag}
+                            </Badge>
+                          ))}
+                          {project.tags.length > 3 && (
+                            <Badge className="bg-white/5 dark:bg-white/10 text-muted-foreground border-0 text-xs">
+                              +{project.tags.length - 3}
+                            </Badge>
+                          )}
+                        </div>
+                      )}
+
+                      {/* Footer */}
+                      <div className="flex items-center justify-between pt-4 border-t border-border">
+                        <div className="flex items-center gap-4">
+                          <div className="flex items-center gap-1 text-muted-foreground">
+                            <Eye className="h-4 w-4" />
+                            <span className="text-sm font-medium">
+                              {project.views || 0}
+                            </span>
                           </div>
-                        </CardContent>
-                      </Card>
-                    </Link>
-                  );
-                })}
-              </div>
-
-              {/* CTA Section */}
-              <div className="relative overflow-hidden bg-[#151515] rounded-3xl p-12 md:p-16 text-center border border-white/10 max-w-3xl mx-auto mt-20">
-                <div className="absolute inset-0 bg-gradient-to-br from-[#FFDF00]/10 to-transparent"></div>
-                <div className="relative z-10">
-                  <div className="relative inline-block mb-8">
-                    <div className="absolute inset-0 bg-gradient-to-br from-[#FFDF00] to-amber-500 rounded-3xl blur-xl opacity-50"></div>
-                    <div className="relative w-16 h-16 rounded-3xl bg-gradient-to-br from-[#FFDF00] to-amber-500 flex items-center justify-center">
-                      <Rocket className="h-8 w-8 text-black" />
-                    </div>
-                  </div>
-                  <h3 className="text-3xl md:text-4xl font-black text-white mb-4 uppercase">
-                    Got a {category.name} Project?
-                  </h3>
-                  <p className="text-white/60 mb-8 max-w-lg mx-auto text-lg leading-relaxed">
-                    Submit your project and get discovered by thousands of Web3
-                    enthusiasts
-                  </p>
-                  <Button asChild className="btn-primary">
-                    <Link href="/submit">
-                      <Rocket className="h-5 w-5 mr-2" />
-                      Submit Your Project
-                      <ArrowRight className="h-5 w-5 ml-2" />
-                    </Link>
-                  </Button>
-                </div>
-              </div>
-            </>
+                        </div>
+                        <ArrowRight className="h-5 w-5 text-primary opacity-0 group-hover:opacity-100 transition-opacity" />
+                      </div>
+                    </CardContent>
+                  </Card>
+                </Link>
+              ))}
+            </div>
           )}
         </div>
       </section>
+
+      {/* CTA Section */}
+      {filteredProjects.length > 0 && (
+        <section className="relative z-10 py-20 md:py-28">
+          <div className="container-custom">
+            <div className="max-w-3xl mx-auto text-center">
+              <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary/10 border border-primary/20 mb-6 animate-pulse-glow">
+                <TrendingUp className="w-4 h-4 text-primary" />
+                <span className="text-primary text-xs font-bold uppercase tracking-wider">
+                  Join The Community
+                </span>
+              </div>
+              <h2 className="text-3xl md:text-4xl lg:text-5xl font-black uppercase leading-tight mb-6">
+                <span className="text-foreground">Submit Your</span>{" "}
+                <span className="bg-gradient-to-r from-primary via-primary to-primary bg-clip-text text-transparent">
+                  {category.name}
+                </span>{" "}
+                <span className="text-foreground">Project</span>
+              </h2>
+              <p className="text-lg text-muted mb-8">
+                Share your innovative {category.name.toLowerCase()} project with
+                thousands of enthusiasts and early adopters.
+              </p>
+              <div className="flex flex-col sm:flex-row gap-4 justify-center">
+                <Link href="/submit">
+                  <Button className="btn-primary">
+                    <Rocket className="h-5 w-5 mr-2" />
+                    Submit Project
+                  </Button>
+                </Link>
+                <Link href="/categories">
+                  <Button className="btn-secondary">
+                    Browse All Categories
+                  </Button>
+                </Link>
+              </div>
+            </div>
+          </div>
+        </section>
+      )}
     </div>
   );
 }

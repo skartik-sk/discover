@@ -75,12 +75,12 @@ export default function Header() {
               <div className="relative">
                 <button
                   onClick={() => setIsUserMenuOpen(!isUserMenuOpen)}
-                  className="flex items-center gap-3 px-4 py-2 rounded-lg bg-dark-lighter border-2 border-white/10 hover:border-[#FFDF00]/50 transition-all"
+                  className="flex items-center gap-3 px-4 py-2 rounded-lg bg-card border-2 border-border hover:border-primary/50 transition-all"
                 >
-                  <div className="w-8 h-8 rounded-full bg-gradient-to-br from-[#FFDF00] to-amber-500 flex items-center justify-center font-bold text-dark text-sm uppercase">
+                  <div className="w-8 h-8 rounded-full bg-primary flex items-center justify-center font-bold text-dark text-sm uppercase">
                     {user?.email?.charAt(0) || "U"}
                   </div>
-                  <span className="text-sm font-bold text-white">
+                  <span className="text-sm font-bold text-foreground">
                     {user?.email?.split("@")[0] || "User"}
                   </span>
                 </button>

@@ -268,10 +268,10 @@ export default function ProjectsPage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-[#0A0A0A] flex items-center justify-center">
+      <div className="min-h-screen bg-background flex items-center justify-center">
         <div className="text-center">
-          <div className="animate-spin rounded-full h-16 w-16 border-b-4 border-[#FFDF00] mx-auto mb-6"></div>
-          <p className="text-white/60 text-base font-medium">
+          <div className="animate-spin rounded-full h-16 w-16 border-b-4 border-primary mx-auto mb-6"></div>
+          <p className="text-muted text-base font-medium">
             Loading projects...
           </p>
         </div>
@@ -280,62 +280,62 @@ export default function ProjectsPage() {
   }
 
   return (
-    <div className="min-h-screen bg-[#0A0A0A]">
+    <div className="min-h-screen bg-background">
       {/* Hero Section */}
-      <section className="section-padding bg-gradient-to-b from-[#151515] to-[#0A0A0A]">
+      <section className="pt-24 pb-8 bg-background">
         <div className="container-custom">
-          <div className="max-w-4xl mx-auto text-center mb-12">
-            <h1 className="text-5xl md:text-6xl lg:text-7xl font-black uppercase leading-[0.9] text-white mb-6">
+          <div className="max-w-4xl mx-auto text-center mb-8">
+            <h1 className="text-3xl md:text-4xl lg:text-6xl font-black uppercase leading-[1.1] text-foreground mb-6">
               Explore Web3
               <br />
-              <span className="text-[#FFDF00]">Projects</span>
+              <span className="text-primary">Projects</span>
             </h1>
-            <p className="text-lg md:text-xl text-white/60 font-medium">
+            <p className="text-lg md:text-xl text-muted font-medium">
               Discover innovative blockchain projects, DeFi protocols, NFT
               platforms, and more
             </p>
           </div>
 
           {/* Stats */}
-          <div className="grid grid-cols-2 lg:grid-cols-4 gap-6 max-w-5xl mx-auto">
+          <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 md:gap-5 max-w-5xl mx-auto">
             <Card className="card-dark text-center">
-              <CardContent className="p-6">
-                <div className="text-4xl md:text-5xl font-black text-[#FFDF00] mb-2">
+              <CardContent className="p-4 md:p-5">
+                <div className="text-3xl md:text-3xl lg:text-4xl font-black text-primary mb-2">
                   {projects.length}
                 </div>
-                <div className="text-xs font-medium text-white/60 uppercase">
+                <div className="text-xs font-medium text-muted uppercase">
                   Total Projects
                 </div>
               </CardContent>
             </Card>
             <Card className="card-dark text-center">
-              <CardContent className="p-6">
-                <div className="text-4xl md:text-5xl font-black text-cyan-500 mb-2">
+              <CardContent className="p-4 md:p-5">
+                <div className="text-3xl md:text-3xl lg:text-4xl font-black text-cyan-500 mb-2">
                   {categories.length}
                 </div>
-                <div className="text-xs font-medium text-white/60 uppercase">
+                <div className="text-xs font-medium text-muted uppercase">
                   Categories
                 </div>
               </CardContent>
             </Card>
             <Card className="card-dark text-center">
-              <CardContent className="p-6">
-                <div className="text-4xl md:text-5xl font-black text-purple-500 mb-2">
+              <CardContent className="p-4 md:p-5">
+                <div className="text-3xl md:text-3xl lg:text-4xl font-black text-purple-500 mb-2">
                   {projects.filter((p) => p.is_featured).length}
                 </div>
-                <div className="text-xs font-medium text-white/60 uppercase">
+                <div className="text-xs font-medium text-muted uppercase">
                   Featured
                 </div>
               </CardContent>
             </Card>
             <Card className="card-dark text-center">
-              <CardContent className="p-6">
-                <div className="text-4xl md:text-5xl font-black text-green-500 mb-2">
+              <CardContent className="p-4 md:p-5">
+                <div className="text-3xl md:text-3xl lg:text-4xl font-black text-green-500 mb-2">
                   {projects
                     .reduce((sum, p) => sum + (p.views || 0), 0)
                     .toLocaleString()}
                 </div>
-                <div className="text-xs font-medium text-white/60 uppercase">
+                <div className="text-xs font-medium text-muted uppercase">
                   Total Views
                 </div>
               </CardContent>
@@ -355,7 +355,7 @@ export default function ProjectsPage() {
                   {/* Search */}
                   <div className="lg:col-span-5">
                     <div className="relative">
-                      <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-white/40" />
+                      <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
                       <Input
                         placeholder="Search projects, tags, or keywords..."
                         value={searchQuery}
@@ -365,7 +365,7 @@ export default function ProjectsPage() {
                       {searchQuery && (
                         <button
                           onClick={() => setSearchQuery("")}
-                          className="absolute right-4 top-1/2 -translate-y-1/2 text-white/40 hover:text-white"
+                          className="absolute right-4 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
                         >
                           <X className="h-5 w-5" />
                         </button>
@@ -382,15 +382,15 @@ export default function ProjectsPage() {
                       <SelectTrigger className="input-dark">
                         <SelectValue placeholder="All Categories" />
                       </SelectTrigger>
-                      <SelectContent className="bg-[#1B1B1B] border-white/10">
-                        <SelectItem value="all" className="text-white">
+                      <SelectContent className="bg-card border-border">
+                        <SelectItem value="all" className="text-foreground">
                           All Categories
                         </SelectItem>
                         {categories.map((cat) => (
                           <SelectItem
                             key={cat.id}
                             value={cat.slug}
-                            className="text-white"
+                            className="text-foreground"
                           >
                             {cat.icon} {cat.name}
                           </SelectItem>
@@ -405,12 +405,12 @@ export default function ProjectsPage() {
                       <SelectTrigger className="input-dark">
                         <SelectValue placeholder="Sort by" />
                       </SelectTrigger>
-                      <SelectContent className="bg-[#1B1B1B] border-white/10">
+                      <SelectContent className="bg-card border-border">
                         {sortOptions.map((option) => (
                           <SelectItem
                             key={option.value}
                             value={option.value}
-                            className="text-white"
+                            className="text-foreground"
                           >
                             {option.label}
                           </SelectItem>
@@ -426,7 +426,7 @@ export default function ProjectsPage() {
                       size="icon"
                       onClick={() => setViewMode("grid")}
                       className={`btn-outline ${
-                        viewMode === "grid" ? "bg-[#FFDF00] text-black" : ""
+                        viewMode === "grid" ? "bg-primary text-dark" : ""
                       }`}
                     >
                       <Grid className="h-5 w-5" />
@@ -436,7 +436,7 @@ export default function ProjectsPage() {
                       size="icon"
                       onClick={() => setViewMode("list")}
                       className={`btn-outline ${
-                        viewMode === "list" ? "bg-[#FFDF00] text-black" : ""
+                        viewMode === "list" ? "bg-primary text-dark" : ""
                       }`}
                     >
                       <List className="h-5 w-5" />
@@ -448,18 +448,18 @@ export default function ProjectsPage() {
                 {(searchQuery ||
                   selectedCategory !== "all" ||
                   sortBy !== "featured") && (
-                  <div className="flex items-center gap-3 mt-4 pt-4 border-t border-white/10">
-                    <span className="text-sm font-medium text-white/60">
+                  <div className="flex items-center gap-3 mt-4 pt-4 border-t border-border">
+                    <span className="text-sm font-medium text-muted">
                       Active filters:
                     </span>
                     <div className="flex flex-wrap gap-2 flex-1">
                       {searchQuery && (
-                        <Badge className="bg-[#FFDF00] text-black">
+                        <Badge className="bg-primary text-dark">
                           Search: {searchQuery}
                         </Badge>
                       )}
                       {selectedCategory !== "all" && (
-                        <Badge className="bg-cyan-500 text-black">
+                        <Badge className="bg-cyan-500 text-dark">
                           Category:{" "}
                           {
                             categories.find((c) => c.slug === selectedCategory)
@@ -468,7 +468,7 @@ export default function ProjectsPage() {
                         </Badge>
                       )}
                       {sortBy !== "featured" && (
-                        <Badge className="bg-purple-500 text-black">
+                        <Badge className="bg-purple-500 text-dark">
                           Sort:{" "}
                           {sortOptions.find((o) => o.value === sortBy)?.label}
                         </Badge>
@@ -490,13 +490,13 @@ export default function ProjectsPage() {
 
           {/* Results Count */}
           <div className="mb-6">
-            <p className="text-white/60 text-lg font-medium">
+            <p className="text-muted text-lg font-medium">
               Showing{" "}
-              <span className="text-white font-bold">
+              <span className="text-foreground font-bold">
                 {displayedProjects.length}
               </span>{" "}
               of{" "}
-              <span className="text-white font-bold">
+              <span className="text-foreground font-bold">
                 {filteredProjects.length}
               </span>{" "}
               projects
@@ -507,11 +507,11 @@ export default function ProjectsPage() {
           {filteredProjects.length === 0 ? (
             <Card className="card-dark">
               <CardContent className="py-20 text-center">
-                <Search className="h-16 w-16 mx-auto mb-6 text-white/20" />
-                <h3 className="text-2xl font-black text-white mb-3 uppercase">
+                <Search className="h-16 w-16 mx-auto mb-6 text-muted" />
+                <h3 className="text-2xl font-black text-foreground mb-3 uppercase">
                   No Projects Found
                 </h3>
-                <p className="text-white/60 mb-8 max-w-md mx-auto">
+                <p className="text-muted mb-8 max-w-md mx-auto">
                   Try adjusting your filters or search terms to find what you're
                   looking for.
                 </p>
@@ -545,27 +545,32 @@ export default function ProjectsPage() {
                   return (
                     <Card
                       key={project.id}
-                      className="card-dark group hover:border-[#FFDF00]/50 transition-all duration-300 overflow-hidden"
+                      className="card-dark group hover:border-primary/50 transition-all duration-300 overflow-hidden"
                     >
                       <CardContent className="p-6">
                         {/* Project Header */}
                         <div className="flex items-start justify-between mb-4">
                           <div className="flex items-start gap-4 flex-1 min-w-0">
-                            {project.logo_url && (
-                              <div className="w-14 h-14 rounded-xl bg-gradient-to-br from-[#FFDF00] to-amber-500 flex items-center justify-center flex-shrink-0">
+                            <div className="w-14 h-14 rounded-xl bg-primary/10 border-2 border-border flex items-center justify-center flex-shrink-0 overflow-hidden">
+                              {project.logo_url &&
+                              !project.logo_url.includes("placeholder") ? (
                                 <img
                                   src={project.logo_url}
                                   alt={project.title}
-                                  className="w-10 h-10 object-contain"
+                                  className="w-full h-full object-cover"
                                 />
-                              </div>
-                            )}
+                              ) : (
+                                <span className="text-xl font-black text-primary">
+                                  {project.title.charAt(0).toUpperCase()}
+                                </span>
+                              )}
+                            </div>
                             <div className="flex-1 min-w-0">
-                              <h3 className="text-xl font-black text-white mb-2 uppercase truncate group-hover:text-[#FFDF00] transition-colors">
+                              <h3 className="text-xl font-black text-foreground mb-2 uppercase truncate group-hover:text-primary transition-colors">
                                 {project.title}
                               </h3>
                               {project.category && (
-                                <Badge className="bg-white/10 text-white hover:bg-white/20">
+                                <Badge className="bg-white/10 dark:bg-white/10 text-foreground hover:bg-white/20">
                                   {project.category.icon}{" "}
                                   {project.category.name}
                                 </Badge>
@@ -573,7 +578,7 @@ export default function ProjectsPage() {
                             </div>
                           </div>
                           {project.is_featured && (
-                            <Badge className="bg-[#FFDF00] text-black hover:bg-[#FFDF00]/90 ml-2 flex-shrink-0">
+                            <Badge className="bg-primary text-dark hover:bg-primary/90 ml-2 flex-shrink-0">
                               <Star className="h-3 w-3 mr-1" />
                               Featured
                             </Badge>
@@ -582,7 +587,7 @@ export default function ProjectsPage() {
 
                         {/* Description */}
                         {project.description && (
-                          <p className="text-white/60 mb-4 line-clamp-3">
+                          <p className="text-muted mb-4 line-clamp-3">
                             {project.description}
                           </p>
                         )}
@@ -594,7 +599,7 @@ export default function ProjectsPage() {
                               <Badge
                                 key={i}
                                 variant="outline"
-                                className="border-white/20 text-white/80 text-xs"
+                                className="border-border text-muted text-xs"
                               >
                                 {tag}
                               </Badge>
@@ -602,7 +607,7 @@ export default function ProjectsPage() {
                             {project.tags.length > 4 && (
                               <Badge
                                 variant="outline"
-                                className="border-white/20 text-white/60 text-xs"
+                                className="border-border text-muted text-xs"
                               >
                                 +{project.tags.length - 4}
                               </Badge>
@@ -611,7 +616,7 @@ export default function ProjectsPage() {
                         )}
 
                         {/* Stats */}
-                        <div className="flex items-center gap-6 mb-4 text-sm text-white/60">
+                        <div className="flex items-center gap-6 mb-4 text-sm text-muted">
                           <div className="flex items-center gap-2">
                             <Eye className="h-4 w-4" />
                             <span>{project.views || 0} views</span>
@@ -628,24 +633,24 @@ export default function ProjectsPage() {
 
                         {/* Author */}
                         {project.user && (
-                          <div className="flex items-center gap-3 mb-4 pb-4 border-b border-white/10">
+                          <div className="flex items-center gap-3 mb-4 pb-4 border-b border-border">
                             <Avatar className="h-8 w-8">
                               <AvatarImage
                                 src={project.user.avatar_url || undefined}
                                 alt={project.user.display_name || "User"}
                               />
-                              <AvatarFallback className="bg-[#FFDF00] text-black text-xs font-black">
+                              <AvatarFallback className="bg-primary text-dark text-xs font-black">
                                 {(project.user.display_name ||
                                   project.user.username ||
                                   "U")[0].toUpperCase()}
                               </AvatarFallback>
                             </Avatar>
                             <div className="flex-1 min-w-0">
-                              <p className="text-sm font-medium text-white truncate">
+                              <p className="text-sm font-medium text-foreground truncate">
                                 {project.user.display_name ||
                                   project.user.username}
                               </p>
-                              <p className="text-xs text-white/40 truncate">
+                              <p className="text-xs text-muted-foreground truncate">
                                 @{project.user.username || "anonymous"}
                               </p>
                             </div>

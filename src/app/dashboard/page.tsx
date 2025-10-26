@@ -220,11 +220,11 @@ export default function DashboardPage() {
 
   if (authLoading || loading) {
     return (
-      <div className="min-h-screen bg-[#0A0A0A] flex items-center justify-center">
+      <div className="min-h-screen bg-mesh bg-orbs flex items-center justify-center">
         <div className="text-center">
           <div className="relative w-24 h-24 mx-auto mb-8">
-            <div className="absolute inset-0 border-8 border-[#FFDF00]/20 rounded-full"></div>
-            <div className="absolute inset-0 border-8 border-[#FFDF00] border-t-transparent rounded-full animate-spin"></div>
+            <div className="absolute inset-0 border-8 border-primary/20 rounded-full"></div>
+            <div className="absolute inset-0 border-8 border-primary border-t-transparent rounded-full animate-spin"></div>
           </div>
           <p className="text-white/60 text-base font-bold uppercase tracking-wider">
             Loading Dashboard...
@@ -236,20 +236,20 @@ export default function DashboardPage() {
 
   if (!session || !user) {
     return (
-      <div className="min-h-screen bg-[#0A0A0A] flex items-center justify-center p-4">
-        <div className="max-w-md w-full bg-[#151515] rounded-3xl p-12 text-center border-2 border-white/10">
-          <div className="w-20 h-20 mx-auto mb-6 bg-gradient-to-br from-[#FFDF00] to-amber-500 rounded-2xl flex items-center justify-center">
-            <Shield className="h-10 w-10 text-black" />
+      <div className="min-h-screen bg-mesh bg-orbs flex items-center justify-center p-4">
+        <div className="max-w-md w-full bg-card rounded-3xl p-12 text-center border-2 border-border">
+          <div className="w-20 h-20 mx-auto mb-6 bg-primary/10 rounded-2xl flex items-center justify-center">
+            <Shield className="h-10 w-10 text-primary" />
           </div>
-          <h3 className="text-4xl md:text-5xl lg:text-6xl font-black text-white mb-4 uppercase">
+          <h3 className="text-3xl md:text-4xl lg:text-5xl font-black text-foreground mb-4 uppercase">
             Authentication Required
           </h3>
-          <p className="text-white/60 mb-8 text-base md:text-lg leading-relaxed">
+          <p className="text-muted mb-8 text-base md:text-lg leading-relaxed">
             Please sign in to access your dashboard and manage your projects.
           </p>
           <Link
             href="/auth/signin"
-            className="inline-flex items-center justify-center w-full h-14 bg-[#FFDF00] hover:bg-[#FFE94D] text-black font-black uppercase text-xs tracking-wider rounded-full transition-all duration-300 transform hover:scale-105"
+            className="inline-flex items-center justify-center w-full h-14 bg-primary hover:shadow-lg hover:shadow-primary/30 text-dark font-black uppercase text-xs tracking-wider rounded-full transition-all duration-300 transform hover:scale-105"
           >
             <ArrowUpRight className="w-5 h-5 mr-2" />
             Sign In Now
@@ -261,27 +261,27 @@ export default function DashboardPage() {
 
   if (error || !profile) {
     return (
-      <div className="min-h-screen bg-[#0A0A0A] flex items-center justify-center p-4">
-        <div className="max-w-md w-full bg-[#151515] rounded-3xl p-12 text-center border-2 border-red-500/20">
-          <div className="w-20 h-20 mx-auto mb-6 bg-gradient-to-br from-red-500 to-red-600 rounded-2xl flex items-center justify-center">
-            <Shield className="h-10 w-10 text-white" />
+      <div className="min-h-screen bg-mesh bg-orbs flex items-center justify-center p-4">
+        <div className="max-w-md w-full bg-card rounded-3xl p-12 text-center border-2 border-red-500/20">
+          <div className="w-20 h-20 mx-auto mb-6 bg-red-500/10 rounded-2xl flex items-center justify-center">
+            <Shield className="h-10 w-10 text-red-500" />
           </div>
-          <h3 className="text-4xl md:text-5xl lg:text-6xl font-black text-white mb-4 uppercase">
+          <h3 className="text-2xl sm:text-3xl md:text-4xl font-black text-foreground mb-4 uppercase">
             Error Loading Data
           </h3>
-          <p className="text-white/60 mb-8 text-base md:text-lg">
+          <p className="text-muted mb-8 text-sm md:text-base">
             {error || "Failed to load dashboard data."}
           </p>
           <div className="flex gap-4">
             <button
               onClick={fetchDashboardData}
-              className="flex-1 h-14 bg-[#FFDF00] hover:bg-[#FFE94D] text-black font-black uppercase text-xs tracking-wider rounded-full transition-all duration-300"
+              className="flex-1 h-14 bg-primary hover:shadow-lg hover:shadow-primary/30 text-dark font-black uppercase text-xs tracking-wider rounded-full transition-all duration-300"
             >
               Retry
             </button>
             <Link
               href="/projects"
-              className="flex-1 h-14 bg-white/10 hover:bg-white/20 text-white font-black uppercase text-xs tracking-wider rounded-full transition-all duration-300 flex items-center justify-center border-2 border-white/20"
+              className="flex-1 h-14 bg-card hover:bg-card/80 text-foreground font-black uppercase text-xs tracking-wider rounded-full transition-all duration-300 flex items-center justify-center border-2 border-border"
             >
               Browse Projects
             </Link>
@@ -292,22 +292,22 @@ export default function DashboardPage() {
   }
 
   return (
-    <div className="min-h-screen bg-[#0A0A0A]">
+    <div className="min-h-screen bg-mesh bg-orbs">
       {/* Header with gradient background */}
-      <div className="relative overflow-hidden bg-gradient-to-b from-[#151515] via-[#0A0A0A] to-[#0A0A0A] border-b border-white/5">
+      <div className="relative overflow-hidden bg-gradient-to-b from-[#151515]/50 via-transparent to-transparent border-b border-white/5">
         <div className="absolute inset-0 bg-[url('/grid.svg')] opacity-5"></div>
 
-        <div className="container-custom py-16 lg:py-24 relative z-10">
-          <div className="flex flex-col lg:flex-row items-start lg:items-center gap-8 mb-12">
+        <div className="container-custom page-header-spaced content-safe relative z-10">
+          <div className="flex flex-col lg:flex-row items-start lg:items-center gap-6 md:gap-8 mb-8 md:mb-10 lg:mb-12">
             {/* Avatar */}
-            <div className="relative group">
-              <div className="absolute inset-0 bg-gradient-to-br from-[#FFDF00] to-amber-500 rounded-3xl blur-xl opacity-50 group-hover:opacity-75 transition-opacity"></div>
-              <Avatar className="relative h-32 w-32 ring-4 ring-[#FFDF00]/20">
+            <div className="relative group flex-shrink-0">
+              <div className="absolute inset-0 bg-primary rounded-3xl blur-xl opacity-50 group-hover:opacity-75 transition-opacity"></div>
+              <Avatar className="relative h-20 w-20 md:h-24 md:w-24 lg:h-32 lg:w-32 ring-4 ring-primary/20">
                 <AvatarImage
                   src={profile.avatar_url || undefined}
                   alt={profile.display_name || "User"}
                 />
-                <AvatarFallback className="bg-gradient-to-br from-[#FFDF00] to-amber-500 text-black text-4xl font-black">
+                <AvatarFallback className="bg-primary text-dark text-2xl md:text-3xl lg:text-4xl font-black">
                   {(profile.display_name ||
                     profile.username ||
                     "U")[0].toUpperCase()}
@@ -317,19 +317,22 @@ export default function DashboardPage() {
 
             {/* Info */}
             <div className="flex-1">
-              <div className="flex items-center gap-3 mb-3">
-                <h1 className="text-5xl md:text-6xl lg:text-7xl font-black uppercase leading-[0.9] text-white">
-                  {profile.display_name || profile.username || "Dashboard"}
+              <div className="flex flex-wrap items-center gap-2 md:gap-3 mb-2 md:mb-3">
+                <h1 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-black uppercase leading-tight">
+                  <span className="text-foreground">Welcome,</span>{" "}
+                  <span className="bg-gradient-to-r from-primary via-primary to-primary bg-clip-text text-transparent">
+                    {profile.display_name || profile.username || "User"}
+                  </span>
                 </h1>
-                <Badge className="bg-[#FFDF00] text-black hover:bg-[#FFDF00]/90 px-4 py-2 text-xs font-black uppercase">
+                <Badge className="bg-primary text-dark hover:bg-primary/90 px-4 py-2 text-xs font-black uppercase">
                   {profile.role}
                 </Badge>
               </div>
-              <p className="text-lg md:text-xl text-white/60 mb-4">
+              <p className="text-sm md:text-base lg:text-lg text-white/60 mb-3">
                 @{profile.username || "no-username"}
               </p>
               {profile.bio && (
-                <p className="text-base md:text-lg text-white/80 max-w-2xl leading-relaxed">
+                <p className="text-sm md:text-base text-white/80 max-w-2xl leading-relaxed">
                   {profile.bio}
                 </p>
               )}
@@ -338,24 +341,31 @@ export default function DashboardPage() {
             {/* Actions */}
             <div className="flex gap-3">
               <Link
-                href="/submit"
-                className="inline-flex items-center justify-center h-14 px-8 bg-[#FFDF00] hover:bg-[#FFE94D] text-black font-black uppercase text-xs tracking-wider rounded-full transition-all duration-300 transform hover:scale-105"
+                href="/dashboard/settings"
+                className="inline-flex items-center justify-center h-12 sm:h-14 px-6 sm:px-8 bg-card hover:bg-card/80 text-foreground font-bold uppercase text-xs tracking-wider rounded-full transition-all duration-300 border border-border hover:border-primary/50"
               >
-                <PlusCircle className="w-5 h-5 mr-2" />
+                <Settings className="w-4 h-4 sm:w-5 sm:h-5 mr-2" />
+                Settings
+              </Link>
+              <Link
+                href="/submit"
+                className="inline-flex items-center justify-center h-12 sm:h-14 px-6 sm:px-8 bg-primary hover:shadow-lg hover:shadow-primary/30 text-dark font-black uppercase text-xs tracking-wider rounded-full transition-all duration-300 transform hover:scale-105"
+              >
+                <PlusCircle className="w-4 h-4 sm:w-5 sm:h-5 mr-2" />
                 New Project
               </Link>
             </div>
           </div>
 
           {/* Stats Grid */}
-          <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-            <div className="relative overflow-hidden bg-gradient-to-br from-[#FFDF00]/10 to-transparent rounded-2xl p-6 border border-[#FFDF00]/20 group hover:border-[#FFDF00]/50 transition-all duration-300">
-              <div className="absolute top-0 right-0 w-32 h-32 bg-[#FFDF00]/5 rounded-full blur-3xl group-hover:bg-[#FFDF00]/10 transition-all"></div>
-              <Rocket className="h-8 w-8 text-[#FFDF00] mb-4" />
-              <div className="text-4xl font-black text-white mb-1">
+          <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6">
+            <div className="relative overflow-hidden bg-gradient-to-br from-primary/10 to-transparent rounded-2xl p-6 border border-primary/20 group hover:border-primary/50 transition-all duration-300">
+              <div className="absolute top-0 right-0 w-32 h-32 bg-primary/5 rounded-full blur-3xl group-hover:bg-primary/10 transition-all"></div>
+              <Rocket className="h-8 w-8 text-primary mb-4" />
+              <div className="text-4xl font-black text-foreground mb-1">
                 {stats.total_projects}
               </div>
-              <div className="text-sm font-bold text-white/60 uppercase tracking-wide">
+              <div className="text-sm font-bold text-muted uppercase tracking-wide">
                 Total Projects
               </div>
             </div>
@@ -363,10 +373,10 @@ export default function DashboardPage() {
             <div className="relative overflow-hidden bg-gradient-to-br from-cyan-500/10 to-transparent rounded-2xl p-6 border border-cyan-500/20 group hover:border-cyan-500/50 transition-all duration-300">
               <div className="absolute top-0 right-0 w-32 h-32 bg-cyan-500/5 rounded-full blur-3xl group-hover:bg-cyan-500/10 transition-all"></div>
               <Eye className="h-8 w-8 text-cyan-500 mb-4" />
-              <div className="text-4xl font-black text-white mb-1">
+              <div className="text-4xl font-black text-foreground mb-1">
                 {stats.total_views.toLocaleString()}
               </div>
-              <div className="text-sm font-bold text-white/60 uppercase tracking-wide">
+              <div className="text-sm font-bold text-muted uppercase tracking-wide">
                 Total Views
               </div>
             </div>
@@ -374,10 +384,10 @@ export default function DashboardPage() {
             <div className="relative overflow-hidden bg-gradient-to-br from-purple-500/10 to-transparent rounded-2xl p-6 border border-purple-500/20 group hover:border-purple-500/50 transition-all duration-300">
               <div className="absolute top-0 right-0 w-32 h-32 bg-purple-500/5 rounded-full blur-3xl group-hover:bg-purple-500/10 transition-all"></div>
               <Trophy className="h-8 w-8 text-purple-500 mb-4" />
-              <div className="text-4xl font-black text-white mb-1">
+              <div className="text-4xl font-black text-foreground mb-1">
                 {stats.featured_projects}
               </div>
-              <div className="text-sm font-bold text-white/60 uppercase tracking-wide">
+              <div className="text-sm font-bold text-muted uppercase tracking-wide">
                 Featured
               </div>
             </div>
@@ -397,18 +407,18 @@ export default function DashboardPage() {
       </div>
 
       {/* Main Content */}
-      <div className="container-custom py-12 lg:py-20">
-        <Tabs defaultValue="projects" className="w-full">
-          <TabsList className="bg-[#151515] border border-white/10 p-1.5 mb-12 inline-flex rounded-2xl">
+      <div className="container-custom py-8 md:py-12">
+        <Tabs defaultValue="projects" className="space-y-6 md:space-y-8">
+          <TabsList className="bg-card border border-border p-1.5 mb-12 inline-flex rounded-2xl">
             <TabsTrigger
               value="projects"
-              className="data-[state=active]:bg-[#FFDF00] data-[state=active]:text-black font-black uppercase px-8 py-3 rounded-xl transition-all duration-300"
+              className="data-[state=active]:bg-primary data-[state=active]:text-dark font-black uppercase px-8 py-3 rounded-xl transition-all duration-300"
             >
               My Projects
             </TabsTrigger>
             <TabsTrigger
               value="profile"
-              className="data-[state=active]:bg-[#FFDF00] data-[state=active]:text-black font-black uppercase px-8 py-3 rounded-xl transition-all duration-300"
+              className="data-[state=active]:bg-primary data-[state=active]:text-dark font-black uppercase px-8 py-3 rounded-xl transition-all duration-300"
             >
               Profile
             </TabsTrigger>
@@ -417,34 +427,34 @@ export default function DashboardPage() {
           {/* Projects Tab */}
           <TabsContent value="projects" className="space-y-8">
             {projects.length === 0 ? (
-              <div className="relative overflow-hidden bg-[#151515] rounded-3xl p-20 text-center border-2 border-dashed border-white/10">
-                <div className="absolute inset-0 bg-gradient-to-br from-[#FFDF00]/5 to-transparent"></div>
+              <div className="relative overflow-hidden bg-card rounded-3xl p-8 md:p-12 lg:p-20 text-center border-2 border-dashed border-border">
+                <div className="absolute inset-0 bg-gradient-to-br from-primary/5 to-transparent"></div>
                 <div className="relative z-10">
-                  <div className="w-24 h-24 mx-auto mb-8 bg-gradient-to-br from-[#FFDF00]/20 to-transparent rounded-3xl flex items-center justify-center">
-                    <Rocket className="h-12 w-12 text-[#FFDF00]/50" />
+                  <div className="w-16 h-16 md:w-20 md:h-20 lg:w-24 lg:h-24 mx-auto mb-6 md:mb-8 bg-primary/10 rounded-2xl md:rounded-3xl flex items-center justify-center">
+                    <Rocket className="h-8 w-8 md:h-10 md:w-10 lg:h-12 lg:w-12 text-primary/50" />
                   </div>
-                  <h3 className="text-3xl font-black text-white mb-4 uppercase">
+                  <h3 className="text-xl sm:text-2xl md:text-3xl font-black text-white mb-4 uppercase">
                     No Projects Yet
                   </h3>
-                  <p className="text-white/60 mb-10 max-w-md mx-auto text-lg leading-relaxed">
+                  <p className="text-white/60 mb-8 md:mb-10 max-w-md mx-auto text-sm md:text-base leading-relaxed">
                     Start showcasing your Web3 innovations by submitting your
                     first project.
                   </p>
                   <Link
                     href="/submit"
-                    className="inline-flex items-center justify-center h-16 px-10 bg-[#FFDF00] hover:bg-[#FFE94D] text-black font-black uppercase text-sm tracking-wider rounded-full transition-all duration-300 transform hover:scale-105"
+                    className="inline-flex items-center justify-center h-12 sm:h-14 px-6 sm:px-8 bg-primary hover:shadow-lg hover:shadow-primary/30 text-dark font-black uppercase text-xs tracking-wider rounded-full transition-all duration-300 transform hover:scale-105"
                   >
-                    <PlusCircle className="w-5 h-5 mr-3" />
+                    <PlusCircle className="w-4 h-4 sm:w-5 sm:h-5 mr-2" />
                     Submit Your First Project
                   </Link>
                 </div>
               </div>
             ) : (
-              <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 md:gap-6">
                 {projects.map((project) => (
                   <div
                     key={project.id}
-                    className="group relative overflow-hidden bg-[#151515] rounded-3xl p-8 border border-white/10 hover:border-[#FFDF00]/50 transition-all duration-500"
+                    className="relative overflow-hidden bg-card rounded-2xl md:rounded-3xl p-5 md:p-6 lg:p-8 border border-border hover:border-primary/30 transition-all group cursor-default"
                   >
                     {/* Glow effect */}
                     <div className="absolute inset-0 bg-gradient-to-br from-[#FFDF00]/0 to-[#FFDF00]/0 group-hover:from-[#FFDF00]/5 group-hover:to-transparent transition-all duration-500"></div>
@@ -455,8 +465,8 @@ export default function DashboardPage() {
                         <div className="flex items-start gap-5 flex-1 min-w-0">
                           {project.logo_url && (
                             <div className="relative">
-                              <div className="absolute inset-0 bg-gradient-to-br from-[#FFDF00] to-amber-500 rounded-2xl blur-lg opacity-50 group-hover:opacity-75 transition-opacity"></div>
-                              <div className="relative w-16 h-16 rounded-2xl bg-gradient-to-br from-[#FFDF00] to-amber-500 flex items-center justify-center">
+                              <div className="absolute inset-0 bg-primary rounded-2xl blur-lg opacity-50 group-hover:opacity-75 transition-opacity"></div>
+                              <div className="relative w-16 h-16 rounded-2xl bg-primary flex items-center justify-center">
                                 <img
                                   src={project.logo_url}
                                   alt={project.title}
@@ -466,7 +476,7 @@ export default function DashboardPage() {
                             </div>
                           )}
                           <div className="flex-1 min-w-0">
-                            <h3 className="text-2xl font-black text-white mb-3 uppercase truncate group-hover:text-[#FFDF00] transition-colors">
+                            <h3 className="text-xl sm:text-2xl md:text-3xl font-black text-foreground uppercase mb-2 group-hover:text-primary transition-colors truncate">
                               {project.title}
                             </h3>
                             <div className="flex flex-wrap gap-2">
@@ -477,7 +487,7 @@ export default function DashboardPage() {
                                 </Badge>
                               )}
                               {project.is_featured && (
-                                <Badge className="bg-[#FFDF00] text-black hover:bg-[#FFDF00]/90">
+                                <Badge className="bg-primary text-dark hover:bg-primary/90">
                                   <Star className="h-3 w-3 mr-1 fill-current" />
                                   Featured
                                 </Badge>
@@ -538,14 +548,15 @@ export default function DashboardPage() {
                       </div>
 
                       {/* Actions */}
-                      <div className="flex gap-3">
+                      <div className="flex gap-2 md:gap-3">
                         {project.website_url && (
                           <a
                             href={project.website_url}
                             target="_blank"
                             rel="noopener noreferrer"
-                            className="flex-1 h-12 bg-white/5 hover:bg-white/10 text-white font-bold text-sm uppercase rounded-xl transition-all duration-300 flex items-center justify-center gap-2 border border-white/10"
+                            className="flex-1 h-10 md:h-12 bg-white/5 hover:bg-white/10 text-white font-bold text-xs md:text-sm uppercase rounded-xl transition-all duration-300 flex items-center justify-center gap-2 border border-white/10"
                           >
+                            <ExternalLink className="w-3 h-3 md:w-4 md:h-4" />
                             <Globe className="h-4 w-4" />
                             Visit
                           </a>
@@ -555,9 +566,9 @@ export default function DashboardPage() {
                             href={project.github_url}
                             target="_blank"
                             rel="noopener noreferrer"
-                            className="flex-1 h-12 bg-white/5 hover:bg-white/10 text-white font-bold text-sm uppercase rounded-xl transition-all duration-300 flex items-center justify-center gap-2 border border-white/10"
+                            className="flex-1 h-10 md:h-12 bg-white/5 hover:bg-white/10 text-white font-bold text-xs md:text-sm uppercase rounded-xl transition-all duration-300 flex items-center justify-center gap-2 border border-white/10"
                           >
-                            <Github className="h-4 w-4" />
+                            <Github className="w-3 h-3 md:w-4 md:h-4" />
                             Code
                           </a>
                         )}
@@ -577,7 +588,7 @@ export default function DashboardPage() {
 
           {/* Profile Tab */}
           <TabsContent value="profile" className="space-y-6">
-            <div className="relative overflow-hidden bg-[#151515] rounded-3xl border border-white/10">
+            <div className="relative overflow-hidden bg-card rounded-3xl border border-border">
               {/* Header */}
               <div className="p-8 border-b border-white/10 flex items-center justify-between">
                 <div>
@@ -591,7 +602,7 @@ export default function DashboardPage() {
                 {!isEditingProfile && (
                   <button
                     onClick={() => setIsEditingProfile(true)}
-                    className="h-12 px-6 bg-[#FFDF00] hover:bg-[#FFE94D] text-black font-black uppercase text-sm tracking-wider rounded-full transition-all duration-300 flex items-center gap-2"
+                    className="h-12 px-6 bg-primary hover:shadow-lg hover:shadow-primary/30 text-dark font-black uppercase text-sm tracking-wider rounded-full transition-all duration-300 flex items-center gap-2"
                   >
                     <Edit className="h-4 w-4" />
                     Edit Profile
@@ -616,7 +627,7 @@ export default function DashboardPage() {
                               display_name: e.target.value,
                             })
                           }
-                          className="h-14 bg-white/5 border-white/10 text-white rounded-xl focus:border-[#FFDF00]"
+                          className="h-14 bg-card border-border text-foreground rounded-xl focus:border-primary"
                           placeholder="Your name"
                         />
                       </div>
@@ -632,7 +643,7 @@ export default function DashboardPage() {
                               username: e.target.value,
                             })
                           }
-                          className="h-14 bg-white/5 border-white/10 text-white rounded-xl focus:border-[#FFDF00]"
+                          className="h-14 bg-card border-border text-foreground rounded-xl focus:border-primary"
                           placeholder="username"
                         />
                       </div>

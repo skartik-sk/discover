@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { useAuth } from "@/contexts/auth-context";
+import { useTheme } from "@/contexts/theme-context";
 import {
   Settings as SettingsIcon,
   User,
@@ -10,29 +11,24 @@ import {
   Palette,
   Moon,
   Sun,
-  Monitor,
   Check,
   ArrowLeft,
 } from "lucide-react";
 import Link from "next/link";
 
-type Theme = "dark" | "light" | "system";
-
 export default function SettingsPage() {
   const { user } = useAuth();
-  const [theme, setTheme] = useState<Theme>("dark");
+  const { theme, setTheme } = useTheme();
   const [emailNotifications, setEmailNotifications] = useState(true);
   const [projectUpdates, setProjectUpdates] = useState(true);
   const [communityNews, setCommunityNews] = useState(false);
 
-  const handleThemeChange = (newTheme: Theme) => {
+  const handleThemeChange = (newTheme: "dark" | "light") => {
     setTheme(newTheme);
-    // In a real app, this would save to localStorage and update the document
-    localStorage.setItem("theme", newTheme);
   };
 
   return (
-    <div className="min-h-screen bg-dark py-12 px-4">
+    <div className="min-h-screen bg-background py-12 px-4">
       <div className="container-custom max-w-5xl">
         {/* Header */}
         <div className="mb-12">
@@ -45,8 +41,8 @@ export default function SettingsPage() {
           </Link>
 
           <div className="flex items-center gap-4 mb-4">
-            <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-[#FFDF00]/20 to-amber-500/20 flex items-center justify-center">
-              <SettingsIcon className="w-8 h-8 text-[#FFDF00]" />
+            <div className="w-16 h-16 rounded-2xl bg-primary/10 flex items-center justify-center">
+              <SettingsIcon className="w-8 h-8 text-primary" />
             </div>
             <div>
               <h1 className="text-3xl md:text-4xl font-black text-white uppercase">
@@ -75,7 +71,7 @@ export default function SettingsPage() {
                 <label className="block text-sm font-bold uppercase tracking-wider text-white mb-4">
                   Theme
                 </label>
-                <div className="grid grid-cols-3 gap-4">
+                <div className="grid grid-cols-2 gap-4">
                   {/* Dark Theme */}
                   <button
                     onClick={() => handleThemeChange("dark")}
@@ -115,31 +111,14 @@ export default function SettingsPage() {
                       </div>
                     )}
                   </button>
-
-                  {/* System Theme */}
-                  <button
-                    onClick={() => handleThemeChange("system")}
-                    className={`relative p-6 rounded-xl border-2 transition-all ${
-                      theme === "system"
-                        ? "border-[#FFDF00] bg-[#FFDF00]/10"
-                        : "border-white/10 bg-dark-lighter hover:border-white/20"
-                    }`}
-                  >
-                    <Monitor className="w-8 h-8 text-white mx-auto mb-3" />
-                    <div className="text-sm font-bold text-white uppercase">
-                      System
-                    </div>
-                    {theme === "system" && (
-                      <div className="absolute top-3 right-3">
-                        <Check className="w-5 h-5 text-[#FFDF00]" />
-                      </div>
-                    )}
-                  </button>
                 </div>
               </div>
 
               <p className="text-white/60 text-sm">
-                Currently using: <strong className="text-[#FFDF00]">Dark Theme</strong>
+                Currently using:{" "}
+                <strong className="text-[#FFDF00] capitalize">
+                  {theme} Theme
+                </strong>
               </p>
             </div>
           </section>
@@ -242,7 +221,9 @@ export default function SettingsPage() {
                 <label className="block text-sm font-bold uppercase tracking-wider text-white/60 mb-2">
                   Email
                 </label>
-                <div className="text-base text-white">{user?.email || "Not available"}</div>
+                <div className="text-base text-white">
+                  {user?.email || "Not available"}
+                </div>
               </div>
 
               <div>

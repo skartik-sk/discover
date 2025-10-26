@@ -5,8 +5,10 @@ import { Mail, Twitter, Github, Linkedin, ArrowUp } from "lucide-react";
 import { FigmaButton } from "@/components/figma-ui/FigmaButton";
 import { FigmaInput } from "@/components/figma-ui/FigmaInput";
 import { useState } from "react";
+import { useTheme } from "@/contexts/theme-context";
 
 export function DarkFooter() {
+  const { theme } = useTheme();
   const [email, setEmail] = useState("");
 
   const handleNewsletter = (e: React.FormEvent) => {
@@ -66,16 +68,31 @@ export function DarkFooter() {
   ];
 
   return (
-    <footer className="relative bg-[#1B1B1B] border-t border-white/10">
+    <footer
+      className="relative border-t transition-all duration-300"
+      style={{
+        backgroundColor: "var(--bg-card)",
+        borderColor: "var(--border-color)",
+      }}
+    >
       <div className="container-custom">
         {/* Newsletter Section */}
-        <div className="py-16 md:py-20 border-b border-white/10">
+        <div
+          className="py-16 md:py-20 border-b"
+          style={{ borderColor: "var(--border-color)" }}
+        >
           <div className="max-w-3xl mx-auto text-center space-y-6">
-            <h3 className="text-3xl md:text-4xl lg:text-5xl font-black uppercase leading-tight">
+            <h3
+              className="text-3xl md:text-4xl lg:text-5xl font-black uppercase leading-tight"
+              style={{ color: "var(--text-primary)" }}
+            >
               Subscribe To Our{" "}
               <span className="text-[#FFDF00]">Newsletter</span>
             </h3>
-            <p className="text-lg text-[#818181] max-w-2xl mx-auto">
+            <p
+              className="text-lg max-w-2xl mx-auto"
+              style={{ color: "var(--text-secondary)" }}
+            >
               Get the latest Web3 projects and updates delivered to your inbox
             </p>
             <form
@@ -104,13 +121,19 @@ export function DarkFooter() {
             <div className="col-span-2 space-y-6">
               <Link href="/" className="flex items-center gap-3 group">
                 <div className="w-10 h-10 rounded-lg bg-[#FFDF00] flex items-center justify-center transition-transform duration-300 group-hover:scale-110">
-                  <span className="text-[#151515] text-xl font-black">D</span>
+                  <span className="text-[#000000] text-xl font-black">D</span>
                 </div>
-                <span className="text-2xl font-black text-white uppercase tracking-tight">
+                <span
+                  className="text-2xl font-black uppercase tracking-tight"
+                  style={{ color: "var(--text-primary)" }}
+                >
                   Discover
                 </span>
               </Link>
-              <p className="text-[#818181] max-w-xs leading-relaxed text-sm">
+              <p
+                className="max-w-xs leading-relaxed text-sm"
+                style={{ color: "var(--text-secondary)" }}
+              >
                 The leading platform for Web3 builders to showcase innovative
                 decentralized applications and connect with early adopters.
               </p>
@@ -121,7 +144,11 @@ export function DarkFooter() {
                     href={social.href}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="w-10 h-10 rounded-lg bg-white/5 flex items-center justify-center text-[#818181] hover:text-[#FFDF00] hover:bg-white/10 transition-all duration-300"
+                    className="w-10 h-10 rounded-lg flex items-center justify-center hover:text-[#FFDF00] transition-all duration-300"
+                    style={{
+                      backgroundColor: "var(--bg-tertiary)",
+                      color: "var(--text-secondary)",
+                    }}
                     aria-label={social.label}
                   >
                     <social.icon className="w-5 h-5" />
@@ -132,7 +159,10 @@ export function DarkFooter() {
 
             {/* Product Links */}
             <div className="space-y-4">
-              <h4 className="text-sm font-bold uppercase tracking-wider text-white">
+              <h4
+                className="text-sm font-bold uppercase tracking-wider"
+                style={{ color: "var(--text-primary)" }}
+              >
                 Product
               </h4>
               <ul className="space-y-3">
@@ -140,7 +170,8 @@ export function DarkFooter() {
                   <li key={link.href}>
                     <Link
                       href={link.href}
-                      className="text-sm text-[#818181] hover:text-[#FFDF00] transition-colors duration-300"
+                      className="text-sm hover:text-[#FFDF00] transition-colors duration-300"
+                      style={{ color: "var(--text-secondary)" }}
                     >
                       {link.label}
                     </Link>
@@ -151,7 +182,10 @@ export function DarkFooter() {
 
             {/* Company Links */}
             <div className="space-y-4">
-              <h4 className="text-sm font-bold uppercase tracking-wider text-white">
+              <h4
+                className="text-sm font-bold uppercase tracking-wider"
+                style={{ color: "var(--text-primary)" }}
+              >
                 Company
               </h4>
               <ul className="space-y-3">
@@ -159,7 +193,8 @@ export function DarkFooter() {
                   <li key={link.href}>
                     <Link
                       href={link.href}
-                      className="text-sm text-[#818181] hover:text-[#FFDF00] transition-colors duration-300"
+                      className="text-sm hover:text-[#FFDF00] transition-colors duration-300"
+                      style={{ color: "var(--text-secondary)" }}
                     >
                       {link.label}
                     </Link>
@@ -170,7 +205,10 @@ export function DarkFooter() {
 
             {/* Resources Links */}
             <div className="space-y-4">
-              <h4 className="text-sm font-bold uppercase tracking-wider text-white">
+              <h4
+                className="text-sm font-bold uppercase tracking-wider"
+                style={{ color: "var(--text-primary)" }}
+              >
                 Resources
               </h4>
               <ul className="space-y-3">
@@ -178,7 +216,8 @@ export function DarkFooter() {
                   <li key={link.href}>
                     <Link
                       href={link.href}
-                      className="text-sm text-[#818181] hover:text-[#FFDF00] transition-colors duration-300"
+                      className="text-sm hover:text-[#FFDF00] transition-colors duration-300"
+                      style={{ color: "var(--text-secondary)" }}
                     >
                       {link.label}
                     </Link>
@@ -189,7 +228,10 @@ export function DarkFooter() {
 
             {/* Legal Links */}
             <div className="space-y-4">
-              <h4 className="text-sm font-bold uppercase tracking-wider text-white">
+              <h4
+                className="text-sm font-bold uppercase tracking-wider"
+                style={{ color: "var(--text-primary)" }}
+              >
                 Legal
               </h4>
               <ul className="space-y-3">
@@ -197,7 +239,8 @@ export function DarkFooter() {
                   <li key={link.href}>
                     <Link
                       href={link.href}
-                      className="text-sm text-[#818181] hover:text-[#FFDF00] transition-colors duration-300"
+                      className="text-sm hover:text-[#FFDF00] transition-colors duration-300"
+                      style={{ color: "var(--text-secondary)" }}
                     >
                       {link.label}
                     </Link>
@@ -209,15 +252,22 @@ export function DarkFooter() {
         </div>
 
         {/* Bottom Bar */}
-        <div className="py-8 border-t border-white/10">
+        <div
+          className="py-8 border-t"
+          style={{ borderColor: "var(--border-color)" }}
+        >
           <div className="flex flex-col md:flex-row justify-between items-center gap-4">
-            <p className="text-sm text-[#818181]">
+            <p className="text-sm" style={{ color: "var(--text-secondary)" }}>
               © {new Date().getFullYear()} Discover. All rights reserved. Built
               with ❤️ for Web3.
             </p>
             <button
               onClick={scrollToTop}
-              className="group flex items-center gap-2 px-4 py-2 rounded-lg bg-white/5 hover:bg-white/10 text-[#818181] hover:text-[#FFDF00] transition-all duration-300"
+              className="group flex items-center gap-2 px-4 py-2 rounded-lg hover:text-[#FFDF00] transition-all duration-300"
+              style={{
+                backgroundColor: "var(--bg-tertiary)",
+                color: "var(--text-secondary)",
+              }}
             >
               <span className="text-sm font-semibold uppercase tracking-wide">
                 Back to Top

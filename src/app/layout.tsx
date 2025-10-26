@@ -1,13 +1,16 @@
 import type { Metadata } from "next";
 import { Space_Grotesk } from "next/font/google";
-import "./globals-dark.css";
+import "./globals.css";
 import { AuthProvider } from "@/contexts/auth-context";
+import { ThemeProvider } from "@/contexts/theme-context";
 import { RainbowProvider } from "@/components/providers/rainbow-provider";
 import { SkipLink } from "@/components/accessibility/skip-link";
 import { AccessibilityToolbar } from "@/components/accessibility/accessibility-toolbar";
 import ErrorBoundary from "@/components/ErrorBoundary";
 import { DarkHeader } from "@/components/layout/header-dark";
 import { DarkFooter } from "@/components/layout/footer-dark";
+import { CursorEffects } from "@/components/CursorEffects";
+import { AnimatedBackground } from "@/components/AnimatedBackground";
 
 // Cabinet Grotesk alternative - Space Grotesk is similar and available on Google Fonts
 // Configured with weights matching Figma specs: 500, 700 (800/900 will fall back to 700)
@@ -96,22 +99,30 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" suppressHydrationWarning className="dark">
+    <html lang="en" suppressHydrationWarning>
       <body
-        className={`${cabinetGrotesk.variable} font-sans antialiased min-h-screen flex flex-col bg-background text-foreground`}
+        className={`${cabinetGrotesk.variable} font-sans antialiased min-h-screen flex flex-col`}
       >
         <SkipLink />
         <ErrorBoundary>
-          <AuthProvider>
-            <RainbowProvider>
-              <DarkHeader />
-              <main id="main-content" className="flex-1" role="main">
-                {children}
-              </main>
-              <DarkFooter />
-              <AccessibilityToolbar />
-            </RainbowProvider>
-          </AuthProvider>
+          <ThemeProvider>
+            <AuthProvider>
+              <RainbowProvider>
+                <CursorEffects />
+                <AnimatedBackground />
+                <DarkHeader />
+                <main
+                  id="main-content"
+                  className="flex-1 relative z-10"
+                  role="main"
+                >
+                  {children}
+                </main>
+                <DarkFooter />
+                <AccessibilityToolbar />
+              </RainbowProvider>
+            </AuthProvider>
+          </ThemeProvider>
         </ErrorBoundary>
       </body>
     </html>

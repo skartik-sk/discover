@@ -4,24 +4,31 @@ export default function LoadingScreen({
   message?: string;
 }) {
   return (
-    <div className="min-h-screen bg-[#0A0A0A] flex items-center justify-center">
+    <div className="min-h-screen bg-background flex items-center justify-center">
       <div className="text-center">
-        {/* Animated Logo/Spinner */}
-        <div className="relative w-24 h-24 mx-auto mb-8">
+        {/* Simple dot + ring spinner */}
+        <div className="relative w-16 h-16 mx-auto mb-6">
           {/* Outer rotating ring */}
-          <div className="absolute inset-0 rounded-full border-4 border-white/10 border-t-[#FFDF00] animate-spin" />
+          <div
+            className="absolute inset-0 rounded-full border-2 border-transparent border-t-primary animate-spin"
+            style={{
+              animationDuration: "0.8s",
+            }}
+          />
 
-          {/* Inner pulsing circle */}
-          <div className="absolute inset-4 rounded-full bg-gradient-to-br from-[#FFDF00]/20 to-transparent animate-pulse" />
-
-          {/* Center dot */}
+          {/* Center pulsing dot with glow */}
           <div className="absolute inset-0 flex items-center justify-center">
-            <div className="w-4 h-4 rounded-full bg-[#FFDF00]" />
+            <div className="relative">
+              {/* Glow effect */}
+              <div className="absolute inset-0 w-3 h-3 rounded-full bg-primary blur-sm opacity-60" />
+              {/* Center dot */}
+              <div className="relative w-3 h-3 rounded-full bg-primary animate-pulse" />
+            </div>
           </div>
         </div>
 
         {/* Loading text */}
-        <p className="text-white/60 uppercase text-xs font-bold tracking-wider">
+        <p className="text-muted uppercase text-xs font-bold tracking-wider">
           {message}
         </p>
       </div>
