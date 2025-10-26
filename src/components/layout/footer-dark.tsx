@@ -78,7 +78,7 @@ export function DarkFooter() {
       <div className="container-custom">
         {/* Newsletter Section */}
         <div
-          className="py-16 md:py-20 border-b"
+          className="py-8 md:py-12 border-b"
           style={{ borderColor: "var(--border-color)" }}
         >
           <div className="max-w-3xl mx-auto text-center space-y-6">
@@ -115,8 +115,8 @@ export function DarkFooter() {
         </div>
 
         {/* Main Footer Content */}
-        <div className="py-16 md:py-20">
-          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-8 lg:gap-12 mb-12">
+        <div className="py-8 md:py-12">
+          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-8 lg:gap-12 mb-8">
             {/* Brand Column */}
             <div className="col-span-2 space-y-6">
               <Link href="/" className="flex items-center gap-3 group">
@@ -253,7 +253,7 @@ export function DarkFooter() {
 
         {/* Bottom Bar */}
         <div
-          className="py-8 border-t"
+          className="py-6 border-t"
           style={{ borderColor: "var(--border-color)" }}
         >
           <div className="flex flex-col md:flex-row justify-between items-center gap-4">
