@@ -254,7 +254,15 @@ export default function CategoryPage() {
               className="text-center text-5xl md:text-6xl lg:text-7xl font-black uppercase leading-[0.95] mb-6 tracking-tight animate-fade-in-up"
               style={{ animationDelay: "100ms" }}
             >
-              <span className="text-primary">{category.name}</span>{" "}
+              <span
+                className="bg-gradient-to-r from-[#FFDF00] via-[#FFE94D] to-[#FFDF00] bg-clip-text text-transparent"
+                style={{
+                  WebkitTextFillColor: "transparent",
+                  WebkitBackgroundClip: "text",
+                }}
+              >
+                {category.name}
+              </span>{" "}
               <span className="text-foreground">Projects</span>
             </h1>
 
@@ -447,7 +455,15 @@ export default function CategoryPage() {
               </div>
               <h2 className="text-3xl md:text-4xl lg:text-5xl font-black uppercase leading-tight mb-6">
                 <span className="text-foreground">Submit Your</span>{" "}
-                <span className="text-primary">{category.name}</span>{" "}
+                <span
+                  className="bg-gradient-to-r from-[#FFDF00] via-[#FFE94D] to-[#FFDF00] bg-clip-text text-transparent"
+                  style={{
+                    WebkitTextFillColor: "transparent",
+                    WebkitBackgroundClip: "text",
+                  }}
+                >
+                  {category.name}
+                </span>{" "}
                 <span className="text-foreground">Project</span>
               </h2>
               <p className="text-lg text-muted mb-8">

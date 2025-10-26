@@ -320,7 +320,13 @@ export default function DashboardPage() {
               <div className="flex flex-wrap items-center gap-2 md:gap-3 mb-2 md:mb-3">
                 <h1 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-black uppercase leading-tight">
                   <span className="text-foreground">Welcome,</span>{" "}
-                  <span className="text-primary">
+                  <span
+                    className="bg-gradient-to-r from-[#FFDF00] via-[#FFE94D] to-[#FFDF00] bg-clip-text text-transparent"
+                    style={{
+                      WebkitTextFillColor: "transparent",
+                      WebkitBackgroundClip: "text",
+                    }}
+                  >
                     {profile.display_name || profile.username || "User"}
                   </span>
                 </h1>

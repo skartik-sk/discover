@@ -241,7 +241,15 @@ export default function CategoriesPage() {
 
             <h2 className="text-4xl lg:text-5xl font-black mb-6 uppercase leading-[1.1]">
               <span className="text-foreground">Can&apos;t Find Your</span>{" "}
-              <span className="text-primary">Category?</span>
+              <span
+                className="bg-gradient-to-r from-[#FFDF00] via-[#FFE94D] to-[#FFDF00] bg-clip-text text-transparent"
+                style={{
+                  WebkitTextFillColor: "transparent",
+                  WebkitBackgroundClip: "text",
+                }}
+              >
+                Category?
+              </span>
             </h2>
             <p className="text-xl text-muted mb-10 max-w-2xl mx-auto leading-relaxed font-medium">
               Submit your project to be featured in our directory and reach

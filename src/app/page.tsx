@@ -200,7 +200,13 @@ export default async function HomePage() {
             {/* Main Heading */}
             <h1 className="text-center text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-black uppercase leading-[1.1] md:leading-[0.95] mb-4 md:mb-6 tracking-tight animate-fade-in-up px-4">
               <span className="block text-foreground">Discover &</span>
-              <span className="block text-primary mt-1 md:mt-2">
+              <span
+                className="block bg-gradient-to-r from-[#FFDF00] via-[#FFE94D] to-[#FFDF00] bg-clip-text text-transparent animate-gradient bg-300% mt-1 md:mt-2"
+                style={{
+                  WebkitTextFillColor: "transparent",
+                  WebkitBackgroundClip: "text",
+                }}
+              >
                 Showcase Web3
               </span>
               <span className="block text-foreground mt-1 md:mt-2">

@@ -9,8 +9,7 @@ import { AccessibilityToolbar } from "@/components/accessibility/accessibility-t
 import ErrorBoundary from "@/components/ErrorBoundary";
 import { DarkHeader } from "@/components/layout/header-dark";
 import { DarkFooter } from "@/components/layout/footer-dark";
-import { CursorEffects } from "@/components/CursorEffects";
-import { AnimatedBackground } from "@/components/AnimatedBackground";
+import { CursorEffects, AnimatedBackground } from "@/components/ClientEffects";
 
 // Cabinet Grotesk alternative - Space Grotesk is similar and available on Google Fonts
 // Configured with weights matching Figma specs: 500, 700 (800/900 will fall back to 700)
