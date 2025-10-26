@@ -198,15 +198,14 @@ export default async function HomePage() {
             </div>
 
             {/* Main Heading */}
-            <h1
-              className="text-center text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-black uppercase leading-[1.1] md:leading-[0.95] mb-4 md:mb-6 tracking-tight animate-fade-in-up px-4"
-              style={{ color: "var(--text-primary)" }}
-            >
-              <span className="block">Discover &</span>
-              <span className="block bg-gradient-to-r from-primary via-primary to-primary bg-clip-text text-transparent animate-gradient bg-300% mt-1 md:mt-2">
+            <h1 className="text-center text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-black uppercase leading-[1.1] md:leading-[0.95] mb-4 md:mb-6 tracking-tight animate-fade-in-up px-4">
+              <span className="block text-foreground">Discover &</span>
+              <span className="block text-primary mt-1 md:mt-2">
                 Showcase Web3
               </span>
-              <span className="block mt-1 md:mt-2">Projects</span>
+              <span className="block text-foreground mt-1 md:mt-2">
+                Projects
+              </span>
             </h1>
 
             {/* Description */}

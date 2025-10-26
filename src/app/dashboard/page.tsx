@@ -320,7 +320,7 @@ export default function DashboardPage() {
               <div className="flex flex-wrap items-center gap-2 md:gap-3 mb-2 md:mb-3">
                 <h1 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-black uppercase leading-tight">
                   <span className="text-foreground">Welcome,</span>{" "}
-                  <span className="bg-gradient-to-r from-primary via-primary to-primary bg-clip-text text-transparent">
+                  <span className="text-primary">
                     {profile.display_name || profile.username || "User"}
                   </span>
                 </h1>
