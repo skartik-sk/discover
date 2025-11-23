@@ -1,0 +1,73 @@
+'use client';
+
+import React from 'react';
+import Link from 'next/link';
+import UpvoteButton from './UpvoteButton';
+
+interface Project {
+  id: string;
+  name: string;
+  slug: string;
+  tagline: string;
+  logoUrl: string;
+  coverUrl: string;
+  category: string;
+  tags: string;
+  upvotes: number;
+  user: {
+    username: string;
+  };
+}
+
+interface ProjectCardProps {
+  project: Project;
+}
+
+export function ProjectCard({ project }: ProjectCardProps) {
+  const tags = project.tags.split(',').filter(Boolean);
+  const username = project.user?.username || 'unknown';
+  
+  return (
+    <Link href={`/${username}/${project.slug}`}>
+      <div className="group relative flex flex-col overflow-hidden rounded-soft bg-card-bg p-5 shadow-card transition-all duration-300 hover:shadow-card-hover transform hover:-translate-y-1 min-h-[320px]">
+        <div 
+          className="absolute inset-x-0 top-0 h-28 bg-cover bg-center" 
+          style={{
+            backgroundImage: `url("${project.coverUrl}")`,
+            filter: 'saturate(0.8) contrast(0.9)'
+          }}
+        />
+        <div className="relative mt-20 flex flex-col">
+          <div className="flex items-center gap-3">
+            <img 
+              alt={`${project.name} Logo`}
+              className="h-10 w-10 rounded-full border-2 border-white bg-gray-700" 
+              src={project.logoUrl}
+            />
+            <h3 className="text-lg font-bold text-header-text line-clamp-1">{project.name}</h3>
+          </div>
+          <p className="mt-2 text-sm text-body-text line-clamp-2">{project.tagline}</p>
+          <div className="flex items-center gap-2 mt-3 flex-wrap">
+            <div className="flex h-6 shrink-0 items-center justify-center rounded-tag bg-accent-terracotta/20 px-3">
+              <p className="text-accent-terracotta text-xs font-semibold">{project.category}</p>
+            </div>
+            {tags.slice(0, 2).map((tag, index) => (
+              <div key={index} className="flex h-6 shrink-0 items-center justify-center rounded-tag px-3 bg-gray-500/10">
+                <p className="text-body-text text-xs font-semibold">{tag.trim()}</p>
+              </div>
+            ))}
+          </div>
+          <div className="mt-auto flex items-center justify-between border-t border-gray-100 pt-3">
+            <div className="flex items-center gap-2">
+              <span className="material-symbols-outlined text-base text-body-text">arrow_drop_up</span>
+              <span className="text-sm font-semibold text-header-text">{project.upvotes}</span>
+            </div>
+            <div onClick={(e) => e.preventDefault()}>
+              <UpvoteButton projectId={project.id} initialUpvotes={project.upvotes} />
+            </div>
+          </div>
+        </div>
+      </div>
+    </Link>
+  );
+}
