@@ -2,12 +2,28 @@ import Link from 'next/link';
 
 export default function AboutPage() {
   return (
-        <main className="flex w-full grow flex-col">
-          <section className="relative w-full h-[50vh] md:h-[60vh] flex items-end justify-center text-center p-6 md:p-8 pb-16 md:pb-24">
-            <div className="absolute inset-0 bg-cover bg-center" style={{backgroundImage: 'url("https://lh3.googleusercontent.com/aida-public/AB6AXuDzLtPhmNYW6AWzDHq6KyJmrlZT7k9mTzb269hItNj2-Dc4dFciw-88byjU8-YDzIkksG78riCAl6yPDR5MlPpYUHYJ3v8nTCsFeevijtjmUO8hUxooL4SOHhzspuGMmj2dNZbWb8JlHd6SGevBq1bNKdUap57Smjlph6Pv9wiIiy_3c5gmK09k4_ZgaklY959bKNqIbGVb8u3UT0b6Y6DFdvFoChb4ByNhG6VSv0GReM7CsoiWdVyJxfQc7hrJFhji4Uz9uOM0Fiyq")', filter: 'saturate(0.5) contrast(0.9) brightness(0.9)'}}></div>
-            <div className="absolute inset-0 bg-linear-to-t from-main-bg/50 via-main-bg/20 to-transparent"></div>
-            <div className="relative z-10">
-
+    <div className="min-h-screen p-2 sm:p-3 md:p-4 bg-transparent">
+      <div className="w-full min-h-[calc(100vh-1rem)] sm:min-h-[calc(100vh-1.5rem)] md:min-h-[calc(100vh-2rem)] bg-main-bg border border-frame-border rounded-soft">
+        <main className="flex w-full grow flex-col px-6 md:px-8">
+          <section className="relative w-full flex flex-col items-center justify-center text-center p-6 md:p-8 py-16 md:py-24 my-8 rounded-soft overflow-hidden border border-primary-green/20 shadow-sm">
+            {/* Strong greenish gradient base */}
+            <div className="absolute inset-0 bg-linear-to-br from-primary-green/15 via-primary-green/8 to-primary-green/12"></div>
+            
+            {/* Matte grain texture */}
+            <div className="absolute inset-0 opacity-60 mix-blend-overlay" style={{backgroundImage: 'url("data:image/svg+xml,%3Csvg width=\"200\" height=\"200\" viewBox=\"0 0 200 200\" xmlns=\"http://www.w3.org/2000/svg\"%3E%3Cfilter id=\"noiseFilter\"%3E%3CfeTurbulence type=\"fractalNoise\" baseFrequency=\"0.65\" numOctaves=\"3\" stitchTiles=\"stitch\"/%3E%3C/filter%3E%3Crect width=\"100%25\" height=\"100%25\" filter=\"url(%23noiseFilter)\" opacity=\"0.08\"/%3E%3C/svg%3E\")', backgroundSize: '180px 180px'}}></div>
+            
+            {/* Micro dot pattern for texture */}
+            <div className="absolute inset-0 opacity-25" style={{backgroundImage: 'url("data:image/svg+xml,%3Csvg width=\"24\" height=\"24\" viewBox=\"0 0 24 24\" xmlns=\"http://www.w3.org/2000/svg\"%3E%3Ccircle cx=\"2\" cy=\"2\" r=\"1\" fill=\"%233A5A40\" fill-opacity=\"0.12\"/%3E%3C/svg%3E\")', backgroundSize: '24px 24px'}}></div>
+            
+            {/* Soft matte finish overlay */}
+            <div className="absolute inset-0 bg-white/40 backdrop-blur-[0.2px]"></div>
+            
+            {/* Radial glow for depth */}
+            <div className="absolute inset-0 opacity-50" style={{background: 'radial-gradient(ellipse 700px 500px at 50% 40%, rgba(58, 90, 64, 0.12) 0%, transparent 60%)'}}></div>
+            
+            <div className="relative z-10 max-w-4xl">
+              <h1 className="text-4xl md:text-6xl font-bold text-primary tracking-tight drop-shadow-sm mb-6">Empowering Web3 Discovery</h1>
+              <p className="text-lg md:text-xl text-body-text leading-relaxed">Discover is more than a platform it&apos;s a community-driven ecosystem designed to illuminate the future of the decentralized web.</p>
             </div>
           </section>
           <div className="px-6 py-12 md:px-16 md:py-24 space-y-20 md:space-y-32 max-w-5xl mx-auto">
@@ -71,34 +87,53 @@ export default function AboutPage() {
               <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-4 gap-6 md:gap-8">
                 <div className="text-center">
                   <img alt="Team member photo" className="w-24 h-24 md:w-32 md:h-32 rounded-full mx-auto object-cover mb-4 shadow-md" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBOyflq0lOLqIHIj6DrKczMsyuyYIUM0Uk0XQY-RhLq83I2_wvndiUuwt6lV2KU2ZnT2RW1y9l7onf_HQ-GclqbPDp2oZ21YDK9aOcOzsBcqK-xLYgYCnSwq5iald_r55NHTu0sRYj-SQnWB0lEIPG-aGCJORcReK2XuVO47pBF3p0BLhce3AnT9pcR8V_PckCcpfIrQs73svF5r8oRs4pv_aKetgxjE7kFzcleSvsDZTXugeN7DZAJD9q9N0dD7l7mX8jrTgzcZZJy"/>
-                  <h3 className="font-bold text-header-text">Alex Chen</h3>
+                  <h3 className="font-bold text-header-text">Singupalli Kartik</h3>
                   <p className="text-sm text-body-text">Lead Protocol Engineer</p>
                 </div>
                 <div className="text-center">
                   <img alt="Team member photo" className="w-24 h-24 md:w-32 md:h-32 rounded-full mx-auto object-cover mb-4 shadow-md" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDn3UWp_fd3KajrkhM-jyWaQbCZZPPnB1Qk7RbFCtAtQAQe48BhsYqKrF7GR3HO81Esk-KvujjuZMYBBf2BWIrMk8dBWYYTbnBYZ2l8PKgdP6VmAwk9aqneajzfdMIOAWOo0mXT0h7Shf97ijtLdpaYEQBGnr9On9T7puB_LPINq19vzIbO0ymmk2Np9nbpP5b9M-YdMoA-eKqhgaokXdgLjf8Zvehkw-gmpCmU5vUrN8zP--xNRWr2qQ2EpHtUAYJQyYnQV4Lp47hm"/>
-                  <h3 className="font-bold text-header-text">Ben Carter</h3>
+                  <h3 className="font-bold text-header-text">Singupalli Kartik</h3>
                   <p className="text-sm text-body-text">Product &amp; Design Lead</p>
                 </div>
                 <div className="text-center">
                   <img alt="Team member photo" className="w-24 h-24 md:w-32 md:h-32 rounded-full mx-auto object-cover mb-4 shadow-md" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDa1Q5ZoqBsLBXWaYnaV0Bs4sO7YJpMfRcC7i-JAkYGXYUoWsul8w6JelZdJcXX7VfvKsHmp-MeCu95BROodXGqYUY4yH4Ki_MUovpRu70PHMWlj0KK3iM0nwOXVq1V16CbBblyUpIb38ZiOrfIlLANoShydL5Y3uJcSq8_HKsZoyDAWCewO3cRMYuN5A05y1uRRQcaJhhgQO0scCr3uyHeaU_L4T47hcetGZ2qoSmGwrZB0pjDwGV_HwApoPj0vGmP86eY1AOmn5vD"/>
-                  <h3 className="font-bold text-header-text">Chloe Davis</h3>
+                  <h3 className="font-bold text-header-text">Singupalli Kartik</h3>
                   <p className="text-sm text-body-text">Community &amp; Growth</p>
                 </div>
                 <div className="text-center">
                   <img alt="Team member photo" className="w-24 h-24 md:w-32 md:h-32 rounded-full mx-auto object-cover mb-4 shadow-md" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDKG7qUGGFBD-uG1YeMOKZEhSJZoy9CVoXM3g8DLDHWr4PVDapr-erblPKI0mJFxPv6gEUPmAZALlSXSMAQGfPgV2EbY78pb3HE_ReNa7AsmOaLkzydBbWixhgZaNt_-6w7oKLtgJRktZE5ppQNvbYbZ3wQBcQ_EOvH9bxZDF91nnX1nEnWDgL9pSPRt19_u1wNw3_mixSC4_fNizC5jdLBTCen-r42qTHmNJqYvZ29Z7wXmmQMppGWWsOD-9A0VwjrQbUwvEn9Xcjk"/>
-                  <h3 className="font-bold text-header-text">Dana Rodriguez</h3>
+                  <h3 className="font-bold text-header-text">Singupalli Kartik</h3>
                   <p className="text-sm text-body-text">Operations</p>
                 </div>
               </div>
             </section>
-            <section className="text-center py-12">
-              <h2 className="text-3xl md:text-4xl font-bold text-header-text tracking-tight">Ready to Shape the Future?</h2>
-              <p className="mt-4 max-w-xl mx-auto text-body-text leading-relaxed">Join our Discord, follow us on socials, and start exploring the projects that are building tomorrow, today.</p>
-              <button className="mt-8 flex min-w-[84px] cursor-pointer items-center justify-center overflow-hidden rounded-btn h-12 px-8 bg-primary-green text-white text-base font-semibold transition-transform duration-200 ease-in-out hover:scale-105 mx-auto">
-                <span className="truncate">Join the Community</span>
-              </button>
+            <section className="relative w-full flex flex-col items-center text-center p-6 md:p-8 py-16 md:py-24 mb-8 rounded-soft overflow-hidden border border-primary-green/20 shadow-sm">
+              {/* Strong greenish gradient base */}
+              <div className="absolute inset-0 bg-linear-to-br from-primary-green/15 via-primary-green/8 to-primary-green/12"></div>
+              
+              {/* Matte grain texture */}
+              <div className="absolute inset-0 opacity-60 mix-blend-overlay" style={{backgroundImage: 'url("data:image/svg+xml,%3Csvg width=\"200\" height=\"200\" viewBox=\"0 0 200 200\" xmlns=\"http://www.w3.org/2000/svg\"%3E%3Cfilter id=\"noiseFilter\"%3E%3CfeTurbulence type=\"fractalNoise\" baseFrequency=\"0.65\" numOctaves=\"3\" stitchTiles=\"stitch\"/%3E%3C/filter%3E%3Crect width=\"100%25\" height=\"100%25\" filter=\"url(%23noiseFilter)\" opacity=\"0.08\"/%3E%3C/svg%3E\")', backgroundSize: '180px 180px'}}></div>
+              
+              {/* Micro dot pattern for texture */}
+              <div className="absolute inset-0 opacity-25" style={{backgroundImage: 'url("data:image/svg+xml,%3Csvg width=\"24\" height=\"24\" viewBox=\"0 0 24 24\" xmlns=\"http://www.w3.org/2000/svg\"%3E%3Ccircle cx=\"2\" cy=\"2\" r=\"1\" fill=\"%233A5A40\" fill-opacity=\"0.12\"/%3E%3C/svg%3E\")', backgroundSize: '24px 24px'}}></div>
+              
+              {/* Soft matte finish overlay */}
+              <div className="absolute inset-0 bg-white/40 backdrop-blur-[0.2px]"></div>
+              
+              {/* Radial glow for depth */}
+              <div className="absolute inset-0 opacity-50" style={{background: 'radial-gradient(ellipse 700px 500px at 50% 40%, rgba(58, 90, 64, 0.12) 0%, transparent 60%)'}}></div>
+              
+              <div className="relative z-10 max-w-3xl">
+                <h2 className="text-3xl md:text-4xl font-bold text-header-text tracking-tight">Ready to Shape the Future?</h2>
+                <p className="mt-4 text-body-text leading-relaxed">Join our Discord, follow us on socials, and start exploring the projects that are building tomorrow, today.</p>
+                <button className="mt-8 flex min-w-[84px] cursor-pointer items-center justify-center overflow-hidden rounded-btn h-12 px-8 bg-primary-green text-white text-base font-semibold transition-transform duration-200 ease-in-out hover:scale-105 mx-auto">
+                  <span className="truncate">Join the Community</span>
+                </button>
+              </div>
             </section>
           </div>
         </main>
+      </div>
+    </div>
   );
 }
