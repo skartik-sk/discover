@@ -96,7 +96,7 @@ export default async function GovernancePage() {
                     <StakeButton tier="contributor" apy="8.2%" />
                   </div>
                 </div>
-                <div className="flex flex-col items-stretch justify-start rounded-xl shadow-[0_4px_12px_rgba(0,0,0,0.05)] bg-white/50 border border-transparent hover:border-highlight-observer transition-all duration-300">\n                  <div className="flex w-full flex-col items-stretch justify-center gap-4 p-6">
+                <div className="flex flex-col items-stretch justify-start rounded-xl shadow-[0_4px_12px_rgba(0,0,0,0.05)] bg-white/50 border border-transparent hover:border-highlight-observer transition-all duration-300">               <div className="flex w-full flex-col items-stretch justify-center gap-4 p-6">
                     <div className="flex items-center gap-3">
                       <div className="w-2 h-8 rounded-full bg-highlight-observer"></div>
                       <p className="text-sm font-semibold uppercase tracking-wider text-highlight-observer">OBSERVER TIER</p>
