@@ -32,7 +32,7 @@ export function ProjectsWithFilters({ initialProjects }: Props) {
   const [selectedStatuses, setSelectedStatuses] = useState<string[]>([]);
   const [ratingFilter, setRatingFilter] = useState(0);
   const [currentPage, setCurrentPage] = useState(1);
-  const itemsPerPage = 12;
+  const itemsPerPage = 9;
 
   const categories = ['DeFi', 'NFT', 'DAO', 'Gaming'];
   const blockchains = ['Ethereum', 'Solana', 'Polygon'];
@@ -94,6 +94,32 @@ export function ProjectsWithFilters({ initialProjects }: Props) {
     setSelectedStatuses([]);
     setRatingFilter(0);
     setSearchQuery('');
+  };
+
+  const goToPage = (page: number) => {
+    setCurrentPage(page);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
+  const getPageNumbers = () => {
+    const pages = [];
+    const maxVisible = 5;
+    
+    if (totalPages <= maxVisible) {
+      for (let i = 1; i <= totalPages; i++) {
+        pages.push(i);
+      }
+    } else {
+      if (currentPage <= 3) {
+        pages.push(1, 2, 3, 4, '...', totalPages);
+      } else if (currentPage >= totalPages - 2) {
+        pages.push(1, '...', totalPages - 3, totalPages - 2, totalPages - 1, totalPages);
+      } else {
+        pages.push(1, '...', currentPage - 1, currentPage, currentPage + 1, '...', totalPages);
+      }
+    }
+    
+    return pages;
   };
 
   return (
@@ -231,21 +257,56 @@ export function ProjectsWithFilters({ initialProjects }: Props) {
         </div>
 
         {/* Pagination */}
-        {projects.length > 0 && (
+        {totalPages > 1 && (
           <div className="mt-10 flex items-center justify-center">
             <nav aria-label="Pagination" className="flex items-center gap-2">
-              <a className="inline-flex items-center justify-center w-9 h-9 rounded-md border border-gray-200 text-body-text hover:bg-gray-100" href="#">
+              <button 
+                onClick={() => goToPage(Math.max(1, currentPage - 1))}
+                disabled={currentPage === 1}
+                className="inline-flex items-center justify-center w-9 h-9 rounded-md border border-gray-200 text-body-text hover:bg-gray-100 disabled:opacity-50 disabled:cursor-not-allowed"
+              >
                 <span className="material-symbols-outlined text-xl!">chevron_left</span>
-              </a>
-              <a aria-current="page" className="inline-flex items-center justify-center w-9 h-9 rounded-md text-white bg-primary-green font-semibold" href="#">1</a>
-              <a className="inline-flex items-center justify-center w-9 h-9 rounded-md text-header-text hover:bg-gray-100 font-medium" href="#">2</a>
-              <a className="inline-flex items-center justify-center w-9 h-9 rounded-md text-header-text hover:bg-gray-100 font-medium" href="#">3</a>
-              <span className="inline-flex items-center justify-center w-9 h-9 text-header-text">...</span>
-              <a className="inline-flex items-center justify-center w-9 h-9 rounded-md text-header-text hover:bg-gray-100 font-medium" href="#">8</a>
-              <a className="inline-flex items-center justify-center w-9 h-9 rounded-md border border-gray-200 text-body-text hover:bg-gray-100" href="#">
+              </button>
+              
+              {getPageNumbers().map((page, index) => (
+                typeof page === 'number' ? (
+                  <button
+                    key={index}
+                    onClick={() => goToPage(page)}
+                    className={`inline-flex items-center justify-center w-9 h-9 rounded-md font-semibold transition-colors ${
+                      currentPage === page
+                        ? 'text-white bg-primary-green'
+                        : 'text-header-text hover:bg-gray-100'
+                    }`}
+                  >
+                    {page}
+                  </button>
+                ) : (
+                  <span key={index} className="inline-flex items-center justify-center w-9 h-9 text-header-text">
+                    {page}
+                  </span>
+                )
+              ))}
+              
+              <button 
+                onClick={() => goToPage(Math.min(totalPages, currentPage + 1))}
+                disabled={currentPage === totalPages}
+                className="inline-flex items-center justify-center w-9 h-9 rounded-md border border-gray-200 text-body-text hover:bg-gray-100 disabled:opacity-50 disabled:cursor-not-allowed"
+              >
                 <span className="material-symbols-outlined text-xl!">chevron_right</span>
-              </a>
+              </button>
             </nav>
+          </div>
+        )}
+        
+        {/* Showing X-Y of Z */}
+        {projects.length > itemsPerPage && (
+          <div className="mt-4 text-center">
+            <p className="text-sm text-body-text">
+              Showing <span className="font-semibold">{startIndex + 1}</span> to{' '}
+              <span className="font-semibold">{Math.min(endIndex, projects.length)}</span> of{' '}
+              <span className="font-semibold">{projects.length}</span> results
+            </p>
           </div>
         )}
       </div>

@@ -100,7 +100,7 @@ export default async function DashboardPage() {
                           </div>
                           <div>
                             <p className="text-sm font-medium text-dark-grey">
-                              Submitted project: <Link href={`/project/${project.slug}`} className="font-bold hover:underline">{project.name}</Link>
+                              Submitted project: <Link href={`/${user.walletAddress}/${project.slug}`} className="font-bold hover:underline">{project.name}</Link>
                             </p>
                             <p className="text-xs text-medium-grey">{new Date(project.createdAt).toLocaleDateString()}</p>
                           </div>
