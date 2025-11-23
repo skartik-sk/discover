@@ -39,14 +39,14 @@ export function ProjectCard({ project }: ProjectCardProps) {
         >
           <div className="absolute inset-0 bg-gradient-to-b from-transparent to-main-bg"></div>
         </div>
-        <div className="relative mt-24 flex flex-col h-full p-5 pt-0">
+        <div className="relative mt-30 flex flex-col h-full p-5 pt-0">
           <div className="flex items-center gap-3 mb-3">
             <img 
               alt={`${project.name} Logo`}
-              className="h-11 w-11 rounded-full border-2 border-white bg-gray-700 shadow-md" 
+              className="h-11 w-11 rounded-full border-2 border-white bg-gray-700 shadow-md ring-2 ring-white/30" 
               src={project.logoUrl}
             />
-            <h3 className="text-lg font-bold text-header-text line-clamp-1">{project.name}</h3>
+            <h3 className="text-lg font-bold text-header-text line-clamp-1" style={{textShadow: '0 0 20px rgba(255, 255, 255, 0.9), 0 0 10px rgba(255, 255, 255, 0.7), 0 1px 2px rgba(255, 255, 255, 0.5)'}}>{project.name}</h3>
           </div>
           <p className="text-sm text-body-text line-clamp-2 mb-3 min-h-[40px]">{project.tagline}</p>
           <div className="flex items-center gap-2 flex-wrap mb-4">

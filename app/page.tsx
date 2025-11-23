@@ -29,14 +29,24 @@ export default async function HomePage() {
   return (
     <div className="min-h-screen p-2 sm:p-3 md:p-4 bg-transparent">
       <div className="w-full min-h-[calc(100vh-1rem)] sm:min-h-[calc(100vh-1.5rem)] md:min-h-[calc(100vh-2rem)] bg-main-bg border border-frame-border rounded-soft">
-        <main className="flex w-full grow flex-col px-6 py-8 md:px-8 md:py-16">
-          <div className="relative flex flex-col items-center justify-center gap-6 text-center py-12 md:py-20 mb-8 rounded-soft overflow-hidden">
-            {/* Textured Background */}
-            <div className="absolute inset-0 bg-linear-to-br from-primary-green/5 via-accent-blue/5 to-accent-terracotta/5"></div>
-            <div className="absolute inset-0 opacity-30" style={{backgroundImage: 'url("data:image/svg+xml,%3Csvg width="60" height="60" viewBox="0 0 60 60" xmlns="http://www.w3.org/2000/svg"%3E%3Cg fill="none" fill-rule="evenodd"%3E%3Cg fill="%233A5A40" fill-opacity="0.05"%3E%3Cpath d="M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z"/%3E%3C/g%3E%3C/g%3E%3C/svg%3E")'}}></div>
-            <div className="absolute inset-0 backdrop-blur-[1px] bg-white/40"></div>
+        <main className="flex w-full grow flex-col px-6 py-8 md:px-8 md:py-12">
+          <div className="relative flex flex-col items-center justify-center gap-6 text-center py-16 md:py-24 px-8 md:px-12 mb-8 rounded-soft overflow-hidden border border-primary-green/20 shadow-sm">
+            {/* Strong greenish gradient base */}
+            <div className="absolute inset-0 bg-linear-to-br from-primary-green/15 via-primary-green/8 to-primary-green/12"></div>
             
-            <h1 className="relative text-header-text text-4xl font-bold leading-tight tracking-tight md:text-6xl">Discover Tomorrow&apos;s Web3</h1>
+            {/* Matte grain texture */}
+            <div className="absolute inset-0 opacity-60 mix-blend-overlay" style={{backgroundImage: 'url("data:image/svg+xml,%3Csvg width=\"200\" height=\"200\" viewBox=\"0 0 200 200\" xmlns=\"http://www.w3.org/2000/svg\"%3E%3Cfilter id=\"noiseFilter\"%3E%3CfeTurbulence type=\"fractalNoise\" baseFrequency=\"0.65\" numOctaves=\"3\" stitchTiles=\"stitch\"/%3E%3C/filter%3E%3Crect width=\"100%25\" height=\"100%25\" filter=\"url(%23noiseFilter)\" opacity=\"0.08\"/%3E%3C/svg%3E\")', backgroundSize: '180px 180px'}}></div>
+            
+            {/* Micro dot pattern for texture */}
+            <div className="absolute inset-0 opacity-25" style={{backgroundImage: 'url("data:image/svg+xml,%3Csvg width=\"24\" height=\"24\" viewBox=\"0 0 24 24\" xmlns=\"http://www.w3.org/2000/svg\"%3E%3Ccircle cx=\"2\" cy=\"2\" r=\"1\" fill=\"%233A5A40\" fill-opacity=\"0.12\"/%3E%3C/svg%3E\")', backgroundSize: '24px 24px'}}></div>
+            
+            {/* Soft matte finish overlay */}
+            <div className="absolute inset-0 bg-white/40 backdrop-blur-[0.2px]"></div>
+            
+            {/* Radial glow for depth */}
+            <div className="absolute inset-0 opacity-50" style={{background: 'radial-gradient(ellipse 700px 500px at 50% 40%, rgba(58, 90, 64, 0.12) 0%, transparent 60%)'}}></div>
+            
+            <h1 className="relative text-primary text-4xl font-bold leading-tight tracking-tight md:text-6xl drop-shadow-sm">Discover Tomorrow&apos;s Web3</h1>
             <h2 className="relative max-w-2xl text-body-text text-base font-normal leading-relaxed md:text-lg">The daily destination for the best new Web3 products. Curated, reviewed, and ranked by the community.</h2>
             <div className="relative mt-6 w-full max-w-lg">
               <form action="/projects" method="GET" className="group relative flex w-full items-stretch">
