@@ -106,35 +106,10 @@ export default function SubmitPage() {
   };
 
   return (
-    <div className="min-h-screen p-2 sm:p-3 md:p-4 bg-transparent">
-      <div className="w-full min-h-[calc(100vh-1rem)] sm:min-h-[calc(100vh-1.5rem)] md:min-h-[calc(100vh-2rem)] bg-main-bg border border-frame-border rounded-soft overflow-hidden flex flex-col">
-        {/* Header */}
-        <header className="sticky top-0 z-50 flex w-full items-center justify-between whitespace-nowrap px-6 py-4 md:px-8 bg-main-bg/80 backdrop-blur-sm border-b border-frame-border">
-          <div className="flex items-center gap-10">
-            <div className="flex items-center gap-2 text-header-text">
-              <div className="size-6 text-primary-green">
-                <svg fill="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                  <path d="M12 2L1 8v8l11 6 11-6V8l-11-6zm0 2.311L19.531 8 12 11.689 4.469 8 12 4.311zM3 9.611L12 14.311l9-4.7V16L12 20.689 3 16V9.611z"></path>
-                </svg>
-              </div>
-              <h2 className="text-xl font-bold tracking-tight">Discover</h2>
-            </div>
-            <nav className="hidden md:flex items-center gap-8">
-              <Link className="text-sm font-medium text-body-text hover:text-header-text transition-colors" href="/projects">Projects</Link>
-              <Link className="text-sm font-medium text-header-text transition-colors" href="/submit">Submit</Link>
-            </nav>
-          </div>
-          <div className="flex flex-1 items-center justify-end gap-4">
-            <button className="flex min-w-[84px] cursor-pointer items-center justify-center overflow-hidden rounded-btn h-10 px-5 bg-primary-green text-white text-sm font-semibold transition-transform duration-200 ease-in-out hover:scale-105">
-              <span className="truncate">Connect Wallet</span>
-            </button>
-          </div>
-        </header>
-
-        <main className="flex flex-col md:flex-row w-full grow">
-          {/* Left Sidebar - Progress */}
-          <aside className="w-full md:w-1/4 lg:w-1/5 p-6 md:p-8 border-b md:border-r md:border-b-0 border-frame-border">
-            <h3 className="text-lg font-semibold text-header-text mb-6">Submission Progress</h3>
+    <main className="flex flex-col md:flex-row w-full grow">
+      {/* Left Sidebar - Progress */}
+      <aside className="w-full md:w-1/4 lg:w-1/5 p-6 md:p-8 border-b md:border-r md:border-b-0 border-frame-border bg-white/30">
+        <h3 className="text-lg font-semibold text-header-text mb-6">Submission Progress</h3>
             <nav>
               <ul className="space-y-4">
                 <li>
@@ -184,7 +159,7 @@ export default function SubmitPage() {
                         required
                         value={formData.name}
                         onChange={(e) => { setFormData({...formData, name: e.target.value}); setErrors(prev => ({...prev, name: ''})); }}
-                        className={`mt-1 block w-full rounded-input shadow-sm placeholder-placeholder-gray focus:ring focus:ring-primary-green focus:ring-opacity-20 ${
+                        className={`mt-1 block w-full py-3 px-4 rounded-input shadow-sm placeholder-placeholder-gray focus:ring focus:ring-primary-green focus:ring-opacity-20 ${
                           errors.name ? 'border-red-500 focus:border-red-500' : 'border-input-border focus:border-primary-green'
                         }`}
                         id="project-name" 
@@ -199,7 +174,7 @@ export default function SubmitPage() {
                         required
                         value={formData.tagline}
                         onChange={(e) => { setFormData({...formData, tagline: e.target.value}); setErrors(prev => ({...prev, tagline: ''})); }}
-                        className={`mt-1 block w-full rounded-input shadow-sm placeholder-placeholder-gray focus:ring focus:ring-primary-green focus:ring-opacity-20 ${
+                        className={`mt-1 block w-full py-3 px-4 rounded-input shadow-sm placeholder-placeholder-gray focus:ring focus:ring-primary-green focus:ring-opacity-20 ${
                           errors.tagline ? 'border-red-500 focus:border-red-500' : 'border-input-border focus:border-primary-green'
                         }`}
                         id="tagline" 
@@ -214,7 +189,7 @@ export default function SubmitPage() {
                         required
                         value={formData.websiteUrl}
                         onChange={(e) => { setFormData({...formData, websiteUrl: e.target.value}); setErrors(prev => ({...prev, websiteUrl: ''})); }}
-                        className={`mt-1 block w-full rounded-input shadow-sm placeholder-placeholder-gray focus:ring focus:ring-primary-green focus:ring-opacity-20 ${
+                        className={`mt-1 block w-full py-3 px-4 rounded-input shadow-sm placeholder-placeholder-gray focus:ring focus:ring-primary-green focus:ring-opacity-20 ${
                           errors.websiteUrl ? 'border-red-500 focus:border-red-500' : 'border-input-border focus:border-primary-green'
                         }`}
                         id="website" 
@@ -229,7 +204,7 @@ export default function SubmitPage() {
                         required
                         value={formData.contactEmail}
                         onChange={(e) => { setFormData({...formData, contactEmail: e.target.value}); setErrors(prev => ({...prev, contactEmail: ''})); }}
-                        className={`mt-1 block w-full rounded-input shadow-sm placeholder-placeholder-gray focus:ring focus:ring-primary-green focus:ring-opacity-20 ${
+                        className={`mt-1 block w-full py-3 px-4 rounded-input shadow-sm placeholder-placeholder-gray focus:ring focus:ring-primary-green focus:ring-opacity-20 ${
                           errors.contactEmail ? 'border-red-500 focus:border-red-500' : 'border-input-border focus:border-primary-green'
                         }`}
                         id="contact-email" 
@@ -250,7 +225,7 @@ export default function SubmitPage() {
                       <input 
                         value={formData.contractAddress}
                         onChange={(e) => setFormData({...formData, contractAddress: e.target.value})}
-                        className="mt-1 block w-full rounded-input border-input-border shadow-sm placeholder-placeholder-gray focus:border-primary-green focus:ring focus:ring-primary-green focus:ring-opacity-20" 
+                        className="mt-1 block w-full py-3 px-4 rounded-input border-input-border shadow-sm placeholder-placeholder-gray focus:border-primary-green focus:ring focus:ring-primary-green focus:ring-opacity-20" 
                         id="contract-address" 
                         placeholder="0x..." 
                         type="text"
@@ -268,9 +243,9 @@ export default function SubmitPage() {
                   <div className="mt-4 grid grid-cols-1 md:grid-cols-2 gap-6">
                     <div>
                       <label className="block text-sm font-medium text-header-text mb-1">Project Logo *</label>
-                      <div className="flex justify-center items-center w-full px-6 py-10 border-2 border-dashed border-gray-300 rounded-lg text-center cursor-pointer hover:border-primary-green">
+                      <div className="flex justify-center items-center w-full px-6 py-10 border-2 border-dashed border-input-border rounded-lg text-center cursor-pointer hover:border-primary-green transition-colors">
                         <div className="text-body-text">
-                          <span className="material-symbols-outlined text-4xl! text-gray-400">cloud_upload</span>
+                          <span className="material-symbols-outlined !text-4xl text-gray-400">cloud_upload</span>
                           <p className="mt-2 text-sm">Drag & drop or <span className="font-semibold text-primary-green">browse files</span></p>
                           <p className="text-xs text-gray-500 mt-1">PNG, JPG, GIF up to 5MB</p>
                         </div>
@@ -279,16 +254,16 @@ export default function SubmitPage() {
                         required
                         value={formData.logoUrl}
                         onChange={(e) => setFormData({...formData, logoUrl: e.target.value})}
-                        className="mt-2 block w-full text-xs rounded-input border-input-border shadow-sm placeholder-placeholder-gray focus:border-primary-green focus:ring focus:ring-primary-green focus:ring-opacity-20" 
+                        className="mt-2 block w-full py-3 px-4 text-xs rounded-input border-input-border shadow-sm placeholder-placeholder-gray focus:border-primary-green focus:ring focus:ring-primary-green focus:ring-opacity-20" 
                         placeholder="Or paste URL: https://yourproject.com/logo.png"
                         type="url"
                       />
                     </div>
                     <div>
                       <label className="block text-sm font-medium text-header-text mb-1">Cover Image</label>
-                      <div className="flex justify-center items-center w-full px-6 py-10 border-2 border-dashed border-gray-300 rounded-lg text-center cursor-pointer hover:border-primary-green">
+                      <div className="flex justify-center items-center w-full px-6 py-10 border-2 border-dashed border-input-border rounded-lg text-center cursor-pointer hover:border-primary-green transition-colors">
                         <div className="text-body-text">
-                          <span className="material-symbols-outlined text-4xl! text-gray-400">image</span>
+                          <span className="material-symbols-outlined !text-4xl text-gray-400">image</span>
                           <p className="mt-2 text-sm">Drag & drop or <span className="font-semibold text-primary-green">browse files</span></p>
                           <p className="text-xs text-gray-500 mt-1">16:9 ratio recommended</p>
                         </div>
@@ -297,7 +272,7 @@ export default function SubmitPage() {
                         required
                         value={formData.coverUrl}
                         onChange={(e) => setFormData({...formData, coverUrl: e.target.value})}
-                        className="mt-2 block w-full text-xs rounded-input border-input-border shadow-sm placeholder-placeholder-gray focus:border-primary-green focus:ring focus:ring-primary-green focus:ring-opacity-20" 
+                        className="mt-2 block w-full py-3 px-4 text-xs rounded-input border-input-border shadow-sm placeholder-placeholder-gray focus:border-primary-green focus:ring focus:ring-primary-green focus:ring-opacity-20" 
                         placeholder="Or paste URL: https://yourproject.com/cover.jpg"
                         type="url"
                       />
@@ -318,7 +293,7 @@ export default function SubmitPage() {
                       required
                       value={formData.description}
                       onChange={(e) => { setFormData({...formData, description: e.target.value}); setErrors(prev => ({...prev, description: ''})); }}
-                      className={`mt-1 block w-full rounded-input shadow-sm placeholder-placeholder-gray focus:ring focus:ring-primary-green focus:ring-opacity-20 min-h-[120px] ${
+                      className={`mt-1 block w-full py-3 px-4 rounded-input shadow-sm placeholder-placeholder-gray focus:ring focus:ring-primary-green focus:ring-opacity-20 min-h-[120px] ${
                         errors.description ? 'border-red-500 focus:border-red-500' : 'border-input-border focus:border-primary-green'
                       }`}
                       id="description" 
@@ -377,7 +352,7 @@ export default function SubmitPage() {
                     <input 
                       value={formData.tags}
                       onChange={(e) => setFormData({...formData, tags: e.target.value})}
-                      className="mt-1 block w-full rounded-input border-input-border shadow-sm placeholder-placeholder-gray focus:border-primary-green focus:ring focus:ring-primary-green focus:ring-opacity-20" 
+                      className="mt-1 block w-full py-3 px-4 rounded-input border-input-border shadow-sm placeholder-placeholder-gray focus:border-primary-green focus:ring focus:ring-primary-green focus:ring-opacity-20" 
                       placeholder="e.g., quantum, ledger, secure, fast"
                       type="text"
                     />
@@ -396,7 +371,7 @@ export default function SubmitPage() {
                         <input 
                           value={formData.videoUrl}
                           onChange={(e) => setFormData({...formData, videoUrl: e.target.value})}
-                          className="mt-1 block w-full rounded-input border-input-border shadow-sm placeholder-placeholder-gray focus:border-primary-green focus:ring focus:ring-primary-green focus:ring-opacity-20" 
+                          className="mt-1 block w-full py-3 px-4 rounded-input border-input-border shadow-sm placeholder-placeholder-gray focus:border-primary-green focus:ring focus:ring-primary-green focus:ring-opacity-20" 
                           id="video" 
                           placeholder="https://youtube.com/watch?v=..."
                           type="url"
@@ -413,7 +388,7 @@ export default function SubmitPage() {
                           <input 
                             value={formData.twitter}
                             onChange={(e) => setFormData({...formData, twitter: e.target.value})}
-                            className="mt-1 block w-full rounded-input border-input-border shadow-sm placeholder-placeholder-gray focus:border-primary-green focus:ring focus:ring-primary-green focus:ring-opacity-20" 
+                            className="mt-1 block w-full py-3 px-4 rounded-input border-input-border shadow-sm placeholder-placeholder-gray focus:border-primary-green focus:ring focus:ring-primary-green focus:ring-opacity-20" 
                             id="twitter" 
                             placeholder="@yourproject"
                             type="text"
@@ -424,7 +399,7 @@ export default function SubmitPage() {
                           <input 
                             value={formData.discord}
                             onChange={(e) => setFormData({...formData, discord: e.target.value})}
-                            className="mt-1 block w-full rounded-input border-input-border shadow-sm placeholder-placeholder-gray focus:border-primary-green focus:ring focus:ring-primary-green focus:ring-opacity-20" 
+                            className="mt-1 block w-full py-3 px-4 rounded-input border-input-border shadow-sm placeholder-placeholder-gray focus:border-primary-green focus:ring focus:ring-primary-green focus:ring-opacity-20" 
                             id="discord" 
                             placeholder="https://discord.gg/..."
                             type="url"
@@ -435,7 +410,7 @@ export default function SubmitPage() {
                           <input 
                             value={formData.github}
                             onChange={(e) => setFormData({...formData, github: e.target.value})}
-                            className="mt-1 block w-full rounded-input border-input-border shadow-sm placeholder-placeholder-gray focus:border-primary-green focus:ring focus:ring-primary-green focus:ring-opacity-20" 
+                            className="mt-1 block w-full py-3 px-4 rounded-input border-input-border shadow-sm placeholder-placeholder-gray focus:border-primary-green focus:ring focus:ring-primary-green focus:ring-opacity-20" 
                             id="github" 
                             placeholder="yourorg/yourproject"
                             type="text"
@@ -446,7 +421,7 @@ export default function SubmitPage() {
                           <input 
                             value={formData.telegram}
                             onChange={(e) => setFormData({...formData, telegram: e.target.value})}
-                            className="mt-1 block w-full rounded-input border-input-border shadow-sm placeholder-placeholder-gray focus:border-primary-green focus:ring focus:ring-primary-green focus:ring-opacity-20" 
+                            className="mt-1 block w-full py-3 px-4 rounded-input border-input-border shadow-sm placeholder-placeholder-gray focus:border-primary-green focus:ring focus:ring-primary-green focus:ring-opacity-20" 
                             id="telegram" 
                             placeholder="t.me/yourproject"
                             type="text"
@@ -513,7 +488,5 @@ export default function SubmitPage() {
             </div>
           </div>
         </main>
-      </div>
-    </div>
   );
 }

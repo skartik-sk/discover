@@ -3,12 +3,11 @@ import Link from 'next/link';
 export default function AboutPage() {
   return (
         <main className="flex w-full grow flex-col">
-          <section className="relative w-full h-[50vh] md:h-[60vh] flex items-center justify-center text-center p-6 md:p-8">
+          <section className="relative w-full h-[50vh] md:h-[60vh] flex items-end justify-center text-center p-6 md:p-8 pb-16 md:pb-24">
             <div className="absolute inset-0 bg-cover bg-center" style={{backgroundImage: 'url("https://lh3.googleusercontent.com/aida-public/AB6AXuDzLtPhmNYW6AWzDHq6KyJmrlZT7k9mTzb269hItNj2-Dc4dFciw-88byjU8-YDzIkksG78riCAl6yPDR5MlPpYUHYJ3v8nTCsFeevijtjmUO8hUxooL4SOHhzspuGMmj2dNZbWb8JlHd6SGevBq1bNKdUap57Smjlph6Pv9wiIiy_3c5gmK09k4_ZgaklY959bKNqIbGVb8u3UT0b6Y6DFdvFoChb4ByNhG6VSv0GReM7CsoiWdVyJxfQc7hrJFhji4Uz9uOM0Fiyq")', filter: 'saturate(0.5) contrast(0.9) brightness(0.9)'}}></div>
-            <div className="absolute inset-0 bg-linear-to-t from-main-bg/30 via-main-bg/10 to-transparent"></div>
+            <div className="absolute inset-0 bg-linear-to-t from-main-bg/50 via-main-bg/20 to-transparent"></div>
             <div className="relative z-10">
-              <h1 className="text-header-text text-4xl font-bold leading-tight tracking-tight md:text-6xl">Empowering Web3 Discovery</h1>
-              <p className="mt-4 max-w-2xl mx-auto text-header-text/80 text-base font-normal leading-relaxed md:text-lg">Discover is more than a platform; it&apos;s a community-driven ecosystem designed to illuminate the future of the decentralized web.</p>
+
             </div>
           </section>
           <div className="px-6 py-12 md:px-16 md:py-24 space-y-20 md:space-y-32 max-w-5xl mx-auto">

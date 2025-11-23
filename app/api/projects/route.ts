@@ -118,7 +118,7 @@ export async function POST(request: NextRequest) {
         discord: body.discord || null,
         github: body.github || null,
         telegram: body.telegram || null,
-        status: 'pending',
+        status: 'approved', // Auto-approve for Phase 1 - add moderation in Phase 2
         userId: user.id,
       },
       include: {

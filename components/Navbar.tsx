@@ -1,3 +1,5 @@
+'use client';
+
 import React from 'react';
 import Link from 'next/link';
 
@@ -32,7 +34,11 @@ export const Navbar = () => {
         </nav>
       </div>
       <div className="flex flex-1 items-center justify-end gap-4">
-        <button className="flex min-w-[84px] cursor-pointer items-center justify-center overflow-hidden rounded-btn h-10 px-5 bg-primary-green text-white text-sm font-semibold transition-transform duration-200 ease-in-out hover:scale-105">
+        <button 
+          onClick={() => alert('Web3 wallet integration coming in Phase 2!\n\nWill support: MetaMask, WalletConnect, Coinbase Wallet, and more.')}
+          className="flex min-w-[84px] cursor-pointer items-center justify-center overflow-hidden rounded-btn h-10 px-5 bg-primary-green text-white text-sm font-semibold transition-transform duration-200 ease-in-out hover:scale-105"
+          title="Coming in Phase 2"
+        >
           <span className="truncate">Connect Wallet</span>
         </button>
       </div>

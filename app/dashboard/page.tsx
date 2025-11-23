@@ -27,46 +27,20 @@ async function getDashboardData() {
 export default async function DashboardPage() {
   const user = await getDashboardData();
   return (
-    <div className="relative flex min-h-screen w-full flex-col">
-      <div className="layout-container flex h-full grow flex-col">
-        <div className="px-4 sm:px-8 md:px-16 lg:px-24 xl:px-40 flex flex-1 justify-center py-5">
-          <div className="layout-content-container flex flex-col w-full max-w-6xl flex-1">
-            <header className="flex items-center justify-between whitespace-nowrap border-b border-solid border-light-grey/80 px-6 sm:px-10 py-4 bg-soft-cream/80 backdrop-blur-sm sticky top-4 z-10 rounded-xl">
-              <div className="flex items-center gap-4 text-forest-green">
-                <div className="size-6">
-                  <svg fill="none" viewBox="0 0 48 48" xmlns="http://www.w3.org/2000/svg">
-                    <path clipRule="evenodd" d="M24 18.4228L42 11.475V34.3663C42 34.7796 41.7457 35.1504 41.3601 35.2992L24 42V18.4228Z" fill="currentColor" fillRule="evenodd"></path>
-                    <path clipRule="evenodd" d="M24 8.18819L33.4123 11.574L24 15.2071L14.5877 11.574L24 8.18819ZM9 15.8487L21 20.4805V37.6263L9 32.9945V15.8487ZM27 37.6263V20.4805L39 15.8487V32.9945L27 37.6263ZM25.354 2.29885C24.4788 1.98402 23.5212 1.98402 22.646 2.29885L4.98454 8.65208C3.7939 9.08038 3 10.2097 3 11.475V34.3663C3 36.0196 4.01719 37.5026 5.55962 38.098L22.9197 44.7987C23.6149 45.0671 24.3851 45.0671 25.0803 44.7987L42.4404 38.098C43.9828 37.5026 45 36.0196 45 34.3663V11.475C45 10.2097 44.2061 9.08038 43.0155 8.65208L25.354 2.29885Z" fill="currentColor" fillRule="evenodd"></path>
-                  </svg>
-                </div>
-                <h2 className="text-forest-green text-xl font-bold leading-tight tracking-[-0.015em]">Discover</h2>
-              </div>
-              <div className="hidden md:flex items-center gap-9">
-                <Link className="text-dark-grey text-sm font-medium leading-normal hover:text-forest-green transition-colors" href="/">Home</Link>
-                <Link className="text-dark-grey text-sm font-medium leading-normal hover:text-forest-green transition-colors" href="/projects">Explore</Link>
-                <Link className="text-dark-grey text-sm font-medium leading-normal hover:text-forest-green transition-colors" href="/projects">Projects</Link>
-              </div>
-              <div className="flex items-center gap-4">
-                <button className="flex max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-full h-10 w-10 bg-white/50 hover:bg-white text-dark-grey transition-colors">
-                  <span className="material-symbols-outlined">notifications</span>
-                </button>
-                <div className="bg-center bg-no-repeat aspect-square bg-cover rounded-full size-10" data-alt="User's abstract 3D avatar" style={{backgroundImage: 'url("https://lh3.googleusercontent.com/aida-public/AB6AXuDoHHlA9pMN6Nh6l9sseluDtdK-0ocxgr1IJ1-U51_FNGEGs8LBPxc1zr8CLYcspwJvt8rO_cHbv-ftxPeaCgFz19L2K1BeFo1T6XP9xv3hys9_bT0zOSvUWcqcLNCjQvilJYweoMAcvG2CICZ9jWxpecKOgxarnwU9yriUnW_Mc_bdFc6D8xxLwNV8dnYRvpvfkM41Q_E2zI1rTcvWKuzgFzc9r5KjQWU5-LTso18jr-Jr-pIpykGvZq-b6ptTii4yt5antLOIHGF4")'}}></div>
-              </div>
-            </header>
-            <main className="flex-1 mt-8">
-              <div className="flex flex-wrap justify-between gap-4 px-4 sm:px-6 mb-8">
-                <p className="text-dark-grey text-4xl sm:text-5xl font-black leading-tight tracking-[-0.033em] min-w-72">My Dashboard</p>
-              </div>
-              <div className="grid grid-cols-1 lg:grid-cols-3 xl:grid-cols-4 gap-6 p-4">
-                {/* Identity Card */}
-                {user && (
-                  <div className="lg:col-span-1 xl:col-span-1 lg:row-span-2 flex flex-col items-stretch justify-start rounded-xl bg-white p-6 shadow-sm transition-shadow hover:shadow-md">
-                    <div 
-                      className="w-full bg-center bg-no-repeat aspect-square bg-cover rounded-lg mb-6" 
-                      data-alt="User avatar" 
-                      style={{backgroundImage: `url("${user.image || 'https://lh3.googleusercontent.com/aida-public/AB6AXuC3LwVONpV-RKqmNRF1RHjGG-3gpbAuSWf0Mr02JNOAYlKCamWDcTQuArgp1pgQAB1e7SrySjZMh2q44kwcTD3pDQeCjqOxwOKgAPudFTOyhUb__xVQYfmDbqRVUWTS2uRI-rEg_whKH99UAwWrRPbHaSfpahMlxgknCd9-wpSWYzkVgEi9iUUw7nLtqVTlZt78ubX0G4Ttn21X-2CHmeX4eNY77TSGbhm-bHbzR2UNV8Q3VUFVN1jyv8kKtPj7lWbClc00fKeEIMpr'}")`}}
-                    ></div>
-                    <p className="text-dark-grey text-2xl font-bold leading-tight tracking-[-0.015em] mb-2">{user.name || user.walletAddress || 'builder.eth'}</p>
+    <main className="flex-1 mt-8 px-4 sm:px-8 md:px-16 lg:px-24 xl:px-40 py-5 max-w-6xl mx-auto w-full">
+      <div className="flex flex-wrap justify-between gap-4 px-4 sm:px-6 mb-8">
+        <p className="text-dark-grey text-4xl sm:text-5xl font-black leading-tight tracking-[-0.033em] min-w-72">My Dashboard</p>
+      </div>
+      <div className="grid grid-cols-1 lg:grid-cols-3 xl:grid-cols-4 gap-6 p-4">
+        {/* Identity Card */}
+        {user && (
+          <div className="lg:col-span-1 xl:col-span-1 lg:row-span-2 flex flex-col items-stretch justify-start rounded-xl bg-white p-6 shadow-sm transition-shadow hover:shadow-md">
+            <div 
+              className="w-full bg-center bg-no-repeat aspect-square bg-cover rounded-lg mb-6" 
+              data-alt="User avatar" 
+              style={{backgroundImage: `url("${user.image || 'https://lh3.googleusercontent.com/aida-public/AB6AXuC3LwVONpV-RKqmNRF1RHjGG-3gpbAuSWf0Mr02JNOAYlKCamWDcTQuArgp1pgQAB1e7SrySjZMh2q44kwcTD3pDQeCjqOxwOKgAPudFTOyhUb__xVQYfmDbqRVUWTS2uRI-rEg_whKH99UAwWrRPbHaSfpahMlxgknCd9-wpSWYzkVgEi9iUUw7nLtqVTlZt78ubX0G4Ttn21X-2CHmeX4eNY77TSGbhm-bHbzR2UNV8Q3VUFVN1jyv8kKtPj7lWbClc00fKeEIMpr'}")`}}
+            ></div>
+            <p className="text-dark-grey text-2xl font-bold leading-tight tracking-[-0.015em] mb-2">{user.name || user.walletAddress || 'builder.eth'}</p>
                     <div className="flex items-center gap-4">
                       <div className="relative size-20">
                         <svg className="size-full" height="36" viewBox="0 0 36 36" width="36" xmlns="http://www.w3.org/2000/svg">
@@ -151,10 +125,6 @@ export default async function DashboardPage() {
                   </div>
                 </div>
               </div>
-            </main>
-          </div>
-        </div>
-      </div>
-    </div>
+    </main>
   );
 }

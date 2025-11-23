@@ -53,8 +53,16 @@ export default async function GovernancePage() {
 
   return (
     <main className="flex-1 mt-10 px-2 sm:px-6 max-w-[1100px] mx-auto w-full">
-              <div className="flex flex-wrap justify-between items-center gap-4 mb-10">
-                <p className="text-forest-green text-4xl lg:text-5xl font-black leading-tight tracking-[-0.033em] min-w-72">Governance &amp; Rewards</p>
+              <div className="flex flex-wrap justify-between items-center gap-4 mb-4">
+                <div>
+                  <p className="text-forest-green text-4xl lg:text-5xl font-black leading-tight tracking-[-0.033em] min-w-72">Governance &amp; Rewards</p>
+                  <p className="text-sm text-blue-600 mt-2 font-medium">
+                    <span className="inline-flex items-center gap-1 bg-blue-50 px-3 py-1 rounded-full">
+                      <span className="material-symbols-outlined text-base">info</span>
+                      Demo Mode - Web3 wallet integration coming in Phase 2
+                    </span>
+                  </p>
+                </div>
                 <div className="text-forest-green/30 opacity-50">
                   <span className="material-symbols-outlined text-8xl">account_balance</span>
                 </div>

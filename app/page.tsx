@@ -24,6 +24,7 @@ async function getProjects() {
 
 export default async function HomePage() {
   const projects = await getProjects();
+  const [featuredProject, ...regularProjects] = projects;
   
   return (
     <div className="min-h-screen p-2 sm:p-3 md:p-4 bg-transparent">
@@ -48,9 +49,51 @@ export default async function HomePage() {
             </div>
           </div>
           
-          {/* Uniform Grid - All cards same height */}
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mt-8">
-            {projects.map((project) => (
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            {/* Featured Project - Large */}
+            {featuredProject && (
+              <div className="group relative flex flex-col md:col-span-2 md:row-span-2 overflow-hidden rounded-soft bg-card-bg p-6 shadow-card transition-all duration-300 hover:shadow-card-hover transform hover:-translate-y-1">
+                <div className="absolute inset-0 bg-cover bg-center opacity-80 transition-transform duration-500 group-hover:scale-105" style={{backgroundImage: `url("${featuredProject.coverUrl}")`, filter: 'saturate(0.8) contrast(0.9)'}}></div>
+                <div className="absolute inset-0 bg-linear-to-t from-black/60 via-black/20 to-transparent"></div>
+                <div className="relative mt-auto flex items-end justify-between">
+                  <div className="flex flex-col gap-2">
+                    <div className="flex items-center gap-3">
+                      <img 
+                        alt={`${featuredProject.name} Logo`}
+                        className="h-10 w-10 rounded-full border-2 border-white/50 bg-gray-700" 
+                        src={featuredProject.logoUrl}
+                      />
+                      <h3 className="text-2xl font-bold text-white">{featuredProject.name}</h3>
+                    </div>
+                    <p className="max-w-md text-sm text-gray-200">{featuredProject.tagline}</p>
+                    <div className="flex items-center gap-2 mt-2">
+                      <div className="flex h-6 shrink-0 items-center justify-center rounded-tag bg-accent-blue/20 px-3">
+                        <p className="text-accent-blue text-xs font-semibold">{featuredProject.category}</p>
+                      </div>
+                      {featuredProject.tags?.split(',').slice(0, 2).map((tag: string, i: number) => (
+                        <div key={i} className="flex h-6 shrink-0 items-center justify-center rounded-tag bg-accent-yellow/20 px-3">
+                          <p className="text-accent-yellow text-xs font-semibold">{tag.trim()}</p>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                  <div className="flex flex-col items-center justify-center rounded-btn border border-white/20 bg-white/10 px-3 py-2 text-white backdrop-blur-sm transition-colors hover:bg-white/20">
+                    <span className="material-symbols-outlined text-2xl!">arrow_drop_up</span>
+                    <span className="text-sm font-bold tracking-tight">{featuredProject.upvotes}</span>
+                  </div>
+                </div>
+              </div>
+            )}
+            
+            {/* Regular Projects */}
+            {regularProjects.slice(0, 2).map((project) => (
+              <ProjectCard key={project.id} project={project} />
+            ))}
+          </div>
+          
+          {/* More Projects Grid */}
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mt-6">
+            {regularProjects.slice(2).map((project) => (
               <ProjectCard key={project.id} project={project} />
             ))}
           </div>
