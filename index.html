@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    
+    <!-- Primary Meta Tags -->
+    <title>Discover | Web3 Showcase Platform</title>
+    <meta name="title" content="Discover | Web3 Showcase Platform" />
+    <meta name="description" content="The premier platform for discovering, verifying, and launching the next generation of Web3 applications. Built for the community, by the community." />
+    
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="https://discover-web3.com/" />
+    <meta property="og:title" content="Discover | Web3 Showcase Platform" />
+    <meta property="og:description" content="The premier platform for discovering, verifying, and launching the next generation of Web3 applications." />
+    <meta property="og:image" content="https://discover-web3.com/og-image.png" />
+    
+    <!-- Twitter -->
+    <meta property="twitter:card" content="summary_large_image" />
+    <meta property="twitter:url" content="https://discover-web3.com/" />
+    <meta property="twitter:title" content="Discover | Web3 Showcase Platform" />
+    <meta property="twitter:description" content="The premier platform for discovering, verifying, and launching the next generation of Web3 applications." />
+    <meta property="twitter:image" content="https://discover-web3.com/og-image.png" />
+    
+    <!-- Favicon -->
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='20' fill='%23000'/><text x='50' y='70' font-size='60' text-anchor='middle' fill='%23CCFF00' font-family='Arial, sans-serif' font-weight='bold'>D</text></svg>" />
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+      tailwind.config = {
+        darkMode: 'class',
+        theme: {
+          extend: {
+            colors: {
+              lime: {
+                300: '#bef264',
+                400: '#a3e635',
+                500: '#84cc16',
+                primary: '#CCFF00', // The specific lime green from inspiration
+              },
+              neutral: {
+                900: '#171717',
+                950: '#0a0a0a',
+              }
+            },
+            fontFamily: {
+              sans: ['Inter', 'system-ui', 'sans-serif'],
+              mono: ['Fira Code', 'monospace'],
+            },
+            animation: {
+              'spin-slow': 'spin 12s linear infinite',
+            }
+          },
+        },
+      }
+    </script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Fira+Code:wght@400;600&display=swap" rel="stylesheet">
+    <style>
+      body {
+        font-family: 'Inter', sans-serif;
+        background-color: #0a0a0a;
+        color: #ffffff;
+      }
+      /* Custom scrollbar for Web3 feel */
+      ::-webkit-scrollbar {
+        width: 8px;
+      }
+      ::-webkit-scrollbar-track {
+        background: #0a0a0a;
+      }
+      ::-webkit-scrollbar-thumb {
+        background: #333;
+        border-radius: 4px;
+      }
+      ::-webkit-scrollbar-thumb:hover {
+        background: #CCFF00;
+      }
+    </style>
+  <script type="importmap">
+{
+  "imports": {
+    "lucide-react": "https://esm.sh/lucide-react@^0.562.0",
+    "recharts": "https://esm.sh/recharts@^3.7.0",
+    "framer-motion": "https://esm.sh/framer-motion@^12.29.0",
+    "react": "https://esm.sh/react@^19.2.3",
+    "react/": "https://esm.sh/react@^19.2.3/",
+    "react-dom/": "https://esm.sh/react-dom@^19.2.3/"
+  }
+}
+</script>
+<link rel="stylesheet" href="/index.css">
+</head>
+  <body>
+    <div id="root"></div>
+  <script type="module" src="/index.tsx"></script>
+</body>
+</html>
